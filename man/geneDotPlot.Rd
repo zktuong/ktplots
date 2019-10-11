@@ -16,7 +16,7 @@ geneDotPlot(scdata, idents, genes, groups, pct.threshold = 0.05,
 
 \item{groups}{conditions you want to split the spots by}
 
-\item{pct.threshold}{float. required to keep gene expressed by minimum percentage of cells. default = 0.05 (5%)}
+\item{pct.threshold}{float. required to keep gene expressed by minimum percentage of cells}
 
 \item{save.plot}{logical. will try to save the pdf}
 

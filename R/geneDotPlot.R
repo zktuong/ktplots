@@ -4,7 +4,7 @@
 #' @param ident vector holding the idents for each cell
 #' @param genes genes you want to plot
 #' @param groups conditions you want to split the spots by
-#' @param pct.threshold float. required to keep gene expressed by minimum percentage of cells. default = 0.05 (5%)
+#' @param pct.threshold float. required to keep gene expressed by minimum percentage of cells
 #' @param save.plot logical. will try to save the pdf
 #' @param h height of plot
 #' @param w width of plot
