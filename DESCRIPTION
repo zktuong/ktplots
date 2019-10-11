@@ -1,14 +1,19 @@
 Package: ktplots
-Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9000
-Authors@R: 
-    person(given = "First",
-           family = "Last",
-           role = c("aut", "cre"),
-           email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
-License: What license it uses
+Title: Plot single-cell data dotplots
+Version: 1.0.0
+Authors@R: person("Kelvin", "Tuong", email = c("z.tuong@uq.edu.au", "zkt22@cam.ac.uk", "kt16@sanger.ac.uk"), role = c("aut", "cre"))
+Description: Plotting tools for Mark.
+License: MIT
 Encoding: UTF-8
+Imports:
+	Matrix,
+	dplyr,
+	ggplot2,
+	reshape2,
+	viridis
+Suggests:
+	Seurat,
+	SummarizedExperiment,
+	RColorBrewer
 LazyData: true
 RoxygenNote: 6.1.1
