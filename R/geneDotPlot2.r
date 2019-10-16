@@ -21,7 +21,7 @@
 #' @import reshape2
 #' @export
 
-geneDotPlot2 <- function(scdata, idents, genes, groups, pct.threshold = 0.05, save.plot = TRUE, h = 5, w = 5, filepath = NULL, filename = NULL, heat_cols = rev(brewer.pal(9, "RdBu")), col_limits = NULL){
+geneDotPlot2 <- function(scdata, idents, genes, groups, pct.threshold = 0.05, save.plot = TRUE, h = 5, w = 5, filepath = NULL, filename = NULL, heat_cols = rev(RColorBrewer::brewer.pal(9, "RdBu")), col_limits = NULL){
 	require(ggplot2)
 	require(dplyr)
 	require(Matrix)
