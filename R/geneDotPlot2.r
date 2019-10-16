@@ -21,7 +21,7 @@
 #' @import reshape2
 #' @export
 
-geneDotPlot <- function(scdata, idents, genes, groups, pct.threshold = 0.05, save.plot = TRUE, h = 5, w = 5, filepath = NULL, filename = NULL, heat_cols = rev(brewer.pal(9, "RdBu")), col_limits = NULL){
+geneDotPlot2 <- function(scdata, idents, genes, groups, pct.threshold = 0.05, save.plot = TRUE, h = 5, w = 5, filepath = NULL, filename = NULL, heat_cols = rev(brewer.pal(9, "RdBu")), col_limits = NULL){
 	require(ggplot2)
 	require(dplyr)
 	require(Matrix)
@@ -133,7 +133,6 @@ geneDotPlot <- function(scdata, idents, genes, groups, pct.threshold = 0.05, sav
   		facet_grid(.~group+cell_type) +
 		theme_bw() +
 		theme(axis.text.x = element_text(angle = 90, hjust = 0),
-  			axis.ticks = element_blank(),
   			axis.title.x = element_blank(),
   			axis.title.y = element_blank(),
   			axis.line = element_blank(),
