@@ -31,5 +31,5 @@ Plotting cellphonedb results
 \examples{
 pvals <- read.delim("./cpdb/output/pvalues.txt", check.names = FALSE)
 means <- read.delim("./cpdb/output/means.txt", check.names = FALSE) 
-plot_cpdb("MNP_5", "Lymphoid_[12345]", means, pvals, groups = c("normal", "tumor"), genes = c("CXCL13", "CD274", "CXCR5"))
+plot_cpdb("Bcell", "Tcell", means, pvals, groups = c("normal", "tumor"), genes = c("CXCL13", "CD274", "CXCR5"))
 }

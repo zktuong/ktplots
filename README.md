@@ -21,13 +21,38 @@ library(ktplots)
 ### geneDotPlot
 plotting genexpression dotplots heatmaps
 ```R
-geneDotPlot(seurat_object, as.factor(seurat_object$split), genes = c("CD68","HLA-DRA"), save.plot = FALSE, groups = c("Tissue","PBMC"))
+geneDotPlot(scdata = seurat_object, # object 
+	idents = Idents(seurat_object), # a vector holding the cell-cluster ID/assignment or some other vector such as those found in the metadata seurat_object$split
+	genes = c("CD68", "CD80", "CD86", "CD74", "CD2", "CD5"), # genes to plot
+	split.by = c("group"), # column name in the meta data that you want to split the plotting by. If not provided, it will just plot according to idents
+	save.plot = FALSE) # If TRUE, it will save to a location that you can specify via filepath and filename
 ```
+hopefully you end up with something like this
+![heatmap](exampleImages/geneDotPlot_example.jpg)
 
 ### plot_cpdb
-Generates the dot plot for cpdb output
+Generates the dot plot for cpdb output vai specify the cell types and the genes
 ```R
 pvals <- read.delim("pvalues.txt", check.names = FALSE)
 means <- read.delim("means.txt", check.names = FALSE) 
-plot_cpdb("Bcell", "Tcell", means, pvals, groups = c("normal", "tumor"), genes = c("CXCL13", "CD274", "CXCR5"))
+plot_cpdb(cell_type1 = "Bcell", # cell_type1 and cell_type2 will call grep, so this will accept regex arguments
+	cell_type2 = "Tcell",
+	means,
+	pvals,
+	groups = c("normal", "tumor"),
+	genes = c("CXCL13", "CD274", "CXCR5"))
 ```
+
+or, you can try by a crude grep via the 'gene.family'
+```R
+pvals <- read.delim("pvalues.txt", check.names = FALSE)
+means <- read.delim("means.txt", check.names = FALSE) 
+plot_cpdb(cell_type1 = "Bcell",
+	cell_type2 = "Tcell",
+	means,
+	pvals,
+	groups = c("normal", "tumor"),
+	gene.family = "chemokines") # can also try Th1, Th2, Th17, Treg, costimulatory, coinhibitory, niche, 
+```
+example of what appears
+![heatmap](exampleImages/plot_cpdb_example.jpg)

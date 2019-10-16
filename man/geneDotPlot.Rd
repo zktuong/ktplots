@@ -4,17 +4,20 @@
 \alias{geneDotPlot}
 \title{Plotting genes as dotplot}
 \usage{
-geneDotPlot(scdata, idents, genes, groups, pct.threshold = 0.05,
-  save.plot = TRUE, h = 5, w = 5, filepath = NULL,
-  filename = NULL, heat_cols = rev(brewer.pal(9, "RdBu")),
+geneDotPlot(scdata, idents, genes, split.by = NULL,
+  pct.threshold = 0.05, save.plot = FALSE, h = 5, w = 5,
+  filepath = NULL, filename = NULL,
+  heat_cols = rev(RColorBrewer::brewer.pal(9, "RdBu")),
   col_limits = NULL)
 }
 \arguments{
 \item{scdata}{single-cell data. can be seurat/summarizedexperiment object}
 
+\item{idents}{vector holding the idents for each cell}
+
 \item{genes}{genes you want to plot}
 
-\item{groups}{conditions you want to split the spots by}
+\item{split.by}{column name in the metadata/coldata table to split the spots by. If not provided, it will plot via idents provided.}
 
 \item{pct.threshold}{float. required to keep gene expressed by minimum percentage of cells}
 
@@ -31,8 +34,6 @@ geneDotPlot(scdata, idents, genes, groups, pct.threshold = 0.05,
 \item{heat_cols}{colour gradient for the dot plot}
 
 \item{col_limits}{set limits to the color gradient}
-
-\item{ident}{vector holding the idents for each cell}
 }
 \value{
 ggplot dot plot object of selected genes
