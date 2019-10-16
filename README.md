@@ -33,7 +33,7 @@ hopefully you end up with something like this
 ### plot_cpdb
 Generates the dot plot for cpdb output via specifying the cell types and the genes
 ```R
-pvals <- read.delim("pvalues.txt", check.names = FALSE)
+pvals <- read.delim("pvalues.txt", check.names = FALSE) # pvalues.txt and means.txt are output from cpdb
 means <- read.delim("means.txt", check.names = FALSE) 
 plot_cpdb(cell_type1 = "Bcell", # cell_type1 and cell_type2 will call grep, so this will accept regex arguments
 	cell_type2 = "Tcell",
@@ -45,8 +45,6 @@ plot_cpdb(cell_type1 = "Bcell", # cell_type1 and cell_type2 will call grep, so t
 
 or, you can try by a crude grep via the 'gene.family'
 ```R
-pvals <- read.delim("pvalues.txt", check.names = FALSE)
-means <- read.delim("means.txt", check.names = FALSE) 
 plot_cpdb(cell_type1 = "Bcell",
 	cell_type2 = "Tcell",
 	means,
