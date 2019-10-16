@@ -124,7 +124,7 @@ geneDotPlot2 <- function(scdata, idents, genes, groups, pct.threshold = 0.05, sa
 
 	# subset the plotting objects
 	doplot <- function(obj, file_name = filename, file_path = filepath, dim_w, dim_h, limits. = col_limits, do.plot = save.plot){
-		g <- ggplot(obj, aes(x = 0, y = gene, size = pct, colour = mean)) + 
+		g <- ggplot(obj, aes(x = cell_type, y = gene, size = pct, colour = mean)) + 
 		geom_point(pch = 16) +
 		scale_y_discrete(position = "top") +
 		scale_x_discrete(position = "bottom") +
