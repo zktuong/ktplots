@@ -24,7 +24,7 @@ plotting genexpression dotplots heatmaps
 geneDotPlot(scdata = seurat_object, # object 
 	idents = Idents(seurat_object), # a vector holding the cell-cluster ID/assignment or some other vector such as those found in the metadata seurat_object$split
 	genes = c("CD68", "CD80", "CD86", "CD74", "CD2", "CD5"), # genes to plot
-	split.by = c("group"), # column name in the meta data that you want to split the plotting by. If not provided, it will just plot according to idents
+	split.by = "group", # column name in the meta data that you want to split the plotting by. If not provided, it will just plot according to idents
 	save.plot = FALSE) # If TRUE, it will save to a location that you can specify via filepath and filename
 ```
 hopefully you end up with something like this
