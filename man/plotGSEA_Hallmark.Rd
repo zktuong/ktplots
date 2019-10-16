@@ -4,10 +4,13 @@
 \alias{plotGSEA_Hallmark}
 \title{Plotting GSEA enrichment as dotplots}
 \usage{
-plotGSEA_Hallmark(gsea, cols = NULL, newlabels = NULL)
+plotGSEA_Hallmark(gsea, group_ref = NULL, cols = NULL,
+  newlabels = NULL)
 }
 \arguments{
 \item{gsea}{processed gsea data table}
+
+\item{group_ref}{if more than 2 comparisons, specify the name of the group to act as reference. Otherwise, use 1 or 2 to specify the order if the reference. Defaults to using the second level.}
 
 \item{cols}{replacement colours}
 

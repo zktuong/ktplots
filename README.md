@@ -125,37 +125,25 @@ for(i in 1:length(geneList)){
 names(result) <- gsub('.csv', "",files)
 
 for(i in 1:length(geneList)){
-result[[i]] <- lapply(result[[i]], function(x){
-	x$ranking <- -log10(x$pval)*sign(x$NES)	
-	x <- x[order(x$ranking), ]
-	return(x)
-})
+	result[[i]] <- lapply(result[[i]], function(x){
+		x$ranking <- -log10(x$pval)*sign(x$NES)	
+		x <- x[order(x$ranking), ]
+		x[[1]]$group = "group1"
+		x[[2]]$group = "group2"
+		x[[3]]$group = "group3"
+		return(x)
+	})
 }
-
-# make the ranking of group3 very big for plotting order
-for(i in 1:length(geneList)){
-	result[[i]][[3]]$ranking <- result[[i]][[3]]$ranking*999
-}
-
-result <- lapply(result ,function(x){
-	x[[1]]$group = "group1"
-	x[[2]]$group = "group2"
-	x[[3]]$group = "group3"
-	return(x)
-})
 
 result2 <- lapply(result, function(x) {
 	y <- do.call(rbind, x)
+	y$group <- factor(y$group, levels = c('group1', 'group2', 'group3')) 
 	return(y)
 })
 
-result2 <- lapply(result2, function(x) {
-	x$group <- factor(x$group, levels = c('group1', 'group2', 'group3')) 
-	return(x)
-})
 
 for(i in 1:length(geneList)){
-p <- plotGSEA_Hallmark(result3[[i]], cols = c("#1f77b4", "#ff7f0e", "#279e68"), newlabels = c("group1", "group2", "group3", "NotSig")) + ggtitle(paste0(names(result3)[i]))
+p <- plotGSEA_Hallmark(result2[[i]], group_ref = "group3", cols = c("#1f77b4", "#ff7f0e", "#279e68"), newlabels = c("group1", "group2", "group3", "NotSig")) + ggtitle(paste0(names(result3)[i]))
 ggsave(paste0("./GSEA/plots/GSEA_Hallmarks", names(result3)[i],".pdf"), plot = p, w = 8.5)
 }
 ```

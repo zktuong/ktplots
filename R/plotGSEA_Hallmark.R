@@ -1,6 +1,7 @@
 #' Plotting GSEA enrichment as dotplots
 #' 
 #' @param gsea processed gsea data table
+#' @param group_ref if more than 2 comparisons, specify the name of the group to act as reference. Otherwise, use 1 or 2 to specify the order if the reference. Defaults to using the second level.
 #' @param cols replacement colours
 #' @param newlabels replacement labels
 #' @return ggplot dot plot object of functions
@@ -13,9 +14,22 @@
 #' @import reshape2
 #' @export
 
-plotGSEA_Hallmark <- function(gsea, cols = NULL, newlabels = NULL) {
+plotGSEA_Hallmark <- function(gsea, group_ref = NULL, cols = NULL, newlabels = NULL) {
 	require(ggplot2)
-	gsea <- gsea[order(gsea$ranking),]
+	gsea$NES[which(is.na(gsea$NES))] <- 0
+	gsea$ranking[which(is.na(gsea$ranking))] <- 0
+	gsea <- gsea[order(gsea$ranking),]		
+	gsea_spl <- split(gsea, gsea$group)
+	if(!is.null(group_ref)){
+		gsea_spl[[group_ref]] <- gsea_spl[[group_ref]][order(gsea_spl[[group_ref]]$ranking),]
+		gsea_spl[[group_ref]]$ranking <- gsea_spl[[group_ref]]$ranking*999
+	} else {
+		gsea_spl[[2]] <- gsea_spl[[2]]$ranking*999
+	}
+	names(gsea_spl) <- NULL
+
+	gsea <- do.call(rbind, gsea_spl)
+	gsea <- gsea[order(gsea$ranking), ]
 	gsea$pathway <- gsub("HALLMARK_|", "", gsea$pathway)
 	gsea$group[which(gsea$pval >= 0.05 & gsea$padj >= 0.25)] <- "NA"
 	
