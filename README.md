@@ -80,7 +80,7 @@ degs <- lapply(files, read_csv)
 
 library(kelvinny)
 # read in gene set
-h <- as.list(parse_gmt("h.all.v6.2.symbols.gmt")) # from kelviny
+h <- as.list(parse_gmt("h.all.v6.2.symbols.gmt")) # from kelvinny
 h <- lapply(h, function(x) {x <- x[-1]; x <- x[!is.na(x)]; return(x)})
 
 # do the symbol conversion
