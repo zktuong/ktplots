@@ -60,17 +60,26 @@ example of what appears
 ### plotGSEA_Hallmark/plotGSEA_GO
 Generates the dot plot for GSEA results
 
-#### for hallmark signatures
+```R
+plotGSEA_Hallmark(gsea_result, cols = c("#1f77b4", "#ff7f0e", "#279e68"), newlabels = c("group1", "group2", "group3", "NotSig"))
+
+plotGSEA_GO(gsea_result, top = 30, group_ref = "group3", cols = c("#1f77b4", "#ff7f0e", "#279e68"), newlabels = c("group1", "group2", "group3", "NotSig"))
+```
+
+
+#### example to prepare the table for plotting enrichment of hallmark signatures
 ```R
 library(dplyr)
 library(readr)
 library(tibble)
 library(pbmcapply)
 
+# assuming the degs are in separate files to begin with
 files <- as.list(list.files(pattern='.csv'))
 degs <- lapply(files, read_csv)
 
 library(kelvinny)
+# read in gene set
 h <- as.list(parse_gmt("h.all.v6.2.symbols.gmt")) # from kelviny
 h <- lapply(h, function(x) {x <- x[-1]; x <- x[!is.na(x)]; return(x)})
 
@@ -153,18 +162,8 @@ ggsave(paste0("./GSEA/plots/GSEA_Hallmarks", names(result3)[i],".pdf"), plot = p
 example output #1
 ![heatmap](exampleImages/plotGSEA_Hallmark_example.png)
 
-#### for Gene Ontologies
+#### for enrichment of Gene Ontologies
 ```R
-library(dplyr)
-library(readr)
-library(tibble)
-library(pbmcapply)
-
-# assuming the degs are in separate files to begin with
-files <- as.list(list.files(pattern='degs.csv'))
-degs <- lapply(files, read_csv)
-
-library(kelvinny)
 # read in gene set
 c5 <- as.list(parse_gmt("c5.bp.v6.2.symbols.gmt")) # from kelvinny
 c5 <- lapply(c5, function(x) {x <- x[-1]; x <- x[!is.na(x)]; return(x)})
@@ -179,28 +178,6 @@ c5 <- lapply(c5, function(x){
 	y <- y[-which(y == "")]	
 	return(y)
 })
-
-# use some threshold? up to you
-up_cutOff = 1.5
-down_cutOff = -1.5
-geneList <- pbmclapply(degs, function(x){
-	group1 <- x %>% dplyr::filter(!between(group1_logfoldchanges, up_cutOff, down_cutOff)) %>% dplyr::select(group1_gene, group1_logfoldchanges, group1_pvals)
-	group2 <- x %>% dplyr::filter(!between(group2_logfoldchanges, up_cutOff, down_cutOff)) %>% dplyr::select(group2_gene, group2_logfoldchanges, group2_pvals)
-	group3 <- x %>% dplyr::filter(!between(group3_logfoldchanges, up_cutOff, down_cutOff)) %>% dplyr::select(group3_gene, group3_logfoldchanges, group3_pvals)
-	
-	geneList_l <- list(group1 = group1, group2 = group2, group3 = group3)
-	geneList_l <- pbmclapply(geneList_l, function(y) {
-		y$neglog10pval <- -log10(y[,3, drop = TRUE])
-		rank <- unlist(y$neglog10pval*sign(y[,2, drop = TRUE]))
-		rank[which(rank == Inf)] <- -log10(10^-308)
-		rank[which(rank == -Inf)] <- log10(10^-308)
-		names(rank) <- y[,1, drop = TRUE]
-		rank <- rev(sort(rank))
-		# if there's are Inf values, just need to change those to -log10(10^-308) or inverse of that
-		return(rank)
-	}, mc.cores = 4)
-	return(geneList_l)
-}, mc.cores = 4)
 
 # do the GSEA
 library(fgsea)
