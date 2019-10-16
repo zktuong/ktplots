@@ -55,8 +55,4 @@ plot_cpdb(cell_type1 = "Bcell",
 	gene.family = "chemokines") # can also try Th1, Th2, Th17, Treg, costimulatory, coinhibitory, niche, 
 ```
 example of what appears
-<<<<<<< HEAD
-![heatmap](exampleImages/plot_cpdb_example.png)
-=======
 ![heatmap](exampleImages/plot_cpdb_example.jpg)
->>>>>>> f811dee4c98b4e7e6afdc705787e685e887ceb90
