@@ -59,7 +59,8 @@ example of what appears
 
 ### plotGSEA_Hallmark/plotGSEA_GO
 Generates the dot plot for GSEA results
-#### for hallmark
+
+#### for hallmark signatures
 ```R
 library(dplyr)
 library(readr)
@@ -151,7 +152,8 @@ ggsave(paste0("./GSEA/plots/GSEA_Hallmarks", names(result3)[i],".pdf"), plot = p
 ```
 example output #1
 ![heatmap](exampleImages/plotGSEA_Hallmark_example.png)
-#### for GO
+
+#### for Gene Ontologies
 ```R
 library(dplyr)
 library(readr)
