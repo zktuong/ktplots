@@ -28,7 +28,7 @@ geneDotPlot(scdata = seurat_object, # object
 	save.plot = FALSE) # If TRUE, it will save to a location that you can specify via filepath and filename
 ```
 hopefully you end up with something like this
-![heatmap](exampleImages/geneDotPlot_example.jpg)
+![heatmap](exampleImages/geneDotPlot_example.png)
 
 ### plot_cpdb
 Generates the dot plot for cpdb output vai specify the cell types and the genes
@@ -55,4 +55,4 @@ plot_cpdb(cell_type1 = "Bcell",
 	gene.family = "chemokines") # can also try Th1, Th2, Th17, Treg, costimulatory, coinhibitory, niche, 
 ```
 example of what appears
-![heatmap](exampleImages/plot_cpdb_example.jpg)
+![heatmap](exampleImages/plot_cpdb_example.png)
