@@ -61,7 +61,7 @@ example of what appears
 Generates the dot plot for GSEA results
 
 ```R
-plotGSEA_Hallmark(gsea_result, cols = c("#1f77b4", "#ff7f0e", "#279e68"), newlabels = c("group1", "group2", "group3", "NotSig"))
+plotGSEA_Hallmark(gsea_result, group_ref = "group3", cols = c("#1f77b4", "#ff7f0e", "#279e68"), newlabels = c("group1", "group2", "group3", "NotSig"))
 
 plotGSEA_GO(gsea_result, top = 30, group_ref = "group3", cols = c("#1f77b4", "#ff7f0e", "#279e68"), newlabels = c("group1", "group2", "group3", "NotSig"))
 ```
@@ -157,10 +157,6 @@ c5 <- as.list(parse_gmt("c5.bp.v6.2.symbols.gmt")) # from kelvinny
 c5 <- lapply(c5, function(x) {x <- x[-1]; x <- x[!is.na(x)]; return(x)})
 
 # do the symbol conversion
-library(biomaRt)
-mart <- useMart("ensembl", dataset="hsapiens_gene_ensembl")
-m <- getBM(attributes=c("external_gene_name", "mmusculus_homolog_associated_gene_name"), mart=mart)
-
 c5 <- lapply(c5, function(x){
 	y <- m$mmusculus_homolog_associated_gene_name[m$external_gene_name %in% x]
 	y <- y[-which(y == "")]	
