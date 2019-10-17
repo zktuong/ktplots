@@ -122,11 +122,23 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
 
     if(!is.null(pct.threshold)){
         cat(paste0("setting minimum percentage of cells expressing gene to be ", pct.threshold*100, "%"), sep ="\n")
-        keep.genes <- plot.df %>% dplyr::filter(pct > pct.threshold) %>% dplyr::select(gene) %>% unique %>% unlist %>% as.character
-        remove.genes <- plot.df %>% dplyr::filter(pct <= pct.threshold) %>% dplyr::select(gene) %>% unique %>% unlist %>% as.character
+        
+        filter <- split(plot.df, plot.df$gene)
+        remove.genes <- lapply(filter, function(x){
+            if(max(x$pct) < pct.threshold){
+                return(as.character(x$gene))
+            }
+        })
+        remove.genes <- unique(unlist(remove.genes))
+        keep.genes <- lapply(filter, function(x){
+            if(max(x$pct) >= pct.threshold){
+                return(as.character(x$gene))
+            }
+        })
+        keep.genes <- unique(unlist(keep.genes))
         cat("the following genes are removed", sep ="\n")
         print(remove.genes)
-    } else {
+    } else if (is.null(pct.threshold) | pct.threshold == 0){
         warning("are you sure you don't want to set a cut off?")
         keep.genes <- plot.df %>% dplyr::select(gene) %>% unique %>% unlist %>% as.character
     }
