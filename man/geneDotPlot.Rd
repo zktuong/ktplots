@@ -5,8 +5,8 @@
 \title{Plotting genes as dotplot}
 \usage{
 geneDotPlot(scdata, idents, genes, split.by = NULL,
-  pct.threshold = 0.05, save.plot = FALSE, h = 5, w = 5,
-  filepath = NULL, filename = NULL,
+  pct.threshold = 0.05, scaled = TRUE, save.plot = FALSE, h = 5,
+  w = 5, filepath = NULL, filename = NULL,
   heat_cols = rev(RColorBrewer::brewer.pal(9, "RdBu")),
   col_limits = NULL)
 }
@@ -20,6 +20,8 @@ geneDotPlot(scdata, idents, genes, split.by = NULL,
 \item{split.by}{column name in the metadata/coldata table to split the spots by. If not provided, it will plot via idents provided.}
 
 \item{pct.threshold}{float. required to keep gene expressed by minimum percentage of cells}
+
+\item{scaled}{logical. scale the expression or not}
 
 \item{save.plot}{logical. will try to save the pdf}
 

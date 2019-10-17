@@ -5,6 +5,7 @@
 #' @param genes genes you want to plot
 #' @param split.by column name in the metadata/coldata table to split the spots by. If not provided, it will plot via idents provided.
 #' @param pct.threshold float. required to keep gene expressed by minimum percentage of cells
+#' @param scaled logical. scale the expression or not
 #' @param save.plot logical. will try to save the pdf
 #' @param h height of plot
 #' @param w width of plot
@@ -21,7 +22,7 @@
 #' @import reshape2
 #' @export
 
-geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 0.05, save.plot = FALSE, h = 5, w = 5, filepath = NULL, filename = NULL, heat_cols = rev(RColorBrewer::brewer.pal(9, "RdBu")), col_limits = NULL){
+geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 0.05, scaled = TRUE, save.plot = FALSE, h = 5, w = 5, filepath = NULL, filename = NULL, heat_cols = rev(RColorBrewer::brewer.pal(9, "RdBu")), col_limits = NULL){
     require(ggplot2)
     require(dplyr)
     require(Matrix)
@@ -59,7 +60,7 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
     }
 
     cat("preparing the final dataframe ...", sep = "\n")
-    quick_prep <- function(expr, label, groups. = NULL){
+    quick_prep <- function(expr, label, groups. = NULL, scaling = scaled){
         expr <- Matrix(expr, sparse = FALSE)
         expr.df <- data.frame(label = label, t(expr), check.names = FALSE)
         
@@ -72,7 +73,10 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
 
         names(meanExpr) <- unique(label)
         meanExpr <- do.call(rbind, meanExpr)
-        meanExpr <- scale(meanExpr)
+        if(scaling){
+            meanExpr <- scale(meanExpr)    
+        }
+        
 
         label.list <- as.list(unique(label))
         exp <- lapply(label.list, function(x) {
@@ -115,9 +119,9 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
     }
 
     if(!is.null(split.by)){
-        plot.df <- quick_prep(expr_mat_filtered, labels, unique(metadata[[split.by]]))
+        plot.df <- quick_prep(expr_mat_filtered, labels, unique(metadata[[split.by]]), scaled)
     } else {
-        plot.df <- quick_prep(expr_mat_filtered, labels)
+        plot.df <- quick_prep(expr_mat_filtered, labels, scaled)
     }
 
     if(!is.null(pct.threshold)){
