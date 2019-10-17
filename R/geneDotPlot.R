@@ -124,9 +124,9 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
     }
 
     if(!is.null(split.by)){
-        plot.df <- quick_prep(expr_mat_filtered, labels, unique(metadata[[split.by]]), scaled)
+        plot.df <- quick_prep(expr_mat_filtered, labels, unique(metadata[[split.by]]))
     } else {
-        plot.df <- quick_prep(expr_mat_filtered, labels, scaled)
+        plot.df <- quick_prep(expr_mat_filtered, labels)
     }
 
     if(!is.null(pct.threshold)){
@@ -156,7 +156,7 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
     plot.df.final <- plot.df[plot.df$gene %in% keep.genes, ]
 
     # subset the plotting objects
-    doplot <- function(obj, group. = NULL, file_name = filename, file_path = filepath, dim_w, dim_h, limits. = col_limits, do.plot = save.plot){
+    doplot <- function(obj, group. = NULL, file_name = filename, file_path = filepath, dim_w, dim_h, limits. = col_limits, do.plot = save.plot, scaling = scaled){
         if(is.null(group.)){
             if(scaling){
                 g <- ggplot(obj, aes(x = 0, y = gene, size = pct, colour = scaled.mean))     
