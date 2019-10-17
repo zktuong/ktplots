@@ -93,7 +93,7 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
         meltedfinal.pct <- melt(final.pct)
     
         df <- cbind(meltedMeanExpr, meltedfinal.pct$value)
-        colnames(df) <- c("celltype", "gene", "mean", "pct")
+        colnames(df) <- c("celltype", "gene", "scaled.mean", "pct")
     
         # add some groupings
         if(!is.null(groups.)){
@@ -137,7 +137,7 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
     # subset the plotting objects
     doplot <- function(obj, group. = NULL, file_name = filename, file_path = filepath, dim_w, dim_h, limits. = col_limits, do.plot = save.plot){
         if(is.null(group.)){
-            g <- ggplot(obj, aes(x = 0, y = gene, size = pct, colour = mean)) + 
+            g <- ggplot(obj, aes(x = 0, y = gene, size = pct, colour = scaled.mean)) + 
                 geom_point(pch = 16) +
                 scale_y_discrete(position = "top") +
                 scale_x_discrete(position = "bottom") +
@@ -155,7 +155,7 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
                     strip.background = element_blank()) +
                 facet_grid(.~cell_type)
             } else {
-            g <- ggplot(obj, aes(x = group, y = gene, size = pct, colour = mean)) + 
+            g <- ggplot(obj, aes(x = group, y = gene, size = pct, colour = scaled.mean)) + 
                 geom_point(pch = 16) +
                 scale_y_discrete(position = "top") +
                 scale_x_discrete(position = "bottom") +
