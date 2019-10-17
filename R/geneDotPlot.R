@@ -121,7 +121,7 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
     }
 
     if(!is.null(pct.threshold)){
-        cat(paste0("setting minimum percentage of cells expressing gene to be ", pct.threshold*100, "%"), sep ="\n")
+        cat(paste0("setting minimum percentage of cells expressing gene to be ", pct.threshold*100, "% of cluster/cell-type"), sep ="\n")
         
         filter <- split(plot.df, plot.df$gene)
         remove.genes <- lapply(filter, function(x){
