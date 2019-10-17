@@ -4,23 +4,36 @@
 \alias{plot_cpdb}
 \title{Plotting cellphonedb results}
 \usage{
-plot_cpdb(cell_type1, cell_type2, means_file, pvals_file, groups,
-  gene.family = NULL, genes = NULL, ...)
+plot_cpdb(cell_type1, cell_type2, scdata, idents, means_file, pvals_file,
+  split.by = NULL, gene.family = NULL, genes = NULL, scale = TRUE,
+  col_option = viridis::viridis(50), noir = FALSE, highlight = "red")
 }
 \arguments{
 \item{cell_type1}{cell type 1}
 
 \item{cell_type2}{cell type 2}
 
+\item{scdata}{single-cell data. can be seurat/summarizedexperiment object}
+
+\item{idents}{vector holding the idents for each cell or column name of scdata's metadata. MUST match cpdb's columns}
+
 \item{means_file}{object holding means.txt from cpdb output}
 
 \item{pvals_file}{object holding pvals.txt from cpdb output}
 
-\item{groups}{conditions to do the plotting}
+\item{split.by}{column name in the metadata/coldata table to split the spots by. Can only take columns with binary options}
 
 \item{gene.family}{default = NULL. some predefined group of genes. can take one of these options: "chemokines", "Th1", "Th2", "Th17", "Treg", "costimulatory", "coinhibitory", "niche"}
 
 \item{genes}{default = NULL. can specify custom list of genes if gene.family is NULL}
+
+\item{scale}{default = TRUE. scales the data}
+
+\item{col_option}{specify plotting colours}
+
+\item{noir}{default = FALSE. Ben's current phase. makes it b/w}
+
+\item{highlight}{colour for highlighting p <0.05}
 }
 \value{
 ggplot dot plot object of cellphone db output
@@ -29,7 +42,8 @@ ggplot dot plot object of cellphone db output
 Plotting cellphonedb results
 }
 \examples{
+scdata <- readRDS("./scdata.RDS", check.names = FALSE)
 pvals <- read.delim("./cpdb/output/pvalues.txt", check.names = FALSE)
 means <- read.delim("./cpdb/output/means.txt", check.names = FALSE) 
-plot_cpdb("Bcell", "Tcell", means, pvals, groups = c("normal", "tumor"), genes = c("CXCL13", "CD274", "CXCR5"))
+plot_cpdb("Bcell", "Tcell", scdata, means, pvals, split.by = "group", genes = c("CXCL13", "CD274", "CXCR5"))
 }
