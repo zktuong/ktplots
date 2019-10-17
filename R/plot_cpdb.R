@@ -2,25 +2,50 @@
 #' 
 #' @param cell_type1 cell type 1
 #' @param cell_type2 cell type 2
+#' @param scdata single-cell data. can be seurat/summarizedexperiment object
+#' @param idents vector holding the idents for each cell or column name of scdata's metadata. MUST match cpdb's columns
 #' @param means_file object holding means.txt from cpdb output
 #' @param pvals_file object holding pvals.txt from cpdb output
-#' @param groups conditions to do the plotting
+#' @param split.by column name in the metadata/coldata table to split the spots by. Can only take columns with binary options
 #' @param gene.family default = NULL. some predefined group of genes. can take one of these options: "chemokines", "Th1", "Th2", "Th17", "Treg", "costimulatory", "coinhibitory", "niche"
 #' @param genes default = NULL. can specify custom list of genes if gene.family is NULL
+#' @param scale default = TRUE. scales the data
+#' @param col_option specify plotting colours
+#' @param noir default = FALSE. Ben's current phase. makes it b/w
+#' @param highlight colour for highlighting p <0.05
 #' @return ggplot dot plot object of cellphone db output
 #' @examples
+#' scdata <- readRDS("./scdata.RDS", check.names = FALSE)
 #' pvals <- read.delim("./cpdb/output/pvalues.txt", check.names = FALSE)
 #' means <- read.delim("./cpdb/output/means.txt", check.names = FALSE) 
-#' plot_cpdb("Bcell", "Tcell", means, pvals, groups = c("normal", "tumor"), genes = c("CXCL13", "CD274", "CXCR5"))
+#' plot_cpdb("Bcell", "Tcell", scdata, means, pvals, split.by = "group", genes = c("CXCL13", "CD274", "CXCR5"))
 #' @import viridis
 #' @import ggplot2
 #' @import reshape2
 #' @export
 
-plot_cpdb <- function(cell_type1, cell_type2, means_file, pvals_file, groups, gene.family = NULL, genes = NULL, ...) {
+plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_file, split.by = NULL, gene.family = NULL, genes = NULL, scale = TRUE, col_option = viridis::viridis(50), noir = FALSE, highlight = "red") {
 	require(ggplot2)
 	require(reshape2)
 	require(viridis)
+
+	if (class(scdata) == "SummarizedExperiment") {
+        cat("data provided is a SummarizedExperiment object", sep = "\n")
+        cat("extracting expression matrix", sep = "\n")
+        require(SummarizedExperiment)
+        exp_mat <- SummarizedExperiment::assay(scdata)
+        metadata <- SummarizedExperiment::ColData(scdata)
+    } else if (class(scdata) == "Seurat") {
+        cat("data provided is a Seurat object", sep = "\n")
+        cat("extracting expression matrix", sep = "\n")
+        exp_mat <- tryCatch(scdata@data, error = function(e) {
+            tryCatch(GetAssayData(object = scdata), error = function(e) {
+                stop(paste0("are you sure that your data is normalized?"))
+                return(NULL)
+            })
+        })
+        metadata <- scdata@meta.data
+    }
 
 	means_mat <- means_file
 	pvals_mat <- pvals_file
@@ -61,10 +86,24 @@ plot_cpdb <- function(cell_type1, cell_type2, means_file, pvals_file, groups, ge
 		query <- grep(paste(genes, collapse="|"), means_mat$interacting_pair)
 	} 
 
-	group1 = groups[1]
-	group2 = groups[2]
-
-	cell_type = paste0(paste0(group1, ".*", cell_type1, ".*-", group1, ".*", cell_type2), "|", paste0(group1,".*", cell_type2, ".*-", group1,".*", cell_type1), "|", paste0(group2,".*", cell_type1, ".*-", group2, ".*", cell_type2), "|", paste0(group2,".*", cell_type2, ".*-", group2, ".*", cell_type1)) 
+	if(!is.null(split.by)){
+        	if(length(idents) > 1){
+        		labels <- paste0(metadata[[split.by]], "_", idents)	
+        	} else {
+        		labels <- paste0(metadata[[split.by]], "_", metadata[[idents]])
+        	}
+        	
+          	groups <- unique(metadata[[split.by]])
+          	if(length(groups) > 2){
+          		stop("please pick another column that is binary")
+          	} else {
+          		group1 <- groups[1]
+          		group2 <- groups[2]
+          		cell_type = paste0(paste0(group1, ".*", cell_type1, ".*-", group1, ".*", cell_type2), "|", paste0(group1,".*", cell_type2, ".*-", group1,".*", cell_type1), "|", paste0(group2,".*", cell_type1, ".*-", group2, ".*", cell_type2), "|", paste0(group2,".*", cell_type2, ".*-", group2, ".*", cell_type1)) 
+          	}
+        } else {
+        	cell_type = paste0(paste0(cell_type1, ".*-", cell_type2), "|", paste0(cell_type2, ".*-", cell_type1)) 
+        }
 
 	if(!is.null(gene.family) & is.null(genes)){
 		means_mat <- means_mat[query_group[[gene.family]], grep(cell_type, colnames(means_mat))]
@@ -75,12 +114,13 @@ plot_cpdb <- function(cell_type1, cell_type2, means_file, pvals_file, groups, ge
 	}
 	
 	# rearrange the columns so that it interleaves the two groups
-	group.1 <- grep(group1, colnames(means_mat))
-	group.2 <- grep(group2, colnames(means_mat))
-
-	means_mat <- means_mat[,as.vector(rbind(group.1, group.2))]
-	pvals_mat <- pvals_mat[,as.vector(rbind(group.1, group.2))]
-
+	if(!is.null(split.by)){
+		group.1 <- grep(group1, colnames(means_mat))
+		group.2 <- grep(group2, colnames(means_mat))
+		means_mat <- means_mat[,as.vector(rbind(group.1, group.2))]
+		pvals_mat <- pvals_mat[,as.vector(rbind(group.1, group.2))]
+	}
+	
 	if(nrow(means_mat) > 2){
 		d <- dist(as.data.frame(means_mat))
 		h <- hclust(d)
@@ -89,7 +129,12 @@ plot_cpdb <- function(cell_type1, cell_type2, means_file, pvals_file, groups, ge
 	} 
 	
 	# scale
-	means_mat2 <- t(scale(t(means_mat)))
+	if(scale){
+		means_mat2 <- t(scale(t(means_mat)))	
+	} else {
+		means_mat2 <- means_mat2
+	}
+	
 	pvals_mat2 <- as.matrix(pvals_mat)
 	means_mat2 <- as.matrix(means_mat2)
 	means_mat2[which(means_mat == 0)] <- NA
@@ -103,7 +148,9 @@ plot_cpdb <- function(cell_type1, cell_type2, means_file, pvals_file, groups, ge
 	df <- data.frame(cbind(df_means, pvals = df_pvals$pvals))
 	df$pvals[which(df$pvals >= 0.05)] <- NA
 	df$pvals[which(df$pvals == 0)] <- 0.001
-	df$group <- gsub(paste0(group1,"_|", group2, "_"), "", df$Var2)
+	if(!is.null(split.by)){
+		df$group <- gsub(paste0(group1,"_|", group2, "_"), "", df$Var2)
+	}
 
 	g <- ggplot(df, aes(x = Var2, y = Var1, color = -log10(pvals), fill = scaled_means, size = scaled_means)) + 
   		geom_point(pch = 21) +
@@ -113,9 +160,18 @@ plot_cpdb <- function(cell_type1, cell_type2, means_file, pvals_file, groups, ge
   			axis.title.x = element_blank(),
   			axis.title.y = element_blank()) +
   		scale_x_discrete(position = "top") +
-  		scale_color_gradientn(colors = "red", na.value = "white") +
-  		scale_fill_gradientn(colors = c("white", viridis(50, direction = 1)), na.value = "white") +
+  		scale_color_gradientn(colors = highlight, na.value = "white") +  		
   		scale_size_continuous(range = c(0,5))
+
+  	if(noir){
+  		g <- g + scale_fill_gradient(low = "white", high = "#131313", na.value = "white")
+  	} else {
+  		if(length(col_option) == 1){
+  			g <- g + scale_fill_gradientn(colors = colorRampPalette(c("white", col_option))(100), na.value = "white")	
+  		} else {
+  			g <- g + scale_fill_gradientn(colors = c("white", colorRampPalette(col_option)(99)), na.value = "white")	
+  		}  		
+  	} 
   	if(!is.null(gene.family) & is.null(genes)){
   		g <- g + ggtitle(gene.family)
   	}
