@@ -114,7 +114,11 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
         return(df)
     }
 
-    plot.df <- quick_prep(expr_mat_filtered, labels, unique(metadata[[split.by]]))
+    if(!is.null(split.by)){
+        plot.df <- quick_prep(expr_mat_filtered, labels, unique(metadata[[split.by]]))
+    } else {
+        plot.df <- quick_prep(expr_mat_filtered, labels)
+    }
 
     if(!is.null(pct.threshold)){
         cat(paste0("setting minimum percentage of cells expressing gene to be ", pct.threshold*100, "%"), sep ="\n")
