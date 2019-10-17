@@ -37,9 +37,11 @@ pvals <- read.delim("pvalues.txt", check.names = FALSE) # pvalues.txt and means.
 means <- read.delim("means.txt", check.names = FALSE) 
 plot_cpdb(cell_type1 = "Bcell", # cell_type1 and cell_type2 will call grep, so this will accept regex arguments
 	cell_type2 = "Tcell",
+	seurat_object,
+	"clusternames", # column name where the cell ids are located in the metadata
 	means,
 	pvals,
-	groups = c("normal", "tumor"),
+	split.by = "group", # column name where the grouping column is
 	genes = c("CXCL13", "CD274", "CXCR5"))
 ```
 
@@ -48,8 +50,10 @@ or, you can try by a crude grep via the 'gene.family'
 plot_cpdb(cell_type1 = "Bcell",
 	cell_type2 = "Tcell",
 	means,
+	seurat_object,
+	"clusternames",
 	pvals,
-	groups = c("normal", "tumor"),
+	split.by = "group",
 	gene.family = "chemokines") # can also try Th1, Th2, Th17, Treg, costimulatory, coinhibitory, niche
 ```
 example of what appears
