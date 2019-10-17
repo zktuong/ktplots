@@ -42,8 +42,15 @@ plot_cpdb(cell_type1 = "Bcell", # cell_type1 and cell_type2 will call grep, so t
 	means,
 	pvals,
 	split.by = "group", # column name where the grouping column is
-	genes = c("CXCL13", "CD274", "CXCR5"))
+	genes = c("CXCR3", "CD274", "CXCR5"))
 ```
+
+```R
+plot_cpdb("NK", "MNP", scdata, "final.labels", means, pvals, genes = c("CXCR3", "CD274", "CXCR5")) + 
+	guides(shape = guide_legend(override.aes = list(size = 4)), color = guide_legend(override.aes = list(size = 4))) +
+	theme(legend.title = element_text(size = 4), legend.text = element_text(size = 4), legend.key.size = unit(0.5, "lines"))
+```
+![heatmap](exampleImages/plot_cpdb_example1.png)
 
 or, you can try by a crude grep via the 'gene.family'
 ```R
@@ -56,8 +63,35 @@ plot_cpdb(cell_type1 = "Bcell",
 	split.by = "group",
 	gene.family = "chemokines") # can also try Th1, Th2, Th17, Treg, costimulatory, coinhibitory, niche
 ```
-example of what appears
+
+some examples
+```R
+plot_cpdb("NK", "MNP", scdata, "final.labels", means, pvals, gene.family = "chemokines")
+```
 ![heatmap](exampleImages/plot_cpdb_example.png)
+```R
+plot_cpdb("NK", "MNP", scdata, "final.labels", means, pvals, gene.family = "chemokines", col_option = "maroon", highlight = "blue")
+```
+![heatmap](exampleImages/plot_cpdb_example2.png)
+```R
+plot_cpdb("NK", "MNP", scdata, "final.labels", means, pvals, gene.family = "chemokines", col_option = viridis::cividis(50))
+```
+![heatmap](exampleImages/plot_cpdb_example3.png)
+```R
+plot_cpdb("NK", "MNP", scdata, "final.labels", means, pvals, gene.family = "chemokines", noir = TRUE)
+```
+![heatmap](exampleImages/plot_cpdb_example4.png)
+
+```R
+# when there's two groups in your input table to cpdb
+p <- plot_cpdb("MNP_1", "Lymphoid_[12]", px.cpdb, "Combined.labels", means, pvals, gene.family = "chemokines", split.by = "group")
+newLabels <- gsub("Lymphoid_[12]|MNP_1","",levels(p$data$Var2))
+newLabels <- gsub("__"," ",newLabels) 
+newLabels <- gsub("*-t"," : t",newLabels) 
+newLabels <- gsub("*-n"," : n",newLabels) 
+p + scale_x_discrete(breaks=levels(p$data$Var2), labels=newLabels, position = "top")
+```
+![heatmap](exampleImages/plot_cpdb_example5.png)
 
 ### plotGSEA_Hallmark/plotGSEA_GO
 Generates the dot plot for GSEA results
