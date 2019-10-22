@@ -17,6 +17,7 @@
 #' @examples
 #' geneDotPlot(scdata, as.factor(scdata$split), genes = c("CD68","HLA-DRA"), save.plot = FALSE, groups = c("normal","tumor"))
 #' @import dplyr
+#' @import gtools
 #' @import Matrix
 #' @import ggplot2
 #' @import reshape2
@@ -52,8 +53,9 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
     cat(paste0("found ", dim(expr_mat_filtered)[1], " genes in the expression matrix", sep ="\n"))
 
     if(!is.null(split.by)){
-        # cat("concatenating groups to idents", sep = "\n")
-        labels = paste0(metadata[[split.by]], "_", idents)
+        require(gtools)
+        labels = as.factor(paste0(metadata[[split.by]], "_", idents))
+        labels <- factor(labels, levels = mixedsort(levels(labels)))
     } else {
         cat("no groups information provided. defaulting to idents only", sep = "\n")
         labels = idents
