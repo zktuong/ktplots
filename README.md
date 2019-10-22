@@ -134,9 +134,9 @@ h <- lapply(h , function(x){
 up_cutOff = 1.5
 down_cutOff = -1.5
 geneList <- pbmclapply(degs, function(x){
-	group1 <- x %>% dplyr::filter(!between(group1_logfoldchanges, up_cutOff, down_cutOff)) %>% dplyr::select(group1_gene, group1_logfoldchanges, group1_pvals)
-	group2 <- x %>% dplyr::filter(!between(group2_logfoldchanges, up_cutOff, down_cutOff)) %>% dplyr::select(group2_gene, group2_logfoldchanges, group2_pvals)
-	group3 <- x %>% dplyr::filter(!between(group3_logfoldchanges, up_cutOff, down_cutOff)) %>% dplyr::select(group3_gene, group3_logfoldchanges, group3_pvals)
+	group1 <- x %>% dplyr::filter(!between(group1_logfoldchanges, down_cutOff, up_cutOff)) %>% dplyr::select(group1_gene, group1_logfoldchanges, group1_pvals)
+	group2 <- x %>% dplyr::filter(!between(group2_logfoldchanges, down_cutOff, up_cutOff)) %>% dplyr::select(group2_gene, group2_logfoldchanges, group2_pvals)
+	group3 <- x %>% dplyr::filter(!between(group3_logfoldchanges, down_cutOff, up_cutOff)) %>% dplyr::select(group3_gene, group3_logfoldchanges, group3_pvals)
 	
 	geneList_l <- list(group1 = group1, group2 = group2, group3 = group3)
 	geneList_l <- pbmclapply(geneList_l, function(y) {
