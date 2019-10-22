@@ -169,7 +169,7 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
                 scale_colour_gradientn(colors = heat_cols, limits = limits., na.value = "grey90", oob = scales::squish) +
                 scale_size_continuous(range = c(0,6), limits = c(0, 1)) +         
                 theme_bw() +
-                theme(axis.text.x = element_text(angle = 90, hjust = 0),
+                theme(axis.text.x = element_text(angle = 90, hjust = 1),
                     axis.title.x = element_blank(),
                     axis.ticks = element_blank(),
                     axis.title.y = element_blank(),
@@ -181,9 +181,9 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
                 facet_grid(.~cell_type)
             } else {
                 if(scaling){
-                    g <- ggplot(obj, aes(x = 0, y = gene, size = pct, colour = scaled.mean))     
+                    g <- ggplot(obj, aes(x = group, y = gene, size = pct, colour = scaled.mean))     
                 } else {
-                    g <- ggplot(obj, aes(x = 0, y = gene, size = pct, colour = mean))
+                    g <- ggplot(obj, aes(x = group, y = gene, size = pct, colour = mean))
                 }
             
             g <- g + geom_point(pch = 16) +
@@ -192,7 +192,7 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
                 scale_colour_gradientn(colors = heat_cols, limits = limits., na.value = "grey90", oob = scales::squish) +
                 scale_size_continuous(range = c(0,6), limits = c(0, 1)) +         
                 theme_bw() +
-                theme(axis.text.x = element_text(angle = 90, hjust = 0),
+                theme(axis.text.x = element_text(angle = 90, hjust = 1),
                     axis.title.x = element_blank(),
                     axis.ticks = element_blank(),
                     axis.title.y = element_blank(),

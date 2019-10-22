@@ -8,7 +8,6 @@
 #' @return ggplot dot plot object of functions
 #' @examples
 #' plotGSEA_GO(gsea_result) + ggtitle("GSEA_Hallmarks")
-#' @import kelvinny
 #' @import dplyr
 #' @import Matrix
 #' @import ggplot2
@@ -49,7 +48,10 @@ plotGSEA_GO <- function(gsea, top = 20, group_ref = NULL, cols = NULL, newlabels
 	}
 
 	if(!is.null(cols)){
-		require(kelvinny)
+		gg_color_hue <- function(n) {
+    		hues = seq(15, 375, length = n + 1)
+    		hcl(h = hues, l = 65, c = 100)[1:n]
+    	}
 		cols. = gg_color_hue(length(dplyr::n_distict(gsea$group, na.rm = TRUE)))
 	} else {
 		cols. = cols
