@@ -53,9 +53,7 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
     cat(paste0("found ", dim(expr_mat_filtered)[1], " genes in the expression matrix", sep ="\n"))
 
     if(!is.null(split.by)){
-        require(gtools)
-        labels = as.factor(paste0(metadata[[split.by]], "_", idents))
-        labels <- factor(labels, levels = mixedsort(levels(labels)))
+        labels = paste0(metadata[[split.by]], "_", idents)
     } else {
         cat("no groups information provided. defaulting to idents only", sep = "\n")
         labels = idents
@@ -156,6 +154,7 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
 
     # finally keep the genes for plotting
     plot.df.final <- plot.df[plot.df$gene %in% keep.genes, ]
+    plot.df.final$cell_type <- factor(plot.df.final$cell_type, levels = gtools::mixedsort(levels(plot.df.final$cell_type)))
 
     # subset the plotting objects
     doplot <- function(obj, group. = NULL, file_name = filename, file_path = filepath, dim_w, dim_h, limits. = col_limits, do.plot = save.plot, scaling = scaled){
