@@ -21,6 +21,7 @@ library(ktplots)
 ### geneDotPlot
 plotting gene expression dot plots heatmaps
 ```R
+# conflicts with tidyr devel version
 geneDotPlot(scdata = seurat_object, # object 
 	idents = Idents(seurat_object), # a vector holding the cell-cluster ID/assignment or some other vector such as those found in the metadata seurat_object$split
 	genes = c("CD68", "CD80", "CD86", "CD74", "CD2", "CD5"), # genes to plot

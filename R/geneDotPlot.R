@@ -176,7 +176,7 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
                 scale_y_discrete(position = "top") +
                 scale_x_discrete(position = "bottom") +
                 scale_colour_gradientn(colors = heat_cols, limits = limits., na.value = "grey90", oob = scales::squish) +
-                scale_size_continuous(range = c(0,6), limits = c(0, 1)) +         
+                scale_radius(range = c(0,6), limits = c(0, 1)) +         
                 theme_bw() +
                 theme(axis.text.x = element_text(angle = 90, hjust = 1),
                     axis.title.x = element_blank(),
@@ -199,7 +199,7 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
                 scale_y_discrete(position = "top") +
                 scale_x_discrete(position = "bottom") +
                 scale_colour_gradientn(colors = heat_cols, limits = limits., na.value = "grey90", oob = scales::squish) +
-                scale_size_continuous(range = c(0,6), limits = c(0, 1)) +         
+                scale_radius(range = c(0,6), limits = c(0, 1)) +         
                 theme_bw() +
                 theme(axis.text.x = element_text(angle = 90, hjust = 1),
                     axis.title.x = element_blank(),
