@@ -1,12 +1,12 @@
 #' Plotting genes as dotplot
 #' 
 #' @param scdata single-cell data. can be seurat/summarizedexperiment object
-#' @param idents vector holding the idents for each cell
+#' @param idents column name holding the idents for each cell
 #' @param genes genes you want to plot
 #' @param split.by column name in the metadata/coldata table to split the spots by. If not provided, it will plot via idents provided.
 #' @param pct.threshold float. required to keep gene expressed by minimum percentage of cells
 #' @param scaled logical. scale the expression or not
-#' @param keepLevels logical. keep the factor of the levels of the idents
+#' @param keepLevels logical. keep the factor of the levels of the idents (for plotting)
 #' @param save.plot logical. will try to save the pdf
 #' @param h height of plot
 #' @param w width of plot
@@ -56,17 +56,18 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
     cat(paste0("found ", dim(expr_mat_filtered)[1], " genes in the expression matrix", sep ="\n"))
 
     if(!is.null(split.by)){
-        labels = paste0(metadata[[split.by]], "_", idents)
+        labels = paste0(metadata[[split.by]], "_", metadata[[idents]])
     } else {
         cat("no groups information provided. defaulting to idents only", sep = "\n")
-        labels = idents
+        labels = metadata[[idents]]
     }
 
     cat("preparing the final dataframe ...", sep = "\n")
     quick_prep <- function(expr, label, groups. = NULL, scaling = scaled){
+        
         expr.df <- tryCatch(data.frame(label = label, t(as.matrix(expr)), check.names = FALSE), error = function(e){
                             data.frame(label = label, t(Matrix::Matrix(expr, sparse = FALSE)), check.names = FALSE)})
-        
+         
         meanExpr <- split(expr.df, expr.df$label)
         meanExpr <- lapply(meanExpr, function(x){
             x <- x[,-1]
@@ -74,7 +75,7 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
             return(x)
         })
 
-        names(meanExpr) <- unique(label)
+        # names(meanExpr) <- unique(label)
         meanExpr <- do.call(rbind, meanExpr)
         if(scaling){
             meanExpr <- scale(meanExpr)   
@@ -106,7 +107,6 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
             colnames(df) <- c("celltype", "gene", "mean", "pct")
         }
         
-    
         # add some groupings
         if(!is.null(groups.)){
             df$group <- groups.[1]
@@ -131,6 +131,7 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
     } else {
         plot.df <- quick_prep(expr_mat_filtered, labels)
     }
+
 
     if(!is.null(pct.threshold)){
         cat(paste0("setting minimum percentage of cells expressing gene to be ", pct.threshold*100, "% of cluster/cell-type"), sep ="\n")

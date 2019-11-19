@@ -24,7 +24,7 @@ geneDotPlot(
 \arguments{
 \item{scdata}{single-cell data. can be seurat/summarizedexperiment object}
 
-\item{idents}{vector holding the idents for each cell}
+\item{idents}{column name holding the idents for each cell}
 
 \item{genes}{genes you want to plot}
 
@@ -34,7 +34,7 @@ geneDotPlot(
 
 \item{scaled}{logical. scale the expression or not}
 
-\item{keepLevels}{logical. keep the factor of the levels of the idents}
+\item{keepLevels}{logical. keep the factor of the levels of the idents (for plotting)}
 
 \item{save.plot}{logical. will try to save the pdf}
 
