@@ -64,8 +64,8 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
 
     cat("preparing the final dataframe ...", sep = "\n")
     quick_prep <- function(expr, label, groups. = NULL, scaling = scaled){
-        expr <- Matrix(expr, sparse = FALSE)
-        expr.df <- data.frame(label = label, t(expr), check.names = FALSE)
+        expr.df <- tryCatch(data.frame(label = label, t(Matrix(expr, sparse = FALSE)), check.names = FALSE), error = function(e){
+                            data.frame(label = label, t(as.matrix(expr)), check.names = FALSE)})
         
         meanExpr <- split(expr.df, expr.df$label)
         meanExpr <- lapply(meanExpr, function(x){
