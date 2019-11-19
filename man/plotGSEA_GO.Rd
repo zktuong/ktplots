@@ -4,8 +4,7 @@
 \alias{plotGSEA_GO}
 \title{Plotting GSEA enrichment as dotplots}
 \usage{
-plotGSEA_GO(gsea, top = 20, group_ref = NULL, cols = NULL,
-  newlabels = NULL)
+plotGSEA_GO(gsea, top = 20, group_ref = NULL, cols = NULL, newlabels = NULL)
 }
 \arguments{
 \item{gsea}{processed gsea data table}

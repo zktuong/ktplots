@@ -4,11 +4,22 @@
 \alias{geneDotPlot}
 \title{Plotting genes as dotplot}
 \usage{
-geneDotPlot(scdata, idents, genes, split.by = NULL,
-  pct.threshold = 0.05, scaled = TRUE, save.plot = FALSE, h = 5,
-  w = 5, filepath = NULL, filename = NULL,
+geneDotPlot(
+  scdata,
+  idents,
+  genes,
+  split.by = NULL,
+  pct.threshold = 0.05,
+  scaled = TRUE,
+  keepLevels = TRUE,
+  save.plot = FALSE,
+  h = 5,
+  w = 5,
+  filepath = NULL,
+  filename = NULL,
   heat_cols = rev(RColorBrewer::brewer.pal(9, "RdBu")),
-  col_limits = NULL)
+  col_limits = NULL
+)
 }
 \arguments{
 \item{scdata}{single-cell data. can be seurat/summarizedexperiment object}
@@ -22,6 +33,8 @@ geneDotPlot(scdata, idents, genes, split.by = NULL,
 \item{pct.threshold}{float. required to keep gene expressed by minimum percentage of cells}
 
 \item{scaled}{logical. scale the expression or not}
+
+\item{keepLevels}{logical. keep the factor of the levels of the idents}
 
 \item{save.plot}{logical. will try to save the pdf}
 

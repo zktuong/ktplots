@@ -4,8 +4,7 @@
 \alias{plotGSEA_Hallmark}
 \title{Plotting GSEA enrichment as dotplots}
 \usage{
-plotGSEA_Hallmark(gsea, group_ref = NULL, cols = NULL,
-  newlabels = NULL)
+plotGSEA_Hallmark(gsea, group_ref = NULL, cols = NULL, newlabels = NULL)
 }
 \arguments{
 \item{gsea}{processed gsea data table}

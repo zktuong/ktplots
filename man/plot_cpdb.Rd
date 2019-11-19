@@ -4,9 +4,21 @@
 \alias{plot_cpdb}
 \title{Plotting cellphonedb results}
 \usage{
-plot_cpdb(cell_type1, cell_type2, scdata, idents, means_file, pvals_file,
-  split.by = NULL, gene.family = NULL, genes = NULL, scale = TRUE,
-  col_option = viridis::viridis(50), noir = FALSE, highlight = "red")
+plot_cpdb(
+  cell_type1,
+  cell_type2,
+  scdata,
+  idents,
+  means_file,
+  pvals_file,
+  split.by = NULL,
+  gene.family = NULL,
+  genes = NULL,
+  scale = TRUE,
+  col_option = viridis::viridis(50),
+  noir = FALSE,
+  highlight = "red"
+)
 }
 \arguments{
 \item{cell_type1}{cell type 1}

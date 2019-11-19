@@ -6,6 +6,7 @@
 #' @param split.by column name in the metadata/coldata table to split the spots by. If not provided, it will plot via idents provided.
 #' @param pct.threshold float. required to keep gene expressed by minimum percentage of cells
 #' @param scaled logical. scale the expression or not
+#' @param keepLevels logical. keep the factor of the levels of the idents
 #' @param save.plot logical. will try to save the pdf
 #' @param h height of plot
 #' @param w width of plot
@@ -23,18 +24,19 @@
 #' @import reshape2
 #' @export
 
-geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 0.05, scaled = TRUE, save.plot = FALSE, h = 5, w = 5, filepath = NULL, filename = NULL, heat_cols = rev(RColorBrewer::brewer.pal(9, "RdBu")), col_limits = NULL){
+geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 0.05, scaled = TRUE, keepLevels = TRUE, save.plot = FALSE, h = 5, w = 5, filepath = NULL, filename = NULL, heat_cols = rev(RColorBrewer::brewer.pal(9, "RdBu")), col_limits = NULL){
     require(ggplot2)
     require(dplyr)
     require(Matrix)
     require(reshape2)
 
-    if (class(scdata) == "SummarizedExperiment") {
-        cat("data provided is a SummarizedExperiment object", sep = "\n")
+    if (class(scdata) %in% c("SingeCellExperiment", "SummarizedExperiment")) {
+        cat("data provided is a SingleCellExperiment/SummarizedExperiment object", sep = "\n")
         cat("extracting expression matrix", sep = "\n")
         require(SummarizedExperiment)
-        exp_mat <- SummarizedExperiment::assay(scdata)
-        metadata <- SummarizedExperiment::ColData(scdata)
+        require(SingleCellExperiment)
+        exp_mat <- assay(scdata)
+        metadata <- ColData(scdata)
     } else if (class(scdata) == "Seurat") {
         cat("data provided is a Seurat object", sep = "\n")
         cat("extracting expression matrix", sep = "\n")
@@ -48,7 +50,8 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
     }
     
     cat(paste0("attempting to subset the expression matrix to the ", length(genes), " genes provided"), sep = "\n")
-    expr_mat_filtered <- exp_mat[row.names(exp_mat) %in% genes, ]
+    # expr_mat_filtered <- exp_mat[row.names(exp_mat) %in% genes, ]
+    expr_mat_filtered <- exp_mat[match(genes, row.names(exp_mat)), ]
 
     cat(paste0("found ", dim(expr_mat_filtered)[1], " genes in the expression matrix", sep ="\n"))
 
@@ -154,7 +157,12 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
 
     # finally keep the genes for plotting
     plot.df.final <- plot.df[plot.df$gene %in% keep.genes, ]
-    plot.df.final$cell_type <- factor(plot.df.final$cell_type, levels = gtools::mixedsort(levels(plot.df.final$cell_type)))
+    if(keepLevels){
+        plot.df.final$cell_type <- factor(plot.df.final$cell_type, levels = gtools::mixedsort(levels(plot.df.final$cell_type)))
+    } else {
+        plot.df.final$cell_type <- plot.df.final$cell_type
+    }
+    
 
     # subset the plotting objects
     doplot <- function(obj, group. = NULL, file_name = filename, file_path = filepath, dim_w, dim_h, limits. = col_limits, do.plot = save.plot, scaling = scaled){
