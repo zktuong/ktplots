@@ -30,13 +30,13 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
     require(Matrix)
     require(reshape2)
 
-    if (class(scdata) %in% c("SingeCellExperiment", "SummarizedExperiment")) {
+    if (class(scdata) %in% c("SingleCellExperiment", "SummarizedExperiment")) {
         cat("data provided is a SingleCellExperiment/SummarizedExperiment object", sep = "\n")
         cat("extracting expression matrix", sep = "\n")
         require(SummarizedExperiment)
         require(SingleCellExperiment)
         exp_mat <- assay(scdata)
-        metadata <- ColData(scdata)
+        metadata <- colData(scdata)
     } else if (class(scdata) == "Seurat") {
         cat("data provided is a Seurat object", sep = "\n")
         cat("extracting expression matrix", sep = "\n")
