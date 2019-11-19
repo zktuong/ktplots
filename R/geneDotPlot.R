@@ -64,8 +64,8 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
 
     cat("preparing the final dataframe ...", sep = "\n")
     quick_prep <- function(expr, label, groups. = NULL, scaling = scaled){
-        expr.df <- tryCatch(data.frame(label = label, t(Matrix(expr, sparse = FALSE)), check.names = FALSE), error = function(e){
-                            data.frame(label = label, t(as.matrix(expr)), check.names = FALSE)})
+        expr.df <- tryCatch(data.frame(label = label, t(as.matrix(expr)), check.names = FALSE), error = function(e){
+                            data.frame(label = label, t(Matrix::Matrix(expr, sparse = FALSE)), check.names = FALSE)})
         
         meanExpr <- split(expr.df, expr.df$label)
         meanExpr <- lapply(meanExpr, function(x){
@@ -96,8 +96,8 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
         pct <- do.call(rbind, pct)
         final.pct <- pct/cellNumbers
         
-        meltedMeanExpr <- melt(meanExpr)
-        meltedfinal.pct <- melt(final.pct)
+        meltedMeanExpr <- reshape2::melt(meanExpr)
+        meltedfinal.pct <- reshape2::melt(final.pct)
     
         df <- cbind(meltedMeanExpr, meltedfinal.pct$value)
         if(scaling){
