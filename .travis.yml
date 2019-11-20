@@ -17,7 +17,7 @@ env:
   - HDF5_RELEASE_URL="https://support.hdfgroup.org/ftp/HDF5/releases"
   - HDF5_VERSION=1.8.13
   - LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
-  - CODECOV_TOKEN="7f426383-7ab2-4f83-bf96-bd56ceed5a59"
+  - CODECOV_TOKEN="2f66cd04-652e-4010-b26c-071deef2af38"
 
 script:
 - R CMD build .
