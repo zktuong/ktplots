@@ -6,6 +6,7 @@ Description: Plotting tools for scData.
 License: MIT
 Encoding: UTF-8
 Imports:
+	devtools,
 	Matrix,
 	dplyr,
 	ggplot2,
