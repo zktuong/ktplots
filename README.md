@@ -5,13 +5,13 @@ R plotting functions to plot gene expression data of single-cell data.
 ## Installation instructions
 You can install the package via ```devtools::install_github()``` function in R
 ```R
-library(devtools)
-devtools::install_github('zktuong/ktplots', dependencies = TRUE)
-
-# one function requires SummarizedExperiment from bioconductor
+if (!requireNamespace("devtools", quietly = TRUE))
+    install.packages("devtools")
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
-BiocManager::install("SummarizedExperiment")
+BiocManager::install(c("SummarizedExperiment", "SingleCellExperiment"))
+devtools::install_github('zktuong/ktplots', dependencies = TRUE)
+
 ```
 ## Usage instructions
 ```R
