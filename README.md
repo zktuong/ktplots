@@ -9,6 +9,7 @@ if (!requireNamespace("devtools", quietly = TRUE))
     install.packages("devtools")
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
+
 BiocManager::install(c("SummarizedExperiment", "SingleCellExperiment"))
 devtools::install_github('zktuong/ktplots', dependencies = TRUE)
 
