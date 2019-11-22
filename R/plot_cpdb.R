@@ -29,12 +29,13 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 	require(reshape2)
 	require(viridis)
 
-	if (class(scdata) == "SummarizedExperiment") {
-        cat("data provided is a SummarizedExperiment object", sep = "\n")
+	if (class(scdata) %in% c("SingleCellExperiment", "SummarizedExperiment")) {
+        cat("data provided is a SingleCellExperiment/SummarizedExperiment object", sep = "\n")
         cat("extracting expression matrix", sep = "\n")
         require(SummarizedExperiment)
-        exp_mat <- SummarizedExperiment::assay(scdata)
-        metadata <- SummarizedExperiment::ColData(scdata)
+        require(SingleCellExperiment)
+        exp_mat <- assay(scdata)
+        metadata <- ColData(scdata)
     } else if (class(scdata) == "Seurat") {
         cat("data provided is a Seurat object", sep = "\n")
         cat("extracting expression matrix", sep = "\n")
@@ -58,6 +59,21 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 	rownames(pvals_mat) <- gsub("_", "-", rownames(pvals_mat))
 	rownames(pvals_mat) <- gsub("[.]", " ", rownames(pvals_mat))
 	
+	checklabels1 <- any(metadata[[idents]] %in% c(cell_type1,cell_type2))
+    checklabels2 <- any(colnames(means_mat) %in% c(cell_type1,cell_type2))
+
+    if(!checklabels1){
+    	stop('Cannot find cell types. The error is mismatch between cell_type1/cell_type2 and the single cell metadata.')
+    }
+    
+    if(!checklabels2){
+    	stop('Cannot find cell types. The error is mismatch between cell_type1/cell_type2 and the cpdb metadata.')
+    }
+
+    if(checklabels1 & checklabels2){
+    	cat('Found cell types in the input data provided. Proceeding with plotting.', sep = "\n")
+    }
+
 	if (is.null(gene.family) & is.null(genes)){
 		stop("Please specify either genes or gene.family")
 		cat("gene.family can be one of the following:", sep = "\n")
