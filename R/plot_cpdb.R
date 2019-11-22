@@ -59,7 +59,12 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 	rownames(pvals_mat) <- gsub("_", "-", rownames(pvals_mat))
 	rownames(pvals_mat) <- gsub("[.]", " ", rownames(pvals_mat))
 	
-	checklabels1 <- any(metadata[[idents]] %in% c(cell_type1,cell_type2))
+	if(length(idents) > 1){
+		checklabels1 <- any(idents %in% c(cell_type1,cell_type2))
+	} else {
+		checklabels1 <- any(metadata[[idents]] %in% c(cell_type1,cell_type2))
+	}
+	
     checklabels2 <- any(colnames(means_mat) %in% c(cell_type1,cell_type2))
 
     if(!checklabels1){
