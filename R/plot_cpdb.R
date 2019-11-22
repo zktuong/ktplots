@@ -60,12 +60,18 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 	rownames(pvals_mat) <- gsub("[.]", " ", rownames(pvals_mat))
 	
 	if(length(idents) > 1){
-		checklabels1 <- any(idents %in% c(cell_type1,cell_type2))
+		ct1 = grep(cell_type1, idents, value = TRUE)
+		ct2 = grep(cell_type2, idents, value = TRUE)
+		checklabels1 <- any(idents %in% c(ct1,ct2))
 	} else {
-		checklabels1 <- any(metadata[[idents]] %in% c(cell_type1,cell_type2))
+		ct1 = grep(cell_type1, metadata[[idents]], value = TRUE)
+		ct2 = grep(cell_type2, metadata[[idents]], value = TRUE)
+		checklabels1 <- any(metadata[[idents]] %in% c(ct1,ct2))
 	}
 	
-    checklabels2 <- any(colnames(means_mat) %in% c(cell_type1,cell_type2))
+	ct1 = grep(cell_type1, colnames(means_mat), value = TRUE)
+	ct2 = grep(cell_type2, colnames(means_mat), value = TRUE)
+    checklabels2 <- any(colnames(means_mat) %in% c(ct1,ct2))
 
     if(!checklabels1){
     	stop('Cannot find cell types. The error is mismatch between cell_type1/cell_type2 and the single cell metadata.')
@@ -123,14 +129,16 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
           		cell_type = paste0(paste0(group1, ".*", cell_type1, ".*-", group1, ".*", cell_type2), "|", paste0(group1,".*", cell_type2, ".*-", group1,".*", cell_type1), "|", paste0(group2,".*", cell_type1, ".*-", group2, ".*", cell_type2), "|", paste0(group2,".*", cell_type2, ".*-", group2, ".*", cell_type1)) 
           	}
         } else {
-        	cell_type = paste0(paste0(cell_type1, ".*-", cell_type2), "|", paste0(cell_type2, ".*-", cell_type1)) 
+        	cell_type = paste0(paste0(cell_type1, ".*", cell_type2), "|", paste0(cell_type2, ".*", cell_type1)) 
         }
 
 	if(!is.null(gene.family) & is.null(genes)){
 		means_mat <- means_mat[query_group[[gene.family]], grep(cell_type, colnames(means_mat))]
+		warning('the cell types that you grep are dependent on the cpdb input labels. so make sure that they fit your plotting strategy')
 		pvals_mat <- pvals_mat[query_group[[gene.family]], grep(cell_type, colnames(pvals_mat))]
 	} else if (is.null(gene.family) & !is.null(genes)){
 		means_mat <- means_mat[query, grep(cell_type, colnames(means_mat))]
+		warning('the cell types that you grep are dependent on the cpdb input labels. so make sure that they fit your plotting strategy')
 		pvals_mat <- pvals_mat[query, grep(cell_type, colnames(pvals_mat))]
 	}
 	
