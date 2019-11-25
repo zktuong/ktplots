@@ -65,7 +65,7 @@ plotGSEA_GO <- function(gsea, top = 20, group_ref = NULL, cols = NULL, newlabels
 		geom_vline(xintercept = -log10(0.25)) +
 		geom_vline(xintercept = -log10(0.25)*-1) +
 		xlim(xval1, xval2) +
-		scale_size_continuous(range = c(1,4)) +
+		scale_radius(range = c(1,4)) +
 		theme(panel.grid.major = element_blank(), 
 			panel.grid.minor = element_blank(), 
 			panel.background = element_blank(), 

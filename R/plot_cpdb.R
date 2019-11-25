@@ -190,7 +190,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
   			axis.title.y = element_blank()) +
   		scale_x_discrete(position = "top") +
   		scale_color_gradientn(colors = highlight, na.value = "white") +  		
-  		scale_size_continuous(range = c(0,5))
+  		scale_radius(range = c(0,5))
 
   	if(noir){
   		g <- g + scale_fill_gradient(low = "white", high = "#131313", na.value = "white")

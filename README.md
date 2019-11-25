@@ -194,7 +194,7 @@ example output #1
 #### for enrichment of Gene Ontologies
 ```R
 # read in gene set
-c5 <- as.list(parse_gmt("c5.bp.v6.2.symbols.gmt")) # from kelvinny
+c5 <- as.list(parse_gmt("c5.bp.v6.2.symbols.gmt")) # parse_gmt is from kelvinny
 c5 <- lapply(c5, function(x) {x <- x[-1]; x <- x[!is.na(x)]; return(x)})
 
 # do the symbol conversion
