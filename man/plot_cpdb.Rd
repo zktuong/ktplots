@@ -33,7 +33,7 @@ plot_cpdb(
 
 \item{pvals_file}{object holding pvals.txt from cpdb output}
 
-\item{split.by}{column name in the metadata/coldata table to split the spots by. Can only take columns with binary options}
+\item{split.by}{column name in the metadata/coldata table to split the spots by. Can only take columns with binary options. If specified, name to split by MUST be specified in the meta file provided to cpdb prior to analysis.}
 
 \item{gene.family}{default = NULL. some predefined group of genes. can take one of these options: "chemokines", "Th1", "Th2", "Th17", "Treg", "costimulatory", "coinhibitory", "niche"}
 
