@@ -6,7 +6,7 @@
 #' @param idents vector holding the idents for each cell or column name of scdata's metadata. MUST match cpdb's columns
 #' @param means_file object holding means.txt from cpdb output
 #' @param pvals_file object holding pvals.txt from cpdb output
-#' @param split.by column name in the metadata/coldata table to split the spots by. Can only take columns with binary options
+#' @param split.by column name in the metadata/coldata table to split the spots by. Can only take columns with binary options. If specified, name to split by MUST be specified in the meta file provided to cpdb prior to analysis.
 #' @param gene.family default = NULL. some predefined group of genes. can take one of these options: "chemokines", "Th1", "Th2", "Th17", "Treg", "costimulatory", "coinhibitory", "niche"
 #' @param genes default = NULL. can specify custom list of genes if gene.family is NULL
 #' @param scale default = TRUE. scales the data
