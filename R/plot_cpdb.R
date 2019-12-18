@@ -126,7 +126,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
           	} else {
           		group1 <- groups[1]
           		group2 <- groups[2]
-          		cell_type = paste0(paste0(group1, ".*", cell_type1, ".*-", group1, ".*", cell_type2), "|", paste0(group1,".*", cell_type2, ".*-", group1,".*", cell_type1), "|", paste0(group2,".*", cell_type1, ".*-", group2, ".*", cell_type2), "|", paste0(group2,".*", cell_type2, ".*-", group2, ".*", cell_type1)) 
+          		cell_type = paste0(paste0(group1, ".*", cell_type1, ".*-", group1, ".*", cell_type2), "|", paste0(group1,".*", cell_type2, ".*-", group1,".*", cell_type1), "|", paste0(group2,".*", cell_type1, ".*-", group2, ".*", cell_type2), "|", paste0(group2,".*", cell_type2, ".*-", group2, ".*", cell_type1), paste0(cell_type1, ".*", group1, ".*-", cell_type1, ".*", group2), "|", paste0(cell_type1,".*", group2, ".*-", cell_type1,".*", group1), "|", paste0(cell_type2,".*", group1, ".*-", cell_type2, ".*", group2), "|", paste0(cell_type2,".*", group2, ".*-", cell_type2, ".*", group1)) 
           	}
         } else {
         	cell_type = paste0(paste0(cell_type1, ".*", cell_type2), "|", paste0(cell_type2, ".*", cell_type1)) 
