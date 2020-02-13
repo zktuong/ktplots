@@ -122,8 +122,20 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
         	
           	groups <- unique(metadata[[split.by]])
           	if(length(groups) > 2){
-          		stop("please pick another column that is binary")
+          		grp <- as.list(groups)
+
+				celltype <- lapply(grp, function(g){
+					ct1 = paste0(g, ".*", cell_type1, ".*-", g, ".*", cell_type2)
+					ct2	= paste0(g,".*", cell_type2, ".*-", g,".*", cell_type1)
+					ct3 = paste0(cell_type1, ".*", g, ".*-", cell_type1, ".*", g)
+					ct4 = paste0(cell_type2, ".*", g, ".*-", cell_type2, ".*", g)
+					ct = paste0(ct1, '|', ct2, '|', ct3, '|', ct4)
+					return(ct)
+				})
+
+				cell_type <- do.call(paste, list(celltype, collapse ='|'))
           	} else {
+          		grp <- as.list(groups)
           		group1 <- groups[1]
           		group2 <- groups[2]
           		cell_type = paste0(paste0(group1, ".*", cell_type1, ".*-", group1, ".*", cell_type2), "|", paste0(group1,".*", cell_type2, ".*-", group1,".*", cell_type1), "|", paste0(group2,".*", cell_type1, ".*-", group2, ".*", cell_type2), "|", paste0(group2,".*", cell_type2, ".*-", group2, ".*", cell_type1), paste0(cell_type1, ".*", group1, ".*-", cell_type1, ".*", group2), "|", paste0(cell_type1,".*", group2, ".*-", cell_type1,".*", group1), "|", paste0(cell_type2,".*", group1, ".*-", cell_type2, ".*", group2), "|", paste0(cell_type2,".*", group2, ".*-", cell_type2, ".*", group1)) 
@@ -144,10 +156,21 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 	
 	# rearrange the columns so that it interleaves the two groups
 	if(!is.null(split.by)){
-		group.1 <- grep(group1, colnames(means_mat))
-		group.2 <- grep(group2, colnames(means_mat))
-		means_mat <- means_mat[,as.vector(rbind(group.1, group.2))]
-		pvals_mat <- pvals_mat[,as.vector(rbind(group.1, group.2))]
+		if(length(groups) > 2){
+			grp <- as.list(groups)
+			group_i <- lapply(grp, function(g){
+				gx <- grep(g, colnames(means_mat))
+				return(gx)
+			})
+			group_id <- do.call(c, group_i)
+			means_mat <- means_mat[,as.vector(group_id)]
+			pvals_mat <- pvals_mat[,as.vector(group_id)]
+		}else{
+			group.1 <- grep(group1, colnames(means_mat))
+			group.2 <- grep(group2, colnames(means_mat))
+			means_mat <- means_mat[,as.vector(rbind(group.1, group.2))]
+			pvals_mat <- pvals_mat[,as.vector(rbind(group.1, group.2))]
+		}		
 	}
 	
 	if(nrow(means_mat) > 2){
@@ -178,7 +201,17 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 	df$pvals[which(df$pvals >= 0.05)] <- NA
 	df$pvals[which(df$pvals == 0)] <- 0.001
 	if(!is.null(split.by)){
-		df$group <- gsub(paste0(group1,"_|", group2, "_"), "", df$Var2)
+		if(length(groups) > 2){
+			grp <- as.list(groups)
+			grp2 <- lapply(grp, function(i){
+				x <- paste0(i,'_')
+				return(x)
+			})
+			searchterm <- do.call(paste, list(grp2, collapse = "|"))
+			df$group <- gsub(searchterm, "", df$Var2)
+		}else{
+			df$group <- gsub(paste0(group1,"_|", group2, "_"), "", df$Var2)
+		}		
 	}
 
 	g <- ggplot(df, aes(x = Var2, y = Var1, color = -log10(pvals), fill = scaled_means, size = scaled_means)) + 
