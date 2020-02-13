@@ -60,17 +60,17 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 	rownames(pvals_mat) <- gsub("[.]", " ", rownames(pvals_mat))
 	
 	if(length(idents) > 1){
-		ct1 = grep(cell_type1, idents, value = TRUE)
-		ct2 = grep(cell_type2, idents, value = TRUE)
+		ct1 = grep(paste0("^",cell_type1,"$"), idents, value = TRUE)
+		ct2 = grep(paste0("^",cell_type2,"$"), idents, value = TRUE)
 		checklabels1 <- any(idents %in% c(ct1,ct2))
 	} else {
-		ct1 = grep(cell_type1, metadata[[idents]], value = TRUE)
-		ct2 = grep(cell_type2, metadata[[idents]], value = TRUE)
+		ct1 = grep(paste0("^",cell_type1,"$"), metadata[[idents]], value = TRUE)
+		ct2 = grep(paste0("^",cell_type2,"$"), metadata[[idents]], value = TRUE)
 		checklabels1 <- any(metadata[[idents]] %in% c(ct1,ct2))
 	}
 	
-	ct1 = grep(cell_type1, colnames(means_mat), value = TRUE)
-	ct2 = grep(cell_type2, colnames(means_mat), value = TRUE)
+	ct1 = grep(paste0("^",cell_type1,"$"), colnames(means_mat), value = TRUE)
+	ct2 = grep(paste0("^",cell_type2,"$"), colnames(means_mat), value = TRUE)
     checklabels2 <- any(colnames(means_mat) %in% c(ct1,ct2))
 
     if(!checklabels1){
