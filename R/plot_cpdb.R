@@ -69,9 +69,9 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 		checklabels1 <- any(metadata[[idents]] %in% c(ct1,ct2))
 	}
 	
-	ct1 = grep(cell_type1, colnames(means_mat), value = TRUE)
-	ct2 = grep(cell_type2, colnames(means_mat), value = TRUE)
-    checklabels2 <- any(colnames(means_mat) %in% c(ct1,ct2))
+	ct1 = grep(cell_type1, substr(colnames(means_mat),start = 1, stop =  nchar(cell_type1)), value = TRUE)
+	ct2 = grep(cell_type2, substr(colnames(means_mat),start = 1, stop =  nchar(cell_type1)), value = TRUE)
+    checklabels2 <- any(colnames(means_mat) %in% c(paste0(ct1,"|",ct2), paste0(ct2,"|",ct1)))
 
     if(!checklabels1){
     	stop('Cannot find cell types. The error is mismatch between cell_type1/cell_type2 and the single cell metadata.')
