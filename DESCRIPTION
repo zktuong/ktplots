@@ -1,6 +1,6 @@
 Package: ktplots
 Title: Plot single-cell data dotplots
-Version: 1.0.17
+Version: 1.0.18
 Authors@R: person("Kelvin", "Tuong", email = c("z.tuong@uq.edu.au", "zkt22@cam.ac.uk", "kt16@sanger.ac.uk"), role = c("aut", "cre"))
 Description: Plotting tools for scData.
 License: MIT
@@ -19,4 +19,4 @@ Suggests:
 	SingleCellExperiment,
 	RColorBrewer
 LazyData: true
-RoxygenNote: 7.0.0
+RoxygenNote: 7.0.2

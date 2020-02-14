@@ -60,17 +60,17 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 	rownames(pvals_mat) <- gsub("[.]", " ", rownames(pvals_mat))
 	
 	if(length(idents) > 1){
-		ct1 = grep(paste0("^",cell_type1,"$"), idents, value = TRUE)
-		ct2 = grep(paste0("^",cell_type2,"$"), idents, value = TRUE)
+		ct1 = grep(cell_type1, idents, value = TRUE)
+		ct2 = grep(cell_type2, idents, value = TRUE)
 		checklabels1 <- any(idents %in% c(ct1,ct2))
 	} else {
-		ct1 = grep(paste0("^",cell_type1,"$"), metadata[[idents]], value = TRUE)
-		ct2 = grep(paste0("^",cell_type2,"$"), metadata[[idents]], value = TRUE)
+		ct1 = grep(cell_type1, metadata[[idents]], value = TRUE)
+		ct2 = grep(cell_type2, metadata[[idents]], value = TRUE)
 		checklabels1 <- any(metadata[[idents]] %in% c(ct1,ct2))
 	}
 	
-	ct1 = grep(paste0("^",cell_type1,"$"), colnames(means_mat), value = TRUE)
-	ct2 = grep(paste0("^",cell_type2,"$"), colnames(means_mat), value = TRUE)
+	ct1 = grep(cell_type1, colnames(means_mat), value = TRUE)
+	ct2 = grep(cell_type2, colnames(means_mat), value = TRUE)
     checklabels2 <- any(colnames(means_mat) %in% c(ct1,ct2))
 
     if(!checklabels1){
@@ -108,7 +108,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 		costimulatory <- grep("CD86|CD80|CD48|LILRB2|LILRB4|TNF|CD2|ICAM|SLAM|LT[AB]|NECTIN2|CD40|CD70|CD27|CD28|CD58|TSLP|PVR|CD44|CD55|CD[1-9]", means_mat$interacting_pair)
 		coinhibitory <- grep("SIRP|CD47|ICOS|TIGIT|CTLA4|PDCD1|CD274|LAG3|HAVCR|VSIR", means_mat$interacting_pair)
 		niche <- grep("CSF", means_mat$interacting_pair)
-		query_group <- list(chemokines = chemokines, Th1 = Th1, Th2 = Th2, Th17 = Th17, Treg = Treg, costimulatory = costimulatory, coinhibitory = coinhibitory, niche = niche)
+		query_group <- list(chemokines = chemokines, chemokine = chemokines, Th1 = Th1, Th2 = Th2, Th17 = Th17, Treg = Treg, costimulatory = costimulatory, coinhibitory = coinhibitory, costimulation = costimulatory, coinhibition = coinhibitory, niche = niche)
 	} else if (is.null(gene.family) & !is.null(genes)){
 		query <- grep(paste(genes, collapse="|"), means_mat$interacting_pair)
 	} 
@@ -144,9 +144,9 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
         }
 
 	if(!is.null(gene.family) & is.null(genes)){
-		means_mat <- means_mat[query_group[[gene.family]], grep(cell_type, colnames(means_mat))]
+		means_mat <- means_mat[query_group[[tolower(gene.family)]], grep(cell_type, colnames(means_mat))]
 		warning('the cell types that you grep are dependent on the cpdb input labels. so make sure that they fit your plotting strategy')
-		pvals_mat <- pvals_mat[query_group[[gene.family]], grep(cell_type, colnames(pvals_mat))]
+		pvals_mat <- pvals_mat[query_group[[tolower(gene.family)]], grep(cell_type, colnames(pvals_mat))]
 	} else if (is.null(gene.family) & !is.null(genes)){
 		means_mat <- means_mat[query, grep(cell_type, colnames(means_mat))]
 		warning('the cell types that you grep are dependent on the cpdb input labels. so make sure that they fit your plotting strategy')
@@ -183,7 +183,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 	if(scale){
 		means_mat2 <- t(scale(t(means_mat)))	
 	} else {
-		means_mat2 <- means_mat2
+		means_mat2 <- means_mat
 	}
 	
 	pvals_mat2 <- as.matrix(pvals_mat)
