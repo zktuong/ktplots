@@ -68,7 +68,9 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
         
         expr.df <- tryCatch(data.frame(label = label, t(as.matrix(expr)), check.names = FALSE), error = function(e){
                             data.frame(label = label, t(Matrix::Matrix(expr, sparse = FALSE)), check.names = FALSE)})
-         
+        
+        expr.df$label <- factor(expr.df$label, levels = levels(droplevels(label)))
+
         meanExpr <- split(expr.df, expr.df$label)
         meanExpr <- lapply(meanExpr, function(x){
             x <- x[,-1, drop = FALSE]
