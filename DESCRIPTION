@@ -5,6 +5,7 @@ Authors@R: person("Kelvin", "Tuong", email = c("z.tuong@uq.edu.au", "zkt22@cam.a
 Description: Plotting tools for scData.
 License: MIT
 Encoding: UTF-8
+biocViews:
 Imports:
 	devtools,
 	Matrix,
@@ -12,12 +13,12 @@ Imports:
 	ggplot2,
 	reshape2,
 	viridis,
-	gtools
-Suggests:
-	Seurat,
+	gtools,
 	SummarizedExperiment,
 	SingleCellExperiment,
-	RColorBrewer,
 	multtest
+Suggests:
+	Seurat,
+	RColorBrewer
 LazyData: true
 RoxygenNote: 7.0.2
