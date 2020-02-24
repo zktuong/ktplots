@@ -5,8 +5,9 @@
 #' @param genes genes you want to plot
 #' @param split.by column name in the metadata/coldata table to split the spots by. If not provided, it will plot via idents provided.
 #' @param pct.threshold float. required to keep gene expressed by minimum percentage of cells
-#' @param scaled logical. scale the expression or not
-#' @param keepLevels logical. keep the factor of the levels of the idents (for plotting)
+#' @param scale logical. scale the expression to mean +/- SD. NULL defaults to TRUE.
+#' @param standard_scale logical. scale the expression to range from 0 to one. NULL defaults to FALSE.
+#' @param keepLevels logical. keep the original factor of the levels of the idents (for plotting)
 #' @param save.plot logical. will try to save the pdf
 #' @param h height of plot
 #' @param w width of plot
@@ -24,7 +25,7 @@
 #' @import reshape2
 #' @export
 
-geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 0.05, scaled = TRUE, keepLevels = TRUE, save.plot = FALSE, h = 5, w = 5, filepath = NULL, filename = NULL, heat_cols = rev(RColorBrewer::brewer.pal(9, "RdBu")), col_limits = NULL){
+geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 0.05, scale = NULL, standard_scale = NULL, keepLevels = TRUE, save.plot = FALSE, h = 5, w = 5, filepath = NULL, filename = NULL, heat_cols = rev(RColorBrewer::brewer.pal(9, "RdBu")), col_limits = NULL){
     require(ggplot2)
     require(dplyr)
     require(Matrix)
@@ -58,18 +59,17 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
 
     if(!is.null(split.by)){
         labels = paste0(metadata[[split.by]], "_", metadata[[idents]])
+        labels = factor(labels)
     } else {
         cat("no groups information provided. defaulting to idents only", sep = "\n")
         labels = metadata[[idents]]
     }
 
     cat("preparing the final dataframe ...", sep = "\n")
-    quick_prep <- function(expr, label, groups. = NULL, scaling = scaled){
+    quick_prep <- function(expr, label, groups. = NULL, scale. = scale, meta = metadata, id = idents, standard_scale. = standard_scale){
         
         expr.df <- tryCatch(data.frame(label = label, t(as.matrix(expr)), check.names = FALSE), error = function(e){
                             data.frame(label = label, t(Matrix::Matrix(expr, sparse = FALSE)), check.names = FALSE)})
-        
-        expr.df$label <- factor(expr.df$label, levels = levels(droplevels(label)))
 
         meanExpr <- split(expr.df, expr.df$label)
         meanExpr <- lapply(meanExpr, function(x){
@@ -80,10 +80,26 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
 
         # names(meanExpr) <- unique(label)
         meanExpr <- do.call(rbind, meanExpr)
-        if(scaling){
-            meanExpr <- scale(meanExpr)   
-        }
         
+        # control the scaling here
+        range01 <- function(x){(x-min(x))/(max(x)-min(x))}
+        if (length(standard_scale.) > 0){
+            if (standard_scale.){
+                meanExpr <- apply(meanExpr,2,range01) 
+            } else {
+                meanExpr <- meanExpr
+            }            
+        } 
+
+        if(length(scale.) > 0 && length(standard_scale.) < 0){
+            if (scale.){
+                meanExpr <- scale(meanExpr)
+            } else {
+                meanExpr <- meanExpr
+            } 
+        } else {
+            meanExpr <- scale(meanExpr)
+        }
 
         label.list <- as.list(unique(label))
         exp <- lapply(label.list, function(x) {
@@ -104,8 +120,8 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
         meltedfinal.pct <- reshape2::melt(final.pct)
     
         df <- cbind(meltedMeanExpr, meltedfinal.pct$value)
-        if(scaling){
-            colnames(df) <- c("celltype", "gene", "scaled.mean", "pct")
+        if(length(scale.) > 0 && scale. | length(scale.) < 0 | length(standard_scale.) > 0 && standard_scale.){
+            colnames(df) <- c("celltype", "gene", "scale.mean", "pct")
         } else {
             colnames(df) <- c("celltype", "gene", "mean", "pct")
         }
@@ -119,8 +135,7 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
             df$group <- factor(df$group, levels = groups.)
             remove.pattern <- paste0(groups., "_", collapse = "|")
             df$cell_type <- gsub(pattern = remove.pattern, "", df$celltype)
-            df$cell_type <- tryCatch(factor(df$cell_type, levels = levels(droplevels(df$cell_type))), error = function(e){
-                            factor(df$cell_type, levels = unique(df$cell_type))})
+            df$cell_type <- factor(df$cell_type, levels = levels(meta[[id]]))
             df <- df[with(df, order(df$cell_type, df$group)), ]
         } else {
             df$cell_type <- as.factor(df$celltype)
@@ -170,10 +185,10 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
     
 
     # subset the plotting objects
-    doplot <- function(obj, group. = NULL, file_name = filename, file_path = filepath, dim_w, dim_h, limits. = col_limits, do.plot = save.plot, scaling = scaled){
+    doplot <- function(obj, group. = NULL, file_name = filename, file_path = filepath, dim_w, dim_h, limits. = col_limits, do.plot = save.plot, scale. = scale, standard_scale. = standard_scale){
         if(is.null(group.)){
-            if(scaling){
-                g <- ggplot(obj, aes(x = 0, y = gene, size = pct, colour = scaled.mean))     
+            if(length(scale.) > 0 && scale. | length(scale.) < 0 | length(standard_scale.) > 0 && standard_scale.){
+                g <- ggplot(obj, aes(x = 0, y = gene, size = pct, colour = scale.mean))     
             } else {
                 g <- ggplot(obj, aes(x = 0, y = gene, size = pct, colour = mean))
             }
@@ -194,8 +209,8 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
                     strip.background = element_blank()) +
                 facet_grid(.~cell_type)
             } else {
-                if(scaling){
-                    g <- ggplot(obj, aes(x = group, y = gene, size = pct, colour = scaled.mean))     
+                if(length(scale.) > 0 && scale. | length(scale.) < 0 | length(standard_scale.) > 0 && standard_scale.){
+                    g <- ggplot(obj, aes(x = group, y = gene, size = pct, colour = scale.mean))     
                 } else {
                     g <- ggplot(obj, aes(x = group, y = gene, size = pct, colour = mean))
                 }

@@ -10,7 +10,8 @@ geneDotPlot(
   genes,
   split.by = NULL,
   pct.threshold = 0.05,
-  scaled = TRUE,
+  scale = NULL,
+  standard_scale = NULL,
   keepLevels = TRUE,
   save.plot = FALSE,
   h = 5,
@@ -32,9 +33,11 @@ geneDotPlot(
 
 \item{pct.threshold}{float. required to keep gene expressed by minimum percentage of cells}
 
-\item{scaled}{logical. scale the expression or not}
+\item{scale}{logical. scale the expression to mean +/- SD. NULL defaults to TRUE.}
 
-\item{keepLevels}{logical. keep the factor of the levels of the idents (for plotting)}
+\item{standard_scale}{logical. scale the expression to range from 0 to one. NULL defaults to FALSE.}
+
+\item{keepLevels}{logical. keep the original factor of the levels of the idents (for plotting)}
 
 \item{save.plot}{logical. will try to save the pdf}
 
