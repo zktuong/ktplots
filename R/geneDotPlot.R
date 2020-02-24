@@ -117,7 +117,8 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
             df$group <- factor(df$group, levels = groups.)
             remove.pattern <- paste0(groups., "_", collapse = "|")
             df$cell_type <- gsub(pattern = remove.pattern, "", df$celltype)
-            df$cell_type <- as.factor(df$cell_type)
+            df$cell_type <- tryCatch(factor(df$cell_type, levels = levels(droplevels(df$cell_type))), error = function(e){
+                            factor(df$cell_type, levels = unique(df$cell_type))})
             df <- df[with(df, order(df$cell_type, df$group)), ]
         } else {
             df$cell_type <- as.factor(df$celltype)
@@ -159,7 +160,7 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
 
     # finally keep the genes for plotting
     plot.df.final <- plot.df[plot.df$gene %in% keep.genes, ]
-    if(keepLevels){
+    if(!keepLevels){
         plot.df.final$cell_type <- factor(plot.df.final$cell_type, levels = gtools::mixedsort(levels(plot.df.final$cell_type)))
     } else {
         plot.df.final$cell_type <- plot.df.final$cell_type

@@ -16,6 +16,8 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
 BiocManager::install(c("SummarizedExperiment", "SingleCellExperiment"))
 devtools::install_github('zktuong/ktplots', dependencies = TRUE)
 
+If you encounter errors saying multtest is unavalibale, please install this manually from bioconductor with:
+BiocManager::install('multtest')
 ```
 ## Usage instructions
 ```R
