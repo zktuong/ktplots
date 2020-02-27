@@ -17,7 +17,8 @@ plot_cpdb(
   scale = TRUE,
   col_option = viridis::viridis(50),
   noir = FALSE,
-  highlight = "red"
+  highlight = "red",
+  ...
 )
 }
 \arguments{
@@ -46,6 +47,8 @@ plot_cpdb(
 \item{noir}{default = FALSE. Ben's current phase. makes it b/w}
 
 \item{highlight}{colour for highlighting p <0.05}
+
+\item{...}{passes arguments to grep for cell_type1 and cell_type2.}
 }
 \value{
 ggplot dot plot object of cellphone db output

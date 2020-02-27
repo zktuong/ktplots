@@ -13,6 +13,7 @@
 #' @param col_option specify plotting colours
 #' @param noir default = FALSE. Ben's current phase. makes it b/w
 #' @param highlight colour for highlighting p <0.05
+#' @param ... passes arguments to grep for cell_type1 and cell_type2.
 #' @return ggplot dot plot object of cellphone db output
 #' @examples
 #' scdata <- readRDS("./scdata.RDS", check.names = FALSE)
@@ -24,7 +25,7 @@
 #' @import reshape2
 #' @export
 
-plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_file, split.by = NULL, gene.family = NULL, genes = NULL, scale = TRUE, col_option = viridis::viridis(50), noir = FALSE, highlight = "red") {
+plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_file, split.by = NULL, gene.family = NULL, genes = NULL, scale = TRUE, col_option = viridis::viridis(50), noir = FALSE, highlight = "red", ...) {
 	require(ggplot2)
 	require(reshape2)
 	require(viridis)
@@ -144,13 +145,13 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
         }
 
 	if(!is.null(gene.family) & is.null(genes)){
-		means_mat <- means_mat[query_group[[tolower(gene.family)]], grep(cell_type, colnames(means_mat))]
+		means_mat <- means_mat[query_group[[tolower(gene.family)]], grep(cell_type, colnames(means_mat), ...)]
 		warning('the cell types that you grep are dependent on the cpdb input labels. so make sure that they fit your plotting strategy')
-		pvals_mat <- pvals_mat[query_group[[tolower(gene.family)]], grep(cell_type, colnames(pvals_mat))]
+		pvals_mat <- pvals_mat[query_group[[tolower(gene.family)]], grep(cell_type, colnames(pvals_mat), ...)]
 	} else if (is.null(gene.family) & !is.null(genes)){
-		means_mat <- means_mat[query, grep(cell_type, colnames(means_mat))]
+		means_mat <- means_mat[query, grep(cell_type, colnames(means_mat), ...)]
 		warning('the cell types that you grep are dependent on the cpdb input labels. so make sure that they fit your plotting strategy')
-		pvals_mat <- pvals_mat[query, grep(cell_type, colnames(pvals_mat))]
+		pvals_mat <- pvals_mat[query, grep(cell_type, colnames(pvals_mat), ...)]
 	}
 	
 	# rearrange the columns so that it interleaves the two groups
@@ -158,15 +159,15 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 		if(length(groups) > 2){
 			grp <- as.list(groups)
 			group_i <- lapply(grp, function(g){
-				gx <- grep(g, colnames(means_mat))
+				gx <- grep(g, colnames(means_mat), ...)
 				return(gx)
 			})
 			group_id <- do.call(c, group_i)
 			means_mat <- means_mat[,as.vector(group_id)]
 			pvals_mat <- pvals_mat[,as.vector(group_id)]
 		}else{
-			group.1 <- grep(group1, colnames(means_mat))
-			group.2 <- grep(group2, colnames(means_mat))
+			group.1 <- grep(group1, colnames(means_mat), ...)
+			group.2 <- grep(group2, colnames(means_mat), ...)
 			means_mat <- means_mat[,as.vector(rbind(group.1, group.2))]
 			pvals_mat <- pvals_mat[,as.vector(rbind(group.1, group.2))]
 		}		

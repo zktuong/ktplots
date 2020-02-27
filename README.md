@@ -42,7 +42,7 @@ Generates the dot plot for cpdb output via specifying the cell types and the gen
 ```R
 pvals <- read.delim("pvalues.txt", check.names = FALSE) # pvalues.txt and means.txt are output from cpdb
 means <- read.delim("means.txt", check.names = FALSE) 
-plot_cpdb(cell_type1 = "Bcell", # cell_type1 and cell_type2 will call grep, so this will accept regex arguments
+plot_cpdb(cell_type1 = "Bcell", # cell_type1 and cell_type2 will call grep, so this will accept regex arguments. Additional options for grep can be specified, such as fixed = TRUE to stop grep from misinterpreting/converting symbols.
 	cell_type2 = "Tcell",
 	seurat_object,
 	"clusternames", # column name where the cell ids are located in the metadata
