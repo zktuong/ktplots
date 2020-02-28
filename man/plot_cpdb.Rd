@@ -11,6 +11,8 @@ plot_cpdb(
   idents,
   means_file,
   pvals_file,
+  p.adjust.method = NULL,
+  keep_significant_only = FALSE,
   split.by = NULL,
   gene.family = NULL,
   genes = NULL,
@@ -33,6 +35,10 @@ plot_cpdb(
 \item{means_file}{object holding means.txt from cpdb output}
 
 \item{pvals_file}{object holding pvals.txt from cpdb output}
+
+\item{p.adjust.method}{correction method. p.adjust.methods of one of these options: c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none")}
+
+\item{keep_significant_only}{logical. Default is FALSE. Switch to TRUE if you only want to plot the significant hits from cpdb.}
 
 \item{split.by}{column name in the metadata/coldata table to split the spots by. Can only take columns with binary options. If specified, name to split by MUST be specified in the meta file provided to cpdb prior to analysis.}
 
@@ -60,5 +66,5 @@ Plotting cellphonedb results
 scdata <- readRDS("./scdata.RDS", check.names = FALSE)
 pvals <- read.delim("./cpdb/output/pvalues.txt", check.names = FALSE)
 means <- read.delim("./cpdb/output/means.txt", check.names = FALSE) 
-plot_cpdb("Bcell", "Tcell", scdata, means, pvals, split.by = "group", genes = c("CXCL13", "CD274", "CXCR5"))
+plot_cpdb("Bcell", "Tcell", scdata, 'seurat_clusters', means, pvals, split.by = "group", genes = c("CXCL13", "CD274", "CXCR5"))
 }

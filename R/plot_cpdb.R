@@ -6,6 +6,8 @@
 #' @param idents vector holding the idents for each cell or column name of scdata's metadata. MUST match cpdb's columns
 #' @param means_file object holding means.txt from cpdb output
 #' @param pvals_file object holding pvals.txt from cpdb output
+#' @param p.adjust.method correction method. p.adjust.methods of one of these options: c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none")
+#' @param keep_significant_only logical. Default is FALSE. Switch to TRUE if you only want to plot the significant hits from cpdb.
 #' @param split.by column name in the metadata/coldata table to split the spots by. Can only take columns with binary options. If specified, name to split by MUST be specified in the meta file provided to cpdb prior to analysis.
 #' @param gene.family default = NULL. some predefined group of genes. can take one of these options: "chemokines", "Th1", "Th2", "Th17", "Treg", "costimulatory", "coinhibitory", "niche"
 #' @param genes default = NULL. can specify custom list of genes if gene.family is NULL
@@ -19,13 +21,13 @@
 #' scdata <- readRDS("./scdata.RDS", check.names = FALSE)
 #' pvals <- read.delim("./cpdb/output/pvalues.txt", check.names = FALSE)
 #' means <- read.delim("./cpdb/output/means.txt", check.names = FALSE) 
-#' plot_cpdb("Bcell", "Tcell", scdata, means, pvals, split.by = "group", genes = c("CXCL13", "CD274", "CXCR5"))
+#' plot_cpdb("Bcell", "Tcell", scdata, 'seurat_clusters', means, pvals, split.by = "group", genes = c("CXCL13", "CD274", "CXCR5"))
 #' @import viridis
 #' @import ggplot2
 #' @import reshape2
 #' @export
 
-plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_file, split.by = NULL, gene.family = NULL, genes = NULL, scale = TRUE, col_option = viridis::viridis(50), noir = FALSE, highlight = "red", ...) {
+plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_file, p.adjust.method = NULL, keep_significant_only = FALSE, split.by = NULL, gene.family = NULL, genes = NULL, scale = TRUE, col_option = viridis::viridis(50), noir = FALSE, highlight = "red", ...) {
 	require(ggplot2)
 	require(reshape2)
 	require(viridis)
@@ -60,26 +62,35 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 	rownames(pvals_mat) <- gsub("_", "-", rownames(pvals_mat))
 	rownames(pvals_mat) <- gsub("[.]", " ", rownames(pvals_mat))
 	
+	if(length(p.adjust.method) > 0){
+		pvals_tmp <- pvals[,12:ncol(pvals)]
+		pvals_adj <- matrix(p.adjust(as.vector(as.matrix(pvals_tmp)), method=p.adjust.method),ncol=ncol(pvals_tmp))
+		colnames(pvals_adj) <- colnames(pvals_tmp)
+		pvals <- cbind(pvals[,c(1:11)], pvals_adj)
+	}
+
 	if(length(idents) > 1){
-		ct1 = grep(cell_type1, idents, value = TRUE)
-		ct2 = grep(cell_type2, idents, value = TRUE)
+		ct1 = grep(cell_type1, idents, value = TRUE, ...)
+		ct2 = grep(cell_type2, idents, value = TRUE, ...)
 		checklabels1 <- any(idents %in% c(ct1,ct2))
 	} else {
-		ct1 = grep(cell_type1, metadata[[idents]], value = TRUE)
-		ct2 = grep(cell_type2, metadata[[idents]], value = TRUE)
+		ct1 = grep(cell_type1, metadata[[idents]], value = TRUE, ...)
+		ct2 = grep(cell_type2, metadata[[idents]], value = TRUE, ...)
 		checklabels1 <- any(metadata[[idents]] %in% c(ct1,ct2))
 	}
 	
-	ct1 = grep(cell_type1, colnames(means_mat), value = TRUE)
-	ct2 = grep(cell_type2, colnames(means_mat), value = TRUE)
+	ct1 = grep(cell_type1, colnames(means_mat), value = TRUE, ...)
+	ct2 = grep(cell_type2, colnames(means_mat), value = TRUE, ...)
     checklabels2 <- any(colnames(means_mat) %in% c(ct1,ct2))
 
     if(!checklabels1){
     	stop('Cannot find cell types. The error is mismatch between cell_type1/cell_type2 and the single cell metadata.')
+    	warning('the cell types that you grep are dependent on the cpdb input labels. so make sure that they fit your plotting strategy')
     }
     
     if(!checklabels2){
     	stop('Cannot find cell types. The error is mismatch between cell_type1/cell_type2 and the cpdb metadata.')
+    	warning('the cell types that you grep are dependent on the cpdb input labels. so make sure that they fit your plotting strategy')
     }
 
     if(checklabels1 & checklabels2){
@@ -146,11 +157,9 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 
 	if(!is.null(gene.family) & is.null(genes)){
 		means_mat <- means_mat[query_group[[tolower(gene.family)]], grep(cell_type, colnames(means_mat), ...)]
-		warning('the cell types that you grep are dependent on the cpdb input labels. so make sure that they fit your plotting strategy')
 		pvals_mat <- pvals_mat[query_group[[tolower(gene.family)]], grep(cell_type, colnames(pvals_mat), ...)]
 	} else if (is.null(gene.family) & !is.null(genes)){
 		means_mat <- means_mat[query, grep(cell_type, colnames(means_mat), ...)]
-		warning('the cell types that you grep are dependent on the cpdb input labels. so make sure that they fit your plotting strategy')
 		pvals_mat <- pvals_mat[query, grep(cell_type, colnames(pvals_mat), ...)]
 	}
 	
@@ -199,6 +208,9 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 	df_pvals <- melt(pvals_mat2, value.name = "pvals")
 	df <- data.frame(cbind(df_means, pvals = df_pvals$pvals))
 	df$pvals[which(df$pvals >= 0.05)] <- NA
+	if (keep_significant_only){
+		df <- df[!is.na(df$pvals),]
+	}
 	df$pvals[which(df$pvals == 0)] <- 0.001
 	if(!is.null(split.by)){
 		if(length(groups) > 2){
