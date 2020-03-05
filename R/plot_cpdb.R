@@ -398,14 +398,14 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 		}
 	}
 
-	if (scale){
-		if(length(p.adjust.method) > 0){
+	if ((length(standard_scale) > 0 && standard_scale) | (length(scale) > 0 && scale)){
+		if(length(p.adjust.method) > 0 && p.adjust.method != 'none'){
 			g <- ggplot(df, aes(x = Var2, y = Var1, color = -log10(padj), fill = scaled_means, size = scaled_means))
 		} else {
 			g <- ggplot(df, aes(x = Var2, y = Var1, color = -log10(pvals), fill = scaled_means, size = scaled_means))
 		}
 	} else {
-		if(length(p.adjust.method) > 0){
+		if(length(p.adjust.method) > 0 && p.adjust.method != 'none'){
 			g <- ggplot(df, aes(x = Var2, y = Var1, color = -log10(padj), fill = means, size = means))
 		} else {
 			g <- ggplot(df, aes(x = Var2, y = Var1, color = -log10(pvals), fill = means, size = means))
