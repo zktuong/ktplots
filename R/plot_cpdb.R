@@ -177,8 +177,8 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 		}else{
 			group.1 <- grep(group1, colnames(means_mat), ...)
 			group.2 <- grep(group2, colnames(means_mat), ...)
-			means_mat <- means_mat[,as.vector(rbind(group.1, group.2))]
-			pvals_mat <- pvals_mat[,as.vector(rbind(group.1, group.2))]
+			means_mat <- means_mat[,unique(as.vector(rbind(group.1, group.2)))]
+			pvals_mat <- pvals_mat[,unique(as.vector(rbind(group.1, group.2)))]
 		}		
 	}
 	
