@@ -85,20 +85,28 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
         range01 <- function(x){(x-min(x))/(max(x)-min(x))}
         if (length(standard_scale.) > 0){
             if (standard_scale.){
-                meanExpr <- apply(meanExpr,2,range01)
+                meanExpr_ <- apply(meanExpr,2,range01)
             } else {
-                meanExpr <- meanExpr
+                meanExpr_ <- meanExpr
             }
         }
 
-        if(length(scale.) > 0 && length(standard_scale.) < 1){
+        if(length(scale.) < 1 && length(standard_scale.) < 1){
+            meanExpr <- scale(meanExpr)
+        } else if(length(scale.) > 0 && length(standard_scale.) < 1){
             if (scale.){
                 meanExpr <- scale(meanExpr)
             } else {
                 meanExpr <- meanExpr
             }
-        } else {
-            meanExpr <- scale(meanExpr)
+        } else if(length(scale.) > 0 && length(standard_scale.) > 0) {
+            if (standard_scale.){
+                meanExpr <- meanExpr_
+            } else if(!standard_scale. && scale.) {
+                meanExpr <- scale(meanExpr)
+            } else if(!standard_scale. && !scale.) {
+                meanExpr <- meanExpr
+            }
         }
 
         label.list <- as.list(unique(label))
@@ -120,7 +128,7 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
         meltedfinal.pct <- reshape2::melt(final.pct)
 
         df <- cbind(meltedMeanExpr, meltedfinal.pct$value)
-        if(length(scale.) > 0 && scale. | length(scale.) < 0 | length(standard_scale.) > 0 && standard_scale.){
+        if(length(scale.) > 0 && scale. | length(scale.) < 1 && length(standard_scale.) < 1 | length(standard_scale.) > 0 && standard_scale.){
             colnames(df) <- c("celltype", "gene", "scale.mean", "pct")
         } else {
             colnames(df) <- c("celltype", "gene", "mean", "pct")
@@ -187,7 +195,7 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
     # subset the plotting objects
     doplot <- function(obj, group. = NULL, file_name = filename, file_path = filepath, dim_w, dim_h, limits. = col_limits, do.plot = save.plot, scale. = scale, standard_scale. = standard_scale){
         if(is.null(group.)){
-            if(length(scale.) > 0 && scale. | length(scale.) < 0 | length(standard_scale.) > 0 && standard_scale.){
+            if(length(scale.) > 0 && scale. | length(scale.) < 1 && length(standard_scale.) < 1 | length(standard_scale.) > 0 && standard_scale.){
                 g <- ggplot(obj, aes(x = 0, y = gene, size = pct, colour = scale.mean))
             } else {
                 g <- ggplot(obj, aes(x = 0, y = gene, size = pct, colour = mean))
@@ -209,7 +217,7 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
                     strip.background = element_blank()) +
                 facet_grid(.~cell_type)
             } else {
-                if(length(scale.) > 0 && scale. | length(scale.) < 0 | length(standard_scale.) > 0 && standard_scale.){
+                if(length(scale.) > 0 && scale. | length(scale.) < 1 && length(standard_scale.) < 1 | length(standard_scale.) > 0 && standard_scale.){
                     g <- ggplot(obj, aes(x = group, y = gene, size = pct, colour = scale.mean))
                 } else {
                     g <- ggplot(obj, aes(x = group, y = gene, size = pct, colour = mean))

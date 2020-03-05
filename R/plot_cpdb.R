@@ -344,14 +344,22 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 		}
 	}
 
-	if(length(scale) > 0 && length(standard_scale) < 1){
+	if(length(scale) > 1 && length(standard_scale) > 1){
+		means_mat2 <- t(scale(t(means_mat)))
+	} else if(length(scale) > 0 && length(standard_scale) < 1){
 		if (scale){
 			means_mat2 <- t(scale(t(means_mat)))
 		} else {
 			means_mat2 <- means_mat
 		}
-	} else {
-		means_mat2 <- t(scale(t(means_mat)))
+	} else if(length(scale) > 0 && length(standard_scale) > 0) {
+		if (standard_scale){
+			means_mat2 <- means_mat_
+		} else if(!standard_scale && scale) {
+			means_mat2 <- t(scale(t(means_mat)))
+		} else if(!standard_scale && !scale) {
+			means_mat2 <- means_mat
+		}
 	}
 
 	pvals_mat2 <- as.matrix(pvals_mat)
@@ -362,7 +370,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 	pvals_mat2 <- pvals_mat2[rowSums(is.na(means_mat2)) != ncol(means_mat2), ,drop = FALSE]
 	means_mat2 <- means_mat2[rowSums(is.na(means_mat2)) != ncol(means_mat2), ,drop = FALSE]
 
-	if ((length(standard_scale) > 0 && standard_scale) | (length(scale) > 0 && scale)){
+	if ((length(standard_scale) > 0 && standard_scale) | (length(scale) > 0 && scale) | (length(scale) < 1 && length(standard_scale) < 1)){
 		df_means <- melt(means_mat2, value.name = "scaled_means")
 	} else {
 		df_means <- melt(means_mat2, value.name = "means")
@@ -398,7 +406,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 		}
 	}
 
-	if ((length(standard_scale) > 0 && standard_scale) | (length(scale) > 0 && scale)){
+	if ((length(standard_scale) > 0 && standard_scale) | (length(scale) > 0 && scale) | (length(scale) < 1 && length(standard_scale) < 1)){
 		if(length(p.adjust.method) > 0 && p.adjust.method != 'none'){
 			g <- ggplot(df, aes(x = Var2, y = Var1, color = -log10(padj), fill = scaled_means, size = scaled_means))
 		} else {
