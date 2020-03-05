@@ -1,12 +1,12 @@
 #' Plotting genes as dotplot
-#' 
+#'
 #' @param scdata single-cell data. can be seurat/summarizedexperiment object
 #' @param idents column name holding the idents for each cell
 #' @param genes genes you want to plot
 #' @param split.by column name in the metadata/coldata table to split the spots by. If not provided, it will plot via idents provided.
 #' @param pct.threshold float. required to keep gene expressed by minimum percentage of cells
 #' @param scale logical. scale the expression to mean +/- SD. NULL defaults to TRUE.
-#' @param standard_scale logical. scale the expression to range from 0 to one. NULL defaults to FALSE.
+#' @param standard_scale logical. scale the expression to range from 0 to 1. NULL defaults to FALSE.
 #' @param keepLevels logical. keep the original factor of the levels of the idents (for plotting)
 #' @param save.plot logical. will try to save the pdf
 #' @param h height of plot
@@ -49,7 +49,7 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
         })
         metadata <- scdata@meta.data
     }
-    
+
     cat(paste0("attempting to subset the expression matrix to the ", length(genes), " genes provided"), sep = "\n")
     # expr_mat_filtered <- exp_mat[row.names(exp_mat) %in% genes, ]
     # exp_mat <- as.matrix(exp_mat)
@@ -67,7 +67,7 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
 
     cat("preparing the final dataframe ...", sep = "\n")
     quick_prep <- function(expr, label, groups. = NULL, scale. = scale, meta = metadata, id = idents, standard_scale. = standard_scale){
-        
+
         expr.df <- tryCatch(data.frame(label = label, t(as.matrix(expr)), check.names = FALSE), error = function(e){
                             data.frame(label = label, t(Matrix::Matrix(expr, sparse = FALSE)), check.names = FALSE)})
 
@@ -80,23 +80,23 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
 
         # names(meanExpr) <- unique(label)
         meanExpr <- do.call(rbind, meanExpr)
-        
+
         # control the scaling here
         range01 <- function(x){(x-min(x))/(max(x)-min(x))}
         if (length(standard_scale.) > 0){
             if (standard_scale.){
-                meanExpr <- apply(meanExpr,2,range01) 
+                meanExpr <- apply(meanExpr,2,range01)
             } else {
                 meanExpr <- meanExpr
-            }            
-        } 
+            }
+        }
 
-        if(length(scale.) > 0 && length(standard_scale.) < 0){
+        if(length(scale.) > 0 && length(standard_scale.) < 1){
             if (scale.){
                 meanExpr <- scale(meanExpr)
             } else {
                 meanExpr <- meanExpr
-            } 
+            }
         } else {
             meanExpr <- scale(meanExpr)
         }
@@ -108,24 +108,24 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
         })
 
         cellNumbers <- do.call(rbind, lapply(exp, dim))[,1]
-    
+
         pct <- list()
         pct <- lapply(exp, function(y) sapply(y, function(x) length(which(x > 0))))
-        
+
         names(pct) <- unique(label)
         pct <- do.call(rbind, pct)
         final.pct <- pct/cellNumbers
-        
+
         meltedMeanExpr <- reshape2::melt(meanExpr)
         meltedfinal.pct <- reshape2::melt(final.pct)
-    
+
         df <- cbind(meltedMeanExpr, meltedfinal.pct$value)
         if(length(scale.) > 0 && scale. | length(scale.) < 0 | length(standard_scale.) > 0 && standard_scale.){
             colnames(df) <- c("celltype", "gene", "scale.mean", "pct")
         } else {
             colnames(df) <- c("celltype", "gene", "mean", "pct")
         }
-        
+
         # add some groupings
         if(!is.null(groups.)){
             df$group <- groups.[1]
@@ -154,7 +154,7 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
 
     if(!is.null(pct.threshold)){
         cat(paste0("setting minimum percentage of cells expressing gene to be ", pct.threshold*100, "% of cluster/cell-type"), sep ="\n")
-        
+
         filter <- split(plot.df, plot.df$gene)
         remove.genes <- lapply(filter, function(x){
             if(max(x$pct) < pct.threshold){
@@ -182,13 +182,13 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
     } else {
         plot.df.final$cell_type <- plot.df.final$cell_type
     }
-    
+
 
     # subset the plotting objects
     doplot <- function(obj, group. = NULL, file_name = filename, file_path = filepath, dim_w, dim_h, limits. = col_limits, do.plot = save.plot, scale. = scale, standard_scale. = standard_scale){
         if(is.null(group.)){
             if(length(scale.) > 0 && scale. | length(scale.) < 0 | length(standard_scale.) > 0 && standard_scale.){
-                g <- ggplot(obj, aes(x = 0, y = gene, size = pct, colour = scale.mean))     
+                g <- ggplot(obj, aes(x = 0, y = gene, size = pct, colour = scale.mean))
             } else {
                 g <- ggplot(obj, aes(x = 0, y = gene, size = pct, colour = mean))
             }
@@ -196,7 +196,7 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
                 scale_y_discrete(position = "top") +
                 scale_x_discrete(position = "bottom") +
                 scale_colour_gradientn(colors = heat_cols, limits = limits., na.value = "grey90", oob = scales::squish) +
-                scale_radius(range = c(0,6), limits = c(0, 1)) +         
+                scale_radius(range = c(0,6), limits = c(0, 1)) +
                 theme_bw() +
                 theme(axis.text.x = element_text(angle = 90, hjust = 1),
                     axis.title.x = element_blank(),
@@ -204,22 +204,22 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
                     axis.title.y = element_blank(),
                     axis.line = element_blank(),
                     panel.grid.major = element_blank(),
-                    panel.grid.minor = element_blank(),         
+                    panel.grid.minor = element_blank(),
                     panel.border = element_blank(),
                     strip.background = element_blank()) +
                 facet_grid(.~cell_type)
             } else {
                 if(length(scale.) > 0 && scale. | length(scale.) < 0 | length(standard_scale.) > 0 && standard_scale.){
-                    g <- ggplot(obj, aes(x = group, y = gene, size = pct, colour = scale.mean))     
+                    g <- ggplot(obj, aes(x = group, y = gene, size = pct, colour = scale.mean))
                 } else {
                     g <- ggplot(obj, aes(x = group, y = gene, size = pct, colour = mean))
                 }
-            
+
             g <- g + geom_point(pch = 16) +
                 scale_y_discrete(position = "top") +
                 scale_x_discrete(position = "bottom") +
                 scale_colour_gradientn(colors = heat_cols, limits = limits., na.value = "grey90", oob = scales::squish) +
-                scale_radius(range = c(0,6), limits = c(0, 1)) +         
+                scale_radius(range = c(0,6), limits = c(0, 1)) +
                 theme_bw() +
                 theme(axis.text.x = element_text(angle = 90, hjust = 1),
                     axis.title.x = element_blank(),
@@ -227,7 +227,7 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
                     axis.title.y = element_blank(),
                     axis.line = element_blank(),
                     panel.grid.major = element_blank(),
-                    panel.grid.minor = element_blank(),         
+                    panel.grid.minor = element_blank(),
                     panel.border = element_blank(),
                     strip.background = element_blank()) +
                 facet_grid(.~cell_type)
@@ -244,9 +244,9 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
                     ggsave("./geneDotPlot.df", plot = g, width = dim_w, height = dim_h, device = "pdf", useDingbats = FALSE)
                     warning("file name provided is not suitable. saving as geneDotPlot.pdf")
                 })
-            } else if(is.null(file_name) && !is.null(file_path)){               
+            } else if(is.null(file_name) && !is.null(file_path)){
                 cat(paste0("saving plot to ", file_path), sep ="\n")
-                if(grepl('.pdf', file_path)){                   
+                if(grepl('.pdf', file_path)){
                     ggsave(file_path, plot = g, width = dim_w, height = dim_h, device = "pdf", useDingbats = FALSE)
                 } else {
                     dir.create(file_path, recursive = TRUE)

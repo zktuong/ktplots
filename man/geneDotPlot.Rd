@@ -35,7 +35,7 @@ geneDotPlot(
 
 \item{scale}{logical. scale the expression to mean +/- SD. NULL defaults to TRUE.}
 
-\item{standard_scale}{logical. scale the expression to range from 0 to one. NULL defaults to FALSE.}
+\item{standard_scale}{logical. scale the expression to range from 0 to 1. NULL defaults to FALSE.}
 
 \item{keepLevels}{logical. keep the original factor of the levels of the idents (for plotting)}
 

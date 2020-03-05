@@ -1,5 +1,5 @@
 #' Plotting cellphonedb results
-#' 
+#'
 #' @param cell_type1 cell type 1
 #' @param cell_type2 cell type 2
 #' @param scdata single-cell data. can be seurat/summarizedexperiment object
@@ -11,7 +11,8 @@
 #' @param split.by column name in the metadata/coldata table to split the spots by. Can only take columns with binary options. If specified, name to split by MUST be specified in the meta file provided to cpdb prior to analysis.
 #' @param gene.family default = NULL. some predefined group of genes. can take one of these options: "chemokines", "Th1", "Th2", "Th17", "Treg", "costimulatory", "coinhibitory", "niche"
 #' @param genes default = NULL. can specify custom list of genes if gene.family is NULL
-#' @param scale default = TRUE. scales the data
+#' @param scale logical. scale the expression to mean +/- SD. NULL defaults to TRUE.
+#' @param standard_scale logical. scale the expression to range from 0 to 1. NULL defaults to FALSE.
 #' @param col_option specify plotting colours
 #' @param noir default = FALSE. Ben's current phase. makes it b/w
 #' @param highlight colour for highlighting p <0.05
@@ -20,14 +21,14 @@
 #' @examples
 #' scdata <- readRDS("./scdata.RDS", check.names = FALSE)
 #' pvals <- read.delim("./cpdb/output/pvalues.txt", check.names = FALSE)
-#' means <- read.delim("./cpdb/output/means.txt", check.names = FALSE) 
+#' means <- read.delim("./cpdb/output/means.txt", check.names = FALSE)
 #' plot_cpdb("Bcell", "Tcell", scdata, 'seurat_clusters', means, pvals, split.by = "group", genes = c("CXCL13", "CD274", "CXCR5"))
 #' @import viridis
 #' @import ggplot2
 #' @import reshape2
 #' @export
 
-plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_file, p.adjust.method = NULL, keep_significant_only = FALSE, split.by = NULL, gene.family = NULL, genes = NULL, scale = TRUE, col_option = viridis::viridis(50), noir = FALSE, highlight = "red", ...) {
+plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_file, p.adjust.method = NULL, keep_significant_only = FALSE, split.by = NULL, gene.family = NULL, genes = NULL, scale = NULL, standard_scale = NULL, col_option = viridis::viridis(50), noir = FALSE, highlight = "red", ...) {
 	require(ggplot2)
 	require(reshape2)
 	require(viridis)
@@ -61,7 +62,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 	colnames(pvals_mat) <- gsub("\\|", "-", colnames(pvals_mat))
 	rownames(pvals_mat) <- gsub("_", "-", rownames(pvals_mat))
 	rownames(pvals_mat) <- gsub("[.]", " ", rownames(pvals_mat))
-	
+
 	if(length(p.adjust.method) > 0){
 		pvals_tmp <- pvals[,12:ncol(pvals)]
 		pvals_adj <- matrix(p.adjust(as.vector(as.matrix(pvals_tmp)), method=p.adjust.method),ncol=ncol(pvals_tmp))
@@ -78,21 +79,21 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 		ct2 = grep(cell_type2, metadata[[idents]], value = TRUE, ...)
 		checklabels1 <- any(metadata[[idents]] %in% c(ct1,ct2))
 	}
-	
+
 	if(!is.null(split.by)){
         if(length(idents) > 1){
-        	labels <- paste0(metadata[[split.by]], "_", idents)	
+        	labels <- paste0(metadata[[split.by]], "_", idents)
         } else {
         	labels <- paste0(metadata[[split.by]], "_", metadata[[idents]])
-        }        	
-        
+        }
+
         labels <- unique(labels)
         groups <- unique(metadata[[split.by]])
 
         if(length(groups) > 0){
         	# the purpose for this step is to allow for special characters to be used in the celltype grepping
 			if(length(groups) > 1){
-				labels2 = gsub(paste0(paste0(groups,'_'), collapse = '|'), '', labels) 
+				labels2 = gsub(paste0(paste0(groups,'_'), collapse = '|'), '', labels)
 			} else {
 				labels2 = gsub(paste0(groups,'_'), '', labels)
 			}
@@ -107,7 +108,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
         		labels <- metadata[[idents]]
         	}
         	labels <- unique(labels)
-        	
+
         	ct1 = grep(cell_type1, labels, value = TRUE, ...)
 			ct2 = grep(cell_type2, labels, value = TRUE, ...)
 		}
@@ -118,13 +119,13 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
         	labels <- metadata[[idents]]
         }
         labels <- unique(labels)
-        	
+
         ct1 = grep(cell_type1, labels, value = TRUE, ...)
 		ct2 = grep(cell_type2, labels, value = TRUE, ...)
 		ct1 = paste0(ct1, collapse = '|')
-		ct2 = paste0(ct2, collapse = '|')		
+		ct2 = paste0(ct2, collapse = '|')
 	}
-	
+
 	if (ct1 == ''){ct1 = NA}
 	if (ct2 == ''){ct2 = NA}
 	checklabels2 <- any(colnames(means_mat) %in% c(ct1,ct2))
@@ -142,7 +143,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 				}
 			} else {
 				stop('Cannot find cell types.\nThe error is mismatch between cell_type1 and the single cell metadata (or idents provided).')
-			}		
+			}
 		} else {
 			ct_1 <- grep(ct1, metadata[[idents]], value = TRUE, ...)
 			ct_2 <- grep(ct2, metadata[[idents]], value = TRUE, ...)
@@ -204,7 +205,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 		query_group <- list(chemokines = chemokines, chemokine = chemokines, Th1 = Th1, Th2 = Th2, Th17 = Th17, Treg = Treg, costimulatory = costimulatory, coinhibitory = coinhibitory, costimulation = costimulatory, coinhibition = coinhibitory, niche = niche)
 	} else if (is.null(gene.family) & !is.null(genes)){
 		query <- grep(paste(genes, collapse="|"), means_mat$interacting_pair)
-	} 
+	}
 
 	create_celltype_query <- function(ctype1, ctype2){
 		ct1 = list()
@@ -213,13 +214,13 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 			ct1[i] = paste0(ctype1, "-", ctype2[i])
 			ct2[i] = paste0(ctype2[i], "-", ctype1)
 		}
-		ct_1 = do.call(paste0, list(ct1, collapse = '|'))	
-		ct_2 = do.call(paste0, list(ct2, collapse = '|'))		
+		ct_1 = do.call(paste0, list(ct1, collapse = '|'))
+		ct_2 = do.call(paste0, list(ct2, collapse = '|'))
 		ct = list(ct_1, ct_2)
 		ct = do.call(paste0, list(ct, collapse = '|'))
 		return(ct)
 	}
-	
+
 	keep_interested_groups <- function(g, ct){
 		ctx <- strsplit(ct, "\\|")[[1]]
 		idx <- grep(paste0(g, ".*-", g), ctx)
@@ -230,18 +231,18 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 
 	if(!is.null(split.by)){
         	if(length(idents) > 1){
-        		labels <- paste0(metadata[[split.by]], "_", idents)	
+        		labels <- paste0(metadata[[split.by]], "_", idents)
         	} else {
         		labels <- paste0(metadata[[split.by]], "_", metadata[[idents]])
         	}
-        	
+
         	labels <- unique(labels)
-          	groups <- unique(metadata[[split.by]])			
+          	groups <- unique(metadata[[split.by]])
 
           	if(length(groups) > 0){
           		# the purpose for this step is to allow for special characters to be used in the celltype grepping
 				if(length(groups) > 1){
-					labels2 = gsub(paste0(paste0(groups,'_'), collapse = '|'), '', labels) 
+					labels2 = gsub(paste0(paste0(groups,'_'), collapse = '|'), '', labels)
 				} else {
 					labels2 = gsub(paste0(groups,'_'), '', labels)
 				}
@@ -256,7 +257,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 				celltype = list()
 				for (i in 1:length(c_type1)){
 					celltype[[i]] <- create_celltype_query(c_type1[[i]], c_type2)
-					celltype[[i]] <- lapply(grp, keep_interested_groups, celltype[[i]])					
+					celltype[[i]] <- lapply(grp, keep_interested_groups, celltype[[i]])
 				}
 
 				for (i in 1:length(celltype)){
@@ -272,7 +273,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
         			labels <- metadata[[idents]]
         		}
         		labels <- unique(labels)
-        		
+
         		c_type1 = as.list(grep(cell_type1, labels, value = TRUE, ...))
 				c_type2 = as.list(grep(cell_type2, labels, value = TRUE, ...))
 
@@ -289,7 +290,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
         		labels <- metadata[[idents]]
         	}
         	labels <- unique(labels)
-			
+
         	c_type1 = as.list(grep(cell_type1, labels, value = TRUE, ...))
 			c_type2 = as.list(grep(cell_type2, labels, value = TRUE, ...))
 
@@ -307,7 +308,11 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 		means_mat <- means_mat[query, grep(cell_type, colnames(means_mat), ...)]
 		pvals_mat <- pvals_mat[query, grep(cell_type, colnames(pvals_mat), ...)]
 	}
-	
+
+	if (length(means_mat) == 0){
+		stop('Please check your options for split.by and your celltypes.')
+	}
+
 	# rearrange the columns so that it interleaves the two groups
 	if(!is.null(split.by)){
 		if(length(groups) > 0){
@@ -316,26 +321,45 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 				gx <- grep(g, colnames(means_mat), ...)
 				return(gx)
 			})
-			group_id <- do.call(c, group_i)
+			group_id <- do.call(rbind, group_i)
 			means_mat <- means_mat[,as.vector(group_id)]
 			pvals_mat <- pvals_mat[,as.vector(group_id)]
-		}		
+		}
 	}
-	
+
 	if(nrow(means_mat) > 2){
 		d <- dist(as.data.frame(means_mat))
 		h <- hclust(d)
 		means_mat <- means_mat[h$order, ]
-		pvals_mat <- pvals_mat[h$order, ]		
-	} 
-	
-	# scale
+		pvals_mat <- pvals_mat[h$order, ]
+	}
+
+	# scaling
+	range01 <- function(x){(x-min(x))/(max(x)-min(x))}
 	if(scale){
-		means_mat2 <- t(scale(t(means_mat)))	
+		means_mat2 <- t(scale(t(means_mat)))
 	} else {
 		means_mat2 <- means_mat
 	}
-	
+
+	if (length(standard_scale) > 0){
+		if (standard_scale){
+			means_mat <- apply(means_mat,1,range01)
+		} else {
+			means_mat <- means_mat
+		}
+	}
+
+	if(length(scale) > 0 && length(standard_scale) < 1){
+		if (scale){
+			means_mat2 <- t(scale(t(means_mat)))
+		} else {
+			means_mat2 <- means_mat
+		}
+	} else {
+		means_mat2 <- t(scale(t(means_mat)))
+	}
+
 	pvals_mat2 <- as.matrix(pvals_mat)
 	means_mat2 <- as.matrix(means_mat2)
 	means_mat2[which(means_mat == 0)] <- NA
@@ -367,7 +391,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 		}
 		df$pvals[which(df$pvals == 0)] <- 0.001
 	}
-		
+
 	if(!is.null(split.by)){
 		if(length(groups) > 0){
 			grp <- as.list(groups)
@@ -377,17 +401,17 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 			})
 			searchterm <- do.call(paste, list(grp2, collapse = "|"))
 			df$group <- gsub(searchterm, "", df$Var2)
-		}		
+		}
 	}
 
 	if (scale){
-		if(length(p.adjust.method) > 0){ 
+		if(length(p.adjust.method) > 0){
 			g <- ggplot(df, aes(x = Var2, y = Var1, color = -log10(padj), fill = scaled_means, size = scaled_means))
 		} else {
 			g <- ggplot(df, aes(x = Var2, y = Var1, color = -log10(pvals), fill = scaled_means, size = scaled_means))
 		}
 	} else {
-		if(length(p.adjust.method) > 0){ 
+		if(length(p.adjust.method) > 0){
 			g <- ggplot(df, aes(x = Var2, y = Var1, color = -log10(padj), fill = means, size = means))
 		} else {
 			g <- ggplot(df, aes(x = Var2, y = Var1, color = -log10(pvals), fill = means, size = means))
@@ -401,18 +425,18 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
   			axis.title.x = element_blank(),
   			axis.title.y = element_blank()) +
   		scale_x_discrete(position = "top") +
-  		scale_color_gradientn(colors = highlight, na.value = "white") +  		
+  		scale_color_gradientn(colors = highlight, na.value = "white") +
   		scale_radius(range = c(0,5))
 
   	if(noir){
   		g <- g + scale_fill_gradient(low = "white", high = "#131313", na.value = "white")
   	} else {
   		if(length(col_option) == 1){
-  			g <- g + scale_fill_gradientn(colors = colorRampPalette(c("white", col_option))(100), na.value = "white")	
+  			g <- g + scale_fill_gradientn(colors = colorRampPalette(c("white", col_option))(100), na.value = "white")
   		} else {
-  			g <- g + scale_fill_gradientn(colors = c("white", colorRampPalette(col_option)(99)), na.value = "white")	
-  		}  		
-  	} 
+  			g <- g + scale_fill_gradientn(colors = c("white", colorRampPalette(col_option)(99)), na.value = "white")
+  		}
+  	}
   	if(!is.null(gene.family) & is.null(genes)){
   		g <- g + ggtitle(gene.family)
   	}

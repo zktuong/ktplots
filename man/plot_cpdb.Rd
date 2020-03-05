@@ -16,7 +16,8 @@ plot_cpdb(
   split.by = NULL,
   gene.family = NULL,
   genes = NULL,
-  scale = TRUE,
+  scale = NULL,
+  standard_scale = NULL,
   col_option = viridis::viridis(50),
   noir = FALSE,
   highlight = "red",
@@ -46,7 +47,9 @@ plot_cpdb(
 
 \item{genes}{default = NULL. can specify custom list of genes if gene.family is NULL}
 
-\item{scale}{default = TRUE. scales the data}
+\item{scale}{logical. scale the expression to mean +/- SD. NULL defaults to TRUE.}
+
+\item{standard_scale}{logical. scale the expression to range from 0 to 1. NULL defaults to FALSE.}
 
 \item{col_option}{specify plotting colours}
 
@@ -65,6 +68,6 @@ Plotting cellphonedb results
 \examples{
 scdata <- readRDS("./scdata.RDS", check.names = FALSE)
 pvals <- read.delim("./cpdb/output/pvalues.txt", check.names = FALSE)
-means <- read.delim("./cpdb/output/means.txt", check.names = FALSE) 
+means <- read.delim("./cpdb/output/means.txt", check.names = FALSE)
 plot_cpdb("Bcell", "Tcell", scdata, 'seurat_clusters', means, pvals, split.by = "group", genes = c("CXCL13", "CD274", "CXCR5"))
 }
