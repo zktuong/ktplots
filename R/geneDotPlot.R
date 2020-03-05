@@ -69,7 +69,7 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
     quick_prep <- function(expr, label, groups. = NULL, scale. = scale, meta = metadata, id = idents, standard_scale. = standard_scale){
 
         expr.df <- tryCatch(data.frame(label = label, t(as.matrix(expr)), check.names = FALSE), error = function(e){
-                            data.frame(label = label, t(Matrix::Matrix(expr, sparse = FALSE)), check.names = FALSE)})
+            data.frame(label = label, t(Matrix::Matrix(expr, sparse = FALSE)), check.names = FALSE)})
 
         meanExpr <- split(expr.df, expr.df$label)
         meanExpr <- lapply(meanExpr, function(x){
@@ -91,21 +91,29 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
             }
         }
 
-        if(length(scale.) < 1 && length(standard_scale.) < 1){
-            meanExpr <- scale(meanExpr)
-        } else if(length(scale.) > 0 && length(standard_scale.) < 1){
-            if (scale.){
-                meanExpr <- scale(meanExpr)
+        if(length(scale.) < 1){
+            if(length(standard_scale.) > 0){
+                if (standard_scale.){
+                    meansExpr <- meansExpr_
+                } else {
+                    meansExpr <- meansExpr
+                }
             } else {
-                meanExpr <- meanExpr
+                meansExpr <- scale(meansExpr)
             }
-        } else if(length(scale.) > 0 && length(standard_scale.) > 0) {
-            if (standard_scale.){
-                meanExpr <- meanExpr_
-            } else if(!standard_scale. && scale.) {
-                meanExpr <- scale(meanExpr)
-            } else if(!standard_scale. && !scale.) {
-                meanExpr <- meanExpr
+        } else {
+            if (scale.){
+                if(length(standard_scale.) > 0){
+                    if (standard_scale.){
+                        meansExpr <- meansExpr_
+                    } else {
+                        meansExpr <- scale(meansExpr)
+                    }
+                } else {
+                    meansExpr <- scale(meansExpr)
+                }           
+            } else {
+                meansExpr <- meansExpr
             }
         }
 
@@ -128,7 +136,7 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
         meltedfinal.pct <- reshape2::melt(final.pct)
 
         df <- cbind(meltedMeanExpr, meltedfinal.pct$value)
-        if(length(scale.) > 0 && scale. | length(scale.) < 1 && length(standard_scale.) < 1 | length(standard_scale.) > 0 && standard_scale.){
+        if((length(scale.) > 0 && scale.) | (length(scale.) < 1 && length(standard_scale.) < 1) | (length(standard_scale.) > 0 && standard_scale.)){
             colnames(df) <- c("celltype", "gene", "scale.mean", "pct")
         } else {
             colnames(df) <- c("celltype", "gene", "mean", "pct")
@@ -195,51 +203,51 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
     # subset the plotting objects
     doplot <- function(obj, group. = NULL, file_name = filename, file_path = filepath, dim_w, dim_h, limits. = col_limits, do.plot = save.plot, scale. = scale, standard_scale. = standard_scale){
         if(is.null(group.)){
-            if(length(scale.) > 0 && scale. | length(scale.) < 1 && length(standard_scale.) < 1 | length(standard_scale.) > 0 && standard_scale.){
+            if((length(scale.) > 0 && scale.) | (length(scale.) < 1 && length(standard_scale.) < 1) | (length(standard_scale.) > 0 && standard_scale.)){
                 g <- ggplot(obj, aes(x = 0, y = gene, size = pct, colour = scale.mean))
             } else {
                 g <- ggplot(obj, aes(x = 0, y = gene, size = pct, colour = mean))
             }
             g <- g + geom_point(pch = 16) +
-                scale_y_discrete(position = "top") +
-                scale_x_discrete(position = "bottom") +
-                scale_colour_gradientn(colors = heat_cols, limits = limits., na.value = "grey90", oob = scales::squish) +
-                scale_radius(range = c(0,6), limits = c(0, 1)) +
-                theme_bw() +
-                theme(axis.text.x = element_text(angle = 90, hjust = 1),
-                    axis.title.x = element_blank(),
-                    axis.ticks = element_blank(),
-                    axis.title.y = element_blank(),
-                    axis.line = element_blank(),
-                    panel.grid.major = element_blank(),
-                    panel.grid.minor = element_blank(),
-                    panel.border = element_blank(),
-                    strip.background = element_blank()) +
-                facet_grid(.~cell_type)
+            scale_y_discrete(position = "top") +
+            scale_x_discrete(position = "bottom") +
+            scale_colour_gradientn(colors = heat_cols, limits = limits., na.value = "grey90", oob = scales::squish) +
+            scale_radius(range = c(0,6), limits = c(0, 1)) +
+            theme_bw() +
+            theme(axis.text.x = element_text(angle = 90, hjust = 1),
+                axis.title.x = element_blank(),
+                axis.ticks = element_blank(),
+                axis.title.y = element_blank(),
+                axis.line = element_blank(),
+                panel.grid.major = element_blank(),
+                panel.grid.minor = element_blank(),
+                panel.border = element_blank(),
+                strip.background = element_blank()) +
+            facet_grid(.~cell_type)
+        } else {
+            if((length(scale.) > 0 && scale.) | (length(scale.) < 1 && length(standard_scale.) < 1) | (length(standard_scale.) > 0 && standard_scale.)){
+                g <- ggplot(obj, aes(x = group, y = gene, size = pct, colour = scale.mean))
             } else {
-                if(length(scale.) > 0 && scale. | length(scale.) < 1 && length(standard_scale.) < 1 | length(standard_scale.) > 0 && standard_scale.){
-                    g <- ggplot(obj, aes(x = group, y = gene, size = pct, colour = scale.mean))
-                } else {
-                    g <- ggplot(obj, aes(x = group, y = gene, size = pct, colour = mean))
-                }
+                g <- ggplot(obj, aes(x = group, y = gene, size = pct, colour = mean))
+            }
 
             g <- g + geom_point(pch = 16) +
-                scale_y_discrete(position = "top") +
-                scale_x_discrete(position = "bottom") +
-                scale_colour_gradientn(colors = heat_cols, limits = limits., na.value = "grey90", oob = scales::squish) +
-                scale_radius(range = c(0,6), limits = c(0, 1)) +
-                theme_bw() +
-                theme(axis.text.x = element_text(angle = 90, hjust = 1),
-                    axis.title.x = element_blank(),
-                    axis.ticks = element_blank(),
-                    axis.title.y = element_blank(),
-                    axis.line = element_blank(),
-                    panel.grid.major = element_blank(),
-                    panel.grid.minor = element_blank(),
-                    panel.border = element_blank(),
-                    strip.background = element_blank()) +
-                facet_grid(.~cell_type)
-            }
+            scale_y_discrete(position = "top") +
+            scale_x_discrete(position = "bottom") +
+            scale_colour_gradientn(colors = heat_cols, limits = limits., na.value = "grey90", oob = scales::squish) +
+            scale_radius(range = c(0,6), limits = c(0, 1)) +
+            theme_bw() +
+            theme(axis.text.x = element_text(angle = 90, hjust = 1),
+                axis.title.x = element_blank(),
+                axis.ticks = element_blank(),
+                axis.title.y = element_blank(),
+                axis.line = element_blank(),
+                panel.grid.major = element_blank(),
+                panel.grid.minor = element_blank(),
+                panel.border = element_blank(),
+                strip.background = element_blank()) +
+            facet_grid(.~cell_type)
+        }
 
         if(do.plot){
             if(is.null(file_name) && is.null(file_path)){

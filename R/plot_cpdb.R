@@ -338,26 +338,34 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 	range01 <- function(x){(x-min(x))/(max(x)-min(x))}
 	if (length(standard_scale) > 0){
 		if (standard_scale){
-			means_mat <- apply(means_mat,1,range01)
+			means_mat_ <- apply(means_mat,1,range01)
 		} else {
-			means_mat <- means_mat
+			means_mat_ <- means_mat
 		}
 	}
 
-	if(length(scale) > 1 && length(standard_scale) > 1){
-		means_mat2 <- t(scale(t(means_mat)))
-	} else if(length(scale) > 0 && length(standard_scale) < 1){
-		if (scale){
-			means_mat2 <- t(scale(t(means_mat)))
+	if(length(scale) < 1){
+		if(length(standard_scale) > 0){
+			if (standard_scale){
+				means_mat2 <- means_mat_
+			} else {
+				means_mat2 <- means_mat
+			}
 		} else {
-			means_mat2 <- means_mat
-		}
-	} else if(length(scale) > 0 && length(standard_scale) > 0) {
-		if (standard_scale){
-			means_mat2 <- means_mat_
-		} else if(!standard_scale && scale) {
 			means_mat2 <- t(scale(t(means_mat)))
-		} else if(!standard_scale && !scale) {
+		}
+	} else {
+		if (scale){
+			if(length(standard_scale) > 0){
+				if (standard_scale){
+					means_mat2 <- means_mat_
+				} else {
+					means_mat2 <- t(scale(t(means_mat)))
+				}
+			} else {
+				means_mat2 <- t(scale(t(means_mat)))
+			}			
+		} else {
 			means_mat2 <- means_mat
 		}
 	}
