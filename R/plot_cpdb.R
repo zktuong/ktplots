@@ -362,7 +362,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 	pvals_mat2 <- pvals_mat2[rowSums(is.na(means_mat2)) != ncol(means_mat2), ,drop = FALSE]
 	means_mat2 <- means_mat2[rowSums(is.na(means_mat2)) != ncol(means_mat2), ,drop = FALSE]
 
-	if(scale){
+	if ((length(standard_scale) > 0 && standard_scale) | (length(scale) > 0 && scale)){
 		df_means <- melt(means_mat2, value.name = "scaled_means")
 	} else {
 		df_means <- melt(means_mat2, value.name = "means")
