@@ -339,6 +339,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 	if (length(standard_scale) > 0){
 		if (standard_scale){
 			means_mat_ <- apply(means_mat,1,range01)
+			means_mat_ <- t(means_mat_)
 		} else {
 			means_mat_ <- means_mat
 		}
