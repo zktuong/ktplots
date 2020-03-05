@@ -34,23 +34,23 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 	require(viridis)
 
 	if (class(scdata) %in% c("SingleCellExperiment", "SummarizedExperiment")) {
-        cat("data provided is a SingleCellExperiment/SummarizedExperiment object", sep = "\n")
-        cat("extracting expression matrix", sep = "\n")
-        require(SummarizedExperiment)
-        require(SingleCellExperiment)
-        exp_mat <- assay(scdata)
-        metadata <- ColData(scdata)
-    } else if (class(scdata) == "Seurat") {
-        cat("data provided is a Seurat object", sep = "\n")
-        cat("extracting expression matrix", sep = "\n")
-        exp_mat <- tryCatch(scdata@data, error = function(e) {
-            tryCatch(GetAssayData(object = scdata), error = function(e) {
-                stop(paste0("are you sure that your data is normalized?"))
-                return(NULL)
-            })
-        })
-        metadata <- scdata@meta.data
-    }
+		cat("data provided is a SingleCellExperiment/SummarizedExperiment object", sep = "\n")
+		cat("extracting expression matrix", sep = "\n")
+		require(SummarizedExperiment)
+		require(SingleCellExperiment)
+		exp_mat <- assay(scdata)
+		metadata <- ColData(scdata)
+	} else if (class(scdata) == "Seurat") {
+		cat("data provided is a Seurat object", sep = "\n")
+		cat("extracting expression matrix", sep = "\n")
+		exp_mat <- tryCatch(scdata@data, error = function(e) {
+			tryCatch(GetAssayData(object = scdata), error = function(e) {
+				stop(paste0("are you sure that your data is normalized?"))
+				return(NULL)
+			})
+		})
+		metadata <- scdata@meta.data
+	}
 
 	means_mat <- means_file
 	pvals_mat <- pvals_file
@@ -81,16 +81,16 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 	}
 
 	if(!is.null(split.by)){
-        if(length(idents) > 1){
-        	labels <- paste0(metadata[[split.by]], "_", idents)
-        } else {
-        	labels <- paste0(metadata[[split.by]], "_", metadata[[idents]])
-        }
+		if(length(idents) > 1){
+			labels <- paste0(metadata[[split.by]], "_", idents)
+		} else {
+			labels <- paste0(metadata[[split.by]], "_", metadata[[idents]])
+		}
 
-        labels <- unique(labels)
-        groups <- unique(metadata[[split.by]])
+		labels <- unique(labels)
+		groups <- unique(metadata[[split.by]])
 
-        if(length(groups) > 0){
+		if(length(groups) > 0){
         	# the purpose for this step is to allow for special characters to be used in the celltype grepping
 			if(length(groups) > 1){
 				labels2 = gsub(paste0(paste0(groups,'_'), collapse = '|'), '', labels)
@@ -103,24 +103,24 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 			ct2 = grep(cell_type2, labels2, value = TRUE, ...)
 		} else {
 			if(length(idents) > 1){
-        		labels <- idents
-        	} else {
-        		labels <- metadata[[idents]]
-        	}
-        	labels <- unique(labels)
+				labels <- idents
+			} else {
+				labels <- metadata[[idents]]
+			}
+			labels <- unique(labels)
 
-        	ct1 = grep(cell_type1, labels, value = TRUE, ...)
+			ct1 = grep(cell_type1, labels, value = TRUE, ...)
 			ct2 = grep(cell_type2, labels, value = TRUE, ...)
 		}
 	} else {
 		if(length(idents) > 1){
-        	labels <- idents
-        } else {
-        	labels <- metadata[[idents]]
-        }
-        labels <- unique(labels)
+			labels <- idents
+		} else {
+			labels <- metadata[[idents]]
+		}
+		labels <- unique(labels)
 
-        ct1 = grep(cell_type1, labels, value = TRUE, ...)
+		ct1 = grep(cell_type1, labels, value = TRUE, ...)
 		ct2 = grep(cell_type2, labels, value = TRUE, ...)
 		ct1 = paste0(ct1, collapse = '|')
 		ct2 = paste0(ct2, collapse = '|')
@@ -130,10 +130,10 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 	if (ct2 == ''){ct2 = NA}
 	checklabels2 <- any(colnames(means_mat) %in% c(ct1,ct2))
 
-    if(!checklabels1){
-    	if(length(idents) > 1){
+	if(!checklabels1){
+		if(length(idents) > 1){
     		# relatively relaxed criteria to allow for the program to continue
-    		ct_1 <- grep(ct1, idents, value = TRUE, ...)
+			ct_1 <- grep(ct1, idents, value = TRUE, ...)
 			ct_2 <- grep(ct2, idents, value = TRUE, ...)
 			checklabels2 <- any(idents %in% ct_1)
 			if(checklabels2){
@@ -157,11 +157,11 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 				stop('Cannot find cell types.\nThe error is mismatch between cell_type1 and the single cell metadata (or idents provided).')
 			}
 		}
-    }
+	}
 
-    if(!checklabels2){
+	if(!checklabels2){
     	# relatively relaxed criteria to allow for the program to continue
-    	ct_1 <- grep(ct1, colnames(means_mat), value = TRUE)
+		ct_1 <- grep(ct1, colnames(means_mat), value = TRUE)
 		ct_2 <- grep(ct2, colnames(means_mat), value = TRUE)
 		checklabels2 <- any(colnames(means_mat) %in% ct_1)
 		if(checklabels2){
@@ -172,11 +172,11 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 		} else {
 			stop('Cannot find cell types. The error is mismatch between cell_type1 and the cpdb metadata.')
 		}
-    }
+	}
 
-    if(checklabels1 & checklabels2){
-    	cat('Found cell types in the input data provided. Proceeding with plotting.', sep = "\n")
-    }
+	if(checklabels1 & checklabels2){
+		cat('Found cell types in the input data provided. Proceeding with plotting.', sep = "\n")
+	}
 
 	if (is.null(gene.family) & is.null(genes)){
 		cat("options genes or gene.family are not specified.\nusing entire cpdb output.")
@@ -230,68 +230,51 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 	}
 
 	if(!is.null(split.by)){
-        	if(length(idents) > 1){
-        		labels <- paste0(metadata[[split.by]], "_", idents)
-        	} else {
-        		labels <- paste0(metadata[[split.by]], "_", metadata[[idents]])
-        	}
-
-        	labels <- unique(labels)
-          	groups <- unique(metadata[[split.by]])
-
-          	if(length(groups) > 0){
-          		# the purpose for this step is to allow for special characters to be used in the celltype grepping
-				if(length(groups) > 1){
-					labels2 = gsub(paste0(paste0(groups,'_'), collapse = '|'), '', labels)
-				} else {
-					labels2 = gsub(paste0(groups,'_'), '', labels)
-				}
-				# this returns the indices from the labels
-				ct1 = grep(cell_type1, labels2, ...)
-				ct2 = grep(cell_type2, labels2, ...)
-
-				c_type1 <- as.list(labels[ct1])
-				c_type2 <- as.list(labels[ct2])
-
-				grp <- as.list(groups)
-				celltype = list()
-				for (i in 1:length(c_type1)){
-					celltype[[i]] <- create_celltype_query(c_type1[[i]], c_type2)
-					celltype[[i]] <- lapply(grp, keep_interested_groups, celltype[[i]])
-				}
-
-				for (i in 1:length(celltype)){
-					celltype[[i]] <- celltype[[i]][-which(celltype[[i]] == '')]
-				}
-
-				celltype <- lapply(celltype, unlist)
-				cell_type <- do.call(paste0, list(celltype, collapse = "|"))
-          	} else {
-          		if(length(idents) > 1){
-        			labels <- idents
-        		} else {
-        			labels <- metadata[[idents]]
-        		}
-        		labels <- unique(labels)
-
-        		c_type1 = as.list(grep(cell_type1, labels, value = TRUE, ...))
-				c_type2 = as.list(grep(cell_type2, labels, value = TRUE, ...))
-
-				celltype = list()
-				for (i in 1:length(c_type1)){
-					celltype[[i]] <- create_celltype_query(c_type1[[i]], c_type2)
-				}
-				cell_type <- do.call(paste0, list(celltype, collapse = "|"))
-			}
+		if(length(idents) > 1){
+			labels <- paste0(metadata[[split.by]], "_", idents)
 		} else {
-        	if(length(idents) > 1){
-        		labels <- idents
-        	} else {
-        		labels <- metadata[[idents]]
-        	}
-        	labels <- unique(labels)
+			labels <- paste0(metadata[[split.by]], "_", metadata[[idents]])
+		}
 
-        	c_type1 = as.list(grep(cell_type1, labels, value = TRUE, ...))
+		labels <- unique(labels)
+		groups <- unique(metadata[[split.by]])
+
+		if(length(groups) > 0){
+          		# the purpose for this step is to allow for special characters to be used in the celltype grepping
+			if(length(groups) > 1){
+				labels2 = gsub(paste0(paste0(groups,'_'), collapse = '|'), '', labels)
+			} else {
+				labels2 = gsub(paste0(groups,'_'), '', labels)
+			}
+				# this returns the indices from the labels
+			ct1 = grep(cell_type1, labels2, ...)
+			ct2 = grep(cell_type2, labels2, ...)
+
+			c_type1 <- as.list(labels[ct1])
+			c_type2 <- as.list(labels[ct2])
+
+			grp <- as.list(groups)
+			celltype = list()
+			for (i in 1:length(c_type1)){
+				celltype[[i]] <- create_celltype_query(c_type1[[i]], c_type2)
+				celltype[[i]] <- lapply(grp, keep_interested_groups, celltype[[i]])
+			}
+
+			for (i in 1:length(celltype)){
+				celltype[[i]] <- celltype[[i]][-which(celltype[[i]] == '')]
+			}
+
+			celltype <- lapply(celltype, unlist)
+			cell_type <- do.call(paste0, list(celltype, collapse = "|"))
+		} else {
+			if(length(idents) > 1){
+				labels <- idents
+			} else {
+				labels <- metadata[[idents]]
+			}
+			labels <- unique(labels)
+
+			c_type1 = as.list(grep(cell_type1, labels, value = TRUE, ...))
 			c_type2 = as.list(grep(cell_type2, labels, value = TRUE, ...))
 
 			celltype = list()
@@ -300,6 +283,23 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 			}
 			cell_type <- do.call(paste0, list(celltype, collapse = "|"))
 		}
+	} else {
+		if(length(idents) > 1){
+			labels <- idents
+		} else {
+			labels <- metadata[[idents]]
+		}
+		labels <- unique(labels)
+
+		c_type1 = as.list(grep(cell_type1, labels, value = TRUE, ...))
+		c_type2 = as.list(grep(cell_type2, labels, value = TRUE, ...))
+
+		celltype = list()
+		for (i in 1:length(c_type1)){
+			celltype[[i]] <- create_celltype_query(c_type1[[i]], c_type2)
+		}
+		cell_type <- do.call(paste0, list(celltype, collapse = "|"))
+	}
 
 	if(!is.null(gene.family) & is.null(genes)){
 		means_mat <- means_mat[query_group[[tolower(gene.family)]], grep(cell_type, colnames(means_mat), ...)]
@@ -336,12 +336,6 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 
 	# scaling
 	range01 <- function(x){(x-min(x))/(max(x)-min(x))}
-	if(scale){
-		means_mat2 <- t(scale(t(means_mat)))
-	} else {
-		means_mat2 <- means_mat
-	}
-
 	if (length(standard_scale) > 0){
 		if (standard_scale){
 			means_mat <- apply(means_mat,1,range01)
@@ -418,27 +412,27 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 		}
 	}
 
-  	g <- g + geom_point(pch = 21) +
-  		theme_bw() +
-  		theme(axis.text.x = element_text(angle = 45, hjust = 0),
-  			axis.ticks = element_blank(),
-  			axis.title.x = element_blank(),
-  			axis.title.y = element_blank()) +
-  		scale_x_discrete(position = "top") +
-  		scale_color_gradientn(colors = highlight, na.value = "white") +
-  		scale_radius(range = c(0,5))
+	g <- g + geom_point(pch = 21) +
+	theme_bw() +
+	theme(axis.text.x = element_text(angle = 45, hjust = 0),
+		axis.ticks = element_blank(),
+		axis.title.x = element_blank(),
+		axis.title.y = element_blank()) +
+	scale_x_discrete(position = "top") +
+	scale_color_gradientn(colors = highlight, na.value = "white") +
+	scale_radius(range = c(0,5))
 
-  	if(noir){
-  		g <- g + scale_fill_gradient(low = "white", high = "#131313", na.value = "white")
-  	} else {
-  		if(length(col_option) == 1){
-  			g <- g + scale_fill_gradientn(colors = colorRampPalette(c("white", col_option))(100), na.value = "white")
-  		} else {
-  			g <- g + scale_fill_gradientn(colors = c("white", colorRampPalette(col_option)(99)), na.value = "white")
-  		}
-  	}
-  	if(!is.null(gene.family) & is.null(genes)){
-  		g <- g + ggtitle(gene.family)
-  	}
-  	return(g)
+	if(noir){
+		g <- g + scale_fill_gradient(low = "white", high = "#131313", na.value = "white")
+	} else {
+		if(length(col_option) == 1){
+			g <- g + scale_fill_gradientn(colors = colorRampPalette(c("white", col_option))(100), na.value = "white")
+		} else {
+			g <- g + scale_fill_gradientn(colors = c("white", colorRampPalette(col_option)(99)), na.value = "white")
+		}
+	}
+	if(!is.null(gene.family) & is.null(genes)){
+		g <- g + ggtitle(gene.family)
+	}
+	return(g)
 }
