@@ -165,7 +165,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 	
 	# rearrange the columns so that it interleaves the two groups
 	if(!is.null(split.by)){
-		if(length(groups) > 2){
+		if(length(groups) > 1){
 			grp <- as.list(groups)
 			group_i <- lapply(grp, function(g){
 				gx <- grep(g, colnames(means_mat), ...)
@@ -213,7 +213,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 	}
 	df$pvals[which(df$pvals == 0)] <- 0.001
 	if(!is.null(split.by)){
-		if(length(groups) > 2){
+		if(length(groups) > 1){
 			grp <- as.list(groups)
 			grp2 <- lapply(grp, function(i){
 				x <- paste0(i,'_')
