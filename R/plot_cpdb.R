@@ -79,18 +79,98 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 		checklabels1 <- any(metadata[[idents]] %in% c(ct1,ct2))
 	}
 	
-	ct1 = grep(cell_type1, colnames(means_mat), value = TRUE, ...)
-	ct2 = grep(cell_type2, colnames(means_mat), value = TRUE, ...)
-    checklabels2 <- any(colnames(means_mat) %in% c(ct1,ct2))
+	if(!is.null(split.by)){
+        if(length(idents) > 1){
+        	labels <- paste0(metadata[[split.by]], "_", idents)	
+        } else {
+        	labels <- paste0(metadata[[split.by]], "_", metadata[[idents]])
+        }        	
+        
+        labels <- unique(labels)
+        groups <- unique(metadata[[split.by]])
+
+        if(length(groups) > 0){
+        	# the purpose for this step is to allow for special characters to be used in the celltype grepping
+			if(length(groups) > 1){
+				labels2 = gsub(paste0(paste0(groups,'_'), collapse = '|'), '', labels) 
+			} else {
+				labels2 = gsub(paste0(groups,'_'), '', labels)
+			}
+
+			# this returns the indices from the labels
+			ct1 = grep(cell_type1, labels2, value = TRUE, ...)
+			ct2 = grep(cell_type2, labels2, value = TRUE, ...)
+		} else {
+			if(length(idents) > 1){
+        		labels <- idents
+        	} else {
+        		labels <- metadata[[idents]]
+        	}
+        	labels <- unique(labels)
+        	
+        	ct1 = grep(cell_type1, labels, value = TRUE, ...)
+			ct2 = grep(cell_type2, labels, value = TRUE, ...)
+		}
+	} else {
+		if(length(idents) > 1){
+        	labels <- idents
+        } else {
+        	labels <- metadata[[idents]]
+        }
+        labels <- unique(labels)
+        	
+        ct1 = grep(cell_type1, labels, value = TRUE, ...)
+		ct2 = grep(cell_type2, labels, value = TRUE, ...)
+		ct1 = paste0(ct1, collapse = '|')
+		ct2 = paste0(ct2, collapse = '|')		
+	}
+	
+	if (ct1 == ''){ct1 = NA}
+	if (ct2 == ''){ct2 = NA}
+	checklabels2 <- any(colnames(means_mat) %in% c(ct1,ct2))
 
     if(!checklabels1){
-    	stop('Cannot find cell types. The error is mismatch between cell_type1/cell_type2 and the single cell metadata.')
-    	warning('the cell types that you grep are dependent on the cpdb input labels. so make sure that they fit your plotting strategy')
+    	if(length(idents) > 1){
+    		# relatively relaxed criteria to allow for the program to continue
+    		ct_1 <- grep(ct1, idents, value = TRUE, ...)
+			ct_2 <- grep(ct2, idents, value = TRUE, ...)
+			checklabels2 <- any(idents %in% ct_1)
+			if(checklabels2){
+				checklabels2 <- any(idents %in% ct_2)
+				if(!checklabels2){
+					stop('Cannot find cell types.\nThe error is mismatch between cell_type2 and the single cell metadata (or idents provided).')
+				}
+			} else {
+				stop('Cannot find cell types.\nThe error is mismatch between cell_type1 and the single cell metadata (or idents provided).')
+			}		
+		} else {
+			ct_1 <- grep(ct1, metadata[[idents]], value = TRUE, ...)
+			ct_2 <- grep(ct2, metadata[[idents]], value = TRUE, ...)
+			checklabels2 <- any(metadata[[idents]] %in% ct_1)
+			if(checklabels2){
+				checklabels2 <- any(metadata[[idents]] %in% ct_2)
+				if(!checklabels2){
+					stop('Cannot find cell types.\nThe error is mismatch between cell_type2 and the single cell metadata (or idents provided).')
+				}
+			} else {
+				stop('Cannot find cell types.\nThe error is mismatch between cell_type1 and the single cell metadata (or idents provided).')
+			}
+		}
     }
-    
+
     if(!checklabels2){
-    	stop('Cannot find cell types. The error is mismatch between cell_type1/cell_type2 and the cpdb metadata.')
-    	warning('the cell types that you grep are dependent on the cpdb input labels. so make sure that they fit your plotting strategy')
+    	# relatively relaxed criteria to allow for the program to continue
+    	ct_1 <- grep(ct1, colnames(means_mat), value = TRUE)
+		ct_2 <- grep(ct2, colnames(means_mat), value = TRUE)
+		checklabels2 <- any(colnames(means_mat) %in% ct_1)
+		if(checklabels2){
+			checklabels2 <- any(colnames(means_mat) %in% ct_2)
+			if(!checklabels2){
+				stop('Cannot find cell types. The error is mismatch between cell_type2 and the cpdb metadata.')
+			}
+		} else {
+			stop('Cannot find cell types. The error is mismatch between cell_type1 and the cpdb metadata.')
+		}
     }
 
     if(checklabels1 & checklabels2){
@@ -98,8 +178,9 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
     }
 
 	if (is.null(gene.family) & is.null(genes)){
-		stop("Please specify either genes or gene.family")
-		cat("gene.family can be one of the following:", sep = "\n")
+		cat("options genes or gene.family are not specified.\nusing entire cpdb output.")
+		query <- grep('', means_mat$interacting_pair)
+		cat("for future reference, genes or gene.family can be specified, not both.\ngene.family can be one of the following:", sep = "\n")
 		print(c("chemokines", "Th1", "Th2", "Th17", "Treg", "costimulatory", "coinhibitory", "niche"))
 		cat("otherwise, please provide gene(s) as a vector in the genes option", sep = "\n")
 	}
@@ -125,6 +206,28 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 		query <- grep(paste(genes, collapse="|"), means_mat$interacting_pair)
 	} 
 
+	create_celltype_query <- function(ctype1, ctype2){
+		ct1 = list()
+		ct2 = list()
+		for (i in 1:length(ctype2)){
+			ct1[i] = paste0(ctype1, "-", ctype2[i])
+			ct2[i] = paste0(ctype2[i], "-", ctype1)
+		}
+		ct_1 = do.call(paste0, list(ct1, collapse = '|'))	
+		ct_2 = do.call(paste0, list(ct2, collapse = '|'))		
+		ct = list(ct_1, ct_2)
+		ct = do.call(paste0, list(ct, collapse = '|'))
+		return(ct)
+	}
+	
+	keep_interested_groups <- function(g, ct){
+		ctx <- strsplit(ct, "\\|")[[1]]
+		idx <- grep(paste0(g, ".*-", g), ctx)
+		ctx <- ctx[idx]
+		ctx <- paste0(ctx, collapse = "|")
+		return(ctx)
+	}
+
 	if(!is.null(split.by)){
         	if(length(idents) > 1){
         		labels <- paste0(metadata[[split.by]], "_", idents)	
@@ -132,24 +235,70 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
         		labels <- paste0(metadata[[split.by]], "_", metadata[[idents]])
         	}
         	
-          	groups <- unique(metadata[[split.by]])
+        	labels <- unique(labels)
+          	groups <- unique(metadata[[split.by]])			
+
           	if(length(groups) > 0){
-          		grp <- as.list(groups)
+          		# the purpose for this step is to allow for special characters to be used in the celltype grepping
+				if(length(groups) > 1){
+					labels2 = gsub(paste0(paste0(groups,'_'), collapse = '|'), '', labels) 
+				} else {
+					labels2 = gsub(paste0(groups,'_'), '', labels)
+				}
+				# this returns the indices from the labels
+				ct1 = grep(cell_type1, labels2, ...)
+				ct2 = grep(cell_type2, labels2, ...)
 
-				celltype <- lapply(grp, function(g){
-					ct1 = paste0(g, ".*", cell_type1, ".*-", g, ".*", cell_type2)
-					ct2	= paste0(g,".*", cell_type2, ".*-", g,".*", cell_type1)
-					ct3 = paste0(cell_type1, ".*", g, ".*-", cell_type1, ".*", g)
-					ct4 = paste0(cell_type2, ".*", g, ".*-", cell_type2, ".*", g)
-					ct = paste0(ct1, '|', ct2, '|', ct3, '|', ct4)
-					return(ct)
-				})
+				c_type1 <- as.list(labels[ct1])
+				c_type2 <- as.list(labels[ct2])
 
-				cell_type <- do.call(paste, list(celltype, collapse ='|'))
-          	} 
-        } else {
-        	cell_type = paste0(paste0(cell_type1, ".*", cell_type2), "|", paste0(cell_type2, ".*", cell_type1)) 
-        }
+				grp <- as.list(groups)
+				celltype = list()
+				for (i in 1:length(c_type1)){
+					celltype[[i]] <- create_celltype_query(c_type1[[i]], c_type2)
+					celltype[[i]] <- lapply(grp, keep_interested_groups, celltype[[i]])					
+				}
+
+				for (i in 1:length(celltype)){
+					celltype[[i]] <- celltype[[i]][-which(celltype[[i]] == '')]
+				}
+
+				celltype <- lapply(celltype, unlist)
+				cell_type <- do.call(paste0, list(celltype, collapse = "|"))
+          	} else {
+          		if(length(idents) > 1){
+        			labels <- idents
+        		} else {
+        			labels <- metadata[[idents]]
+        		}
+        		labels <- unique(labels)
+        		
+        		c_type1 = as.list(grep(cell_type1, labels, value = TRUE, ...))
+				c_type2 = as.list(grep(cell_type2, labels, value = TRUE, ...))
+
+				celltype = list()
+				for (i in 1:length(c_type1)){
+					celltype[[i]] <- create_celltype_query(c_type1[[i]], c_type2)
+				}
+				cell_type <- do.call(paste0, list(celltype, collapse = "|"))
+			}
+		} else {
+        	if(length(idents) > 1){
+        		labels <- idents
+        	} else {
+        		labels <- metadata[[idents]]
+        	}
+        	labels <- unique(labels)
+			
+        	c_type1 = as.list(grep(cell_type1, labels, value = TRUE, ...))
+			c_type2 = as.list(grep(cell_type2, labels, value = TRUE, ...))
+
+			celltype = list()
+			for (i in 1:length(c_type1)){
+				celltype[[i]] <- create_celltype_query(c_type1[[i]], c_type2)
+			}
+			cell_type <- do.call(paste0, list(celltype, collapse = "|"))
+		}
 
 	if(!is.null(gene.family) & is.null(genes)){
 		means_mat <- means_mat[query_group[[tolower(gene.family)]], grep(cell_type, colnames(means_mat), ...)]
