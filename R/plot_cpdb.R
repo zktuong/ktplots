@@ -133,7 +133,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
         	}
         	
           	groups <- unique(metadata[[split.by]])
-          	if(length(groups) > 2){
+          	if(length(groups) > 0){
           		grp <- as.list(groups)
 
 				celltype <- lapply(grp, function(g){
@@ -146,11 +146,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 				})
 
 				cell_type <- do.call(paste, list(celltype, collapse ='|'))
-          	} else {
-          		group1 <- groups[1]
-          		group2 <- groups[2]
-          		cell_type = paste0(paste0(group1, ".*", cell_type1, ".*-", group1, ".*", cell_type2), "|", paste0(group1,".*", cell_type2, ".*-", group1,".*", cell_type1), "|", paste0(group2,".*", cell_type1, ".*-", group2, ".*", cell_type2), "|", paste0(group2,".*", cell_type2, ".*-", group2, ".*", cell_type1), paste0(cell_type1, ".*", group1, ".*-", cell_type1, ".*", group2), "|", paste0(cell_type1,".*", group2, ".*-", cell_type1,".*", group1), "|", paste0(cell_type2,".*", group1, ".*-", cell_type2, ".*", group2), "|", paste0(cell_type2,".*", group2, ".*-", cell_type2, ".*", group1)) 
-          	}
+          	} 
         } else {
         	cell_type = paste0(paste0(cell_type1, ".*", cell_type2), "|", paste0(cell_type2, ".*", cell_type1)) 
         }
@@ -165,7 +161,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 	
 	# rearrange the columns so that it interleaves the two groups
 	if(!is.null(split.by)){
-		if(length(groups) > 1){
+		if(length(groups) > 0){
 			grp <- as.list(groups)
 			group_i <- lapply(grp, function(g){
 				gx <- grep(g, colnames(means_mat), ...)
@@ -174,11 +170,6 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 			group_id <- do.call(c, group_i)
 			means_mat <- means_mat[,as.vector(group_id)]
 			pvals_mat <- pvals_mat[,as.vector(group_id)]
-		}else{
-			group.1 <- grep(group1, colnames(means_mat), ...)
-			group.2 <- grep(group2, colnames(means_mat), ...)
-			means_mat <- means_mat[,unique(as.vector(rbind(group.1, group.2)))]
-			pvals_mat <- pvals_mat[,unique(as.vector(rbind(group.1, group.2)))]
 		}		
 	}
 	
@@ -204,16 +195,32 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 	pvals_mat2 <- pvals_mat2[rowSums(is.na(means_mat2)) != ncol(means_mat2), ,drop = FALSE]
 	means_mat2 <- means_mat2[rowSums(is.na(means_mat2)) != ncol(means_mat2), ,drop = FALSE]
 
-	df_means <- melt(means_mat2, value.name = "scaled_means")
-	df_pvals <- melt(pvals_mat2, value.name = "pvals")
-	df <- data.frame(cbind(df_means, pvals = df_pvals$pvals))
-	df$pvals[which(df$pvals >= 0.05)] <- NA
-	if (keep_significant_only){
-		df <- df[!is.na(df$pvals),]
+	if(scale){
+		df_means <- melt(means_mat2, value.name = "scaled_means")
+	} else {
+		df_means <- melt(means_mat2, value.name = "means")
 	}
-	df$pvals[which(df$pvals == 0)] <- 0.001
+
+	if(length(p.adjust.method) > 0){
+		df_pvals <- melt(pvals_mat2, value.name = "padj")
+		df <- data.frame(cbind(df_means, padj = df_pvals$padj))
+		df$padj[which(df$padj >= 0.05)] <- NA
+		if (keep_significant_only){
+			df <- df[!is.na(df$padj),]
+		}
+		df$padj[which(df$padj == 0)] <- 0.001
+	} else {
+		df_pvals <- melt(pvals_mat2, value.name = "pvals")
+		df <- data.frame(cbind(df_means, pvals = df_pvals$pvals))
+		df$pvals[which(df$pvals >= 0.05)] <- NA
+		if (keep_significant_only){
+			df <- df[!is.na(df$pvals),]
+		}
+		df$pvals[which(df$pvals == 0)] <- 0.001
+	}
+		
 	if(!is.null(split.by)){
-		if(length(groups) > 1){
+		if(length(groups) > 0){
 			grp <- as.list(groups)
 			grp2 <- lapply(grp, function(i){
 				x <- paste0(i,'_')
@@ -221,13 +228,24 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 			})
 			searchterm <- do.call(paste, list(grp2, collapse = "|"))
 			df$group <- gsub(searchterm, "", df$Var2)
-		}else{
-			df$group <- gsub(paste0(group1,"_|", group2, "_"), "", df$Var2)
 		}		
 	}
 
-	g <- ggplot(df, aes(x = Var2, y = Var1, color = -log10(pvals), fill = scaled_means, size = scaled_means)) + 
-  		geom_point(pch = 21) +
+	if (scale){
+		if(length(p.adjust.method) > 0){ 
+			g <- ggplot(df, aes(x = Var2, y = Var1, color = -log10(padj), fill = scaled_means, size = scaled_means))
+		} else {
+			g <- ggplot(df, aes(x = Var2, y = Var1, color = -log10(pvals), fill = scaled_means, size = scaled_means))
+		}
+	} else {
+		if(length(p.adjust.method) > 0){ 
+			g <- ggplot(df, aes(x = Var2, y = Var1, color = -log10(padj), fill = means, size = means))
+		} else {
+			g <- ggplot(df, aes(x = Var2, y = Var1, color = -log10(pvals), fill = means, size = means))
+		}
+	}
+
+  	g <- g + geom_point(pch = 21) +
   		theme_bw() +
   		theme(axis.text.x = element_text(angle = 45, hjust = 0),
   			axis.ticks = element_blank(),
