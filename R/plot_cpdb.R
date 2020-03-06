@@ -405,7 +405,6 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 		}else{
 			df$means[which(is.na(df$means))] <- 0
 		}
-		df[which(is.na(df[,3])), 3] <- 0
 		df$padj[which(df$padj == 0)] <- 0.001
 		df$padj[which(is.na(df$padj))] <- 1
 	} else {
