@@ -70,6 +70,8 @@ plot_cpdb(cell_type1 = "Bcell",
 	split.by = "group",
 	gene.family = "chemokines") # can also try Th1, Th2, Th17, Treg, costimulatory, coinhibitory, niche
 ```
+if genes/gene.family are both not specified, by default it will plot everything.
+Specifying keep_significant_only will only keep those that are p<0.05 (with or without adjustment).
 
 some examples
 ```R
