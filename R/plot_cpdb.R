@@ -400,13 +400,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 			names(df_) <- NULL
 			df <- do.call(rbind, df_)			
 		}
-		if ((length(standard_scale) > 0 && standard_scale) | (length(scale) > 0 && scale) | (length(scale) < 1 && length(standard_scale) < 1)){
-			df$scaled_means[which(is.na(df$scaled_means))] <- 0
-		}else{
-			df$means[which(is.na(df$means))] <- 0
-		}
 		df$padj[which(df$padj == 0)] <- 0.001
-		df$padj[which(is.na(df$padj))] <- 1
 	} else {
 		df_pvals <- melt(pvals_mat2, value.name = "pvals")
 		df <- data.frame(cbind(df_means, pvals = df_pvals$pvals))
@@ -421,14 +415,8 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 			df_ <- df_[which(unlist(anysig))]
 			names(df_) <- NULL
 			df <- do.call(rbind, df_)
-		}
-		if ((length(standard_scale) > 0 && standard_scale) | (length(scale) > 0 && scale) | (length(scale) < 1 && length(standard_scale) < 1)){
-			df$scaled_means[which(is.na(df$scaled_means))] <- 0
-		}else{
-			df$means[which(is.na(df$means))] <- 0
-		}
+		}		
 		df$pvals[which(df$pvals == 0)] <- 0.001
-		df$pvals[which(is.na(df$pvals))] <- 1
 	}
 
 	if(!is.null(split.by)){
