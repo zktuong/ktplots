@@ -179,7 +179,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 	}
 
 	if (is.null(gene.family) & is.null(genes)){
-		cat("options genes or gene.family are not specified.\nusing entire cpdb output.")
+		cat("options genes or gene.family are not specified.\nusing entire cpdb output.\n")
 		query <- grep('', means_mat$interacting_pair)
 		cat("for future reference, genes or gene.family can be specified, not both.\ngene.family can be one of the following:", sep = "\n")
 		print(c("chemokines", "Th1", "Th2", "Th17", "Treg", "costimulatory", "coinhibitory", "niche"))
@@ -304,7 +304,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 	if(!is.null(gene.family) & is.null(genes)){
 		means_mat <- means_mat[query_group[[tolower(gene.family)]], grep(cell_type, colnames(means_mat), ...)]
 		pvals_mat <- pvals_mat[query_group[[tolower(gene.family)]], grep(cell_type, colnames(pvals_mat), ...)]
-	} else if (is.null(gene.family) & !is.null(genes)){
+	} else if (is.null(gene.family) & !is.null(genes) | is.null(gene.family) & is.null(genes)){
 		means_mat <- means_mat[query, grep(cell_type, colnames(means_mat), ...)]
 		pvals_mat <- pvals_mat[query, grep(cell_type, colnames(pvals_mat), ...)]
 	}
@@ -390,17 +390,37 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 		df <- data.frame(cbind(df_means, padj = df_pvals$padj))
 		df$padj[which(df$padj >= 0.05)] <- NA
 		if (keep_significant_only){
-			df <- df[!is.na(df$padj),]
+			# keep the entire row/ all the comparisons
+			df_ <- split(df, as.character(df$Var1))
+			anysig <- lapply(df_, function(x){
+				keep <- any(x$padj < 0.05)
+				return(keep)
+			})
+			df_ <- df_[which(unlist(anysig))]
+			names(df_) <- NULL
+			df <- do.call(rbind, df_)			
 		}
+		df[which(is.na(df[,3])), 3] <- 0
 		df$padj[which(df$padj == 0)] <- 0.001
+		df$padj[which(is.na(df$padj))] <- 1
 	} else {
 		df_pvals <- melt(pvals_mat2, value.name = "pvals")
 		df <- data.frame(cbind(df_means, pvals = df_pvals$pvals))
 		df$pvals[which(df$pvals >= 0.05)] <- NA
 		if (keep_significant_only){
-			df <- df[!is.na(df$pvals),]
+			# keep the entire row/ all the comparisons
+			df_ <- split(df, as.character(df$Var1))
+			anysig <- lapply(df_, function(x){
+				keep <- any(x$pvals < 0.05)
+				return(keep)
+			})
+			df_ <- df_[which(unlist(anysig))]
+			names(df_) <- NULL
+			df <- do.call(rbind, df_)
 		}
+		df[which(is.na(df[,3])), 3] <- 0
 		df$pvals[which(df$pvals == 0)] <- 0.001
+		df$pvals[which(is.na(df$pvals))] <- 1
 	}
 
 	if(!is.null(split.by)){
