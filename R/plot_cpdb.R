@@ -202,7 +202,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 		costimulatory <- grep("CD86|CD80|CD48|LILRB2|LILRB4|TNF|CD2|ICAM|SLAM|LT[AB]|NECTIN2|CD40|CD70|CD27|CD28|CD58|TSLP|PVR|CD44|CD55|CD[1-9]", means_mat$interacting_pair)
 		coinhibitory <- grep("SIRP|CD47|ICOS|TIGIT|CTLA4|PDCD1|CD274|LAG3|HAVCR|VSIR", means_mat$interacting_pair)
 		niche <- grep("CSF", means_mat$interacting_pair)
-		query_group <- list(chemokines = chemokines, chemokine = chemokines, Th1 = Th1, Th2 = Th2, Th17 = Th17, Treg = Treg, costimulatory = costimulatory, coinhibitory = coinhibitory, costimulation = costimulatory, coinhibition = coinhibitory, niche = niche)
+		query_group <- list(chemokines = chemokines, chemokine = chemokines, th1 = th1, th2 = th2, th17 = th17, treg = treg, costimulatory = costimulatory, coinhibitory = coinhibitory, costimulation = costimulatory, coinhibition = coinhibitory, niche = niche)
 	} else if (is.null(gene.family) & !is.null(genes)){
 		query <- grep(paste(genes, collapse="|"), means_mat$interacting_pair)
 	}
