@@ -94,26 +94,26 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
         if(length(scale.) < 1){
             if(length(standard_scale.) > 0){
                 if (standard_scale.){
-                    meansExpr <- meansExpr_
+                    meanExpr <- meanExpr_
                 } else {
-                    meansExpr <- meansExpr
+                    meanExpr <- meanExpr
                 }
             } else {
-                meansExpr <- scale(meansExpr)
+                meanExpr <- scale(meanExpr)
             }
         } else {
             if (scale.){
                 if(length(standard_scale.) > 0){
                     if (standard_scale.){
-                        meansExpr <- meansExpr_
+                        meanExpr <- meanExpr_
                     } else {
-                        meansExpr <- scale(meansExpr)
+                        meanExpr <- scale(meanExpr)
                     }
                 } else {
-                    meansExpr <- scale(meansExpr)
+                    meanExpr <- scale(meanExpr)
                 }           
             } else {
-                meansExpr <- meansExpr
+                meanExpr <- meanExpr
             }
         }
 
