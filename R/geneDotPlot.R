@@ -58,11 +58,11 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
     cat(paste0("found ", dim(expr_mat_filtered)[1], " genes in the expression matrix", sep ="\n"))
 
     if(!is.null(split.by)){
-        labels = paste0(metadata[[split.by]], "_", metadata[[idents]])
+        labels = paste0(as.character(metadata[[split.by]]), "_", as.character(metadata[[idents]]))
         labels = factor(labels)
     } else {
         cat("no groups information provided. defaulting to idents only", sep = "\n")
-        labels = metadata[[idents]]
+        labels = factor(metadata[[idents]])
     }
 
     cat("preparing the final dataframe ...", sep = "\n")
