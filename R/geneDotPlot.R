@@ -136,7 +136,7 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
         meltedfinal.pct <- reshape2::melt(final.pct)
 
         meltedfinal.pct <- meltedfinal.pct[order(meltedfinal.pct$Var1, meltedfinal.pct$Var2),]
-        meltedfinal.pct <- meltedMeanExpr[order(meltedMeanExpr$Var1, meltedMeanExpr$Var2),]
+        meltedMeanExpr <- meltedMeanExpr[order(meltedMeanExpr$Var1, meltedMeanExpr$Var2),]
 
         df <- cbind(meltedMeanExpr, meltedfinal.pct$value)
         if((length(scale.) > 0 && scale.) | (length(scale.) < 1 && length(standard_scale.) < 1) | (length(standard_scale.) > 0 && standard_scale.)){
