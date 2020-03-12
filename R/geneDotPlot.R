@@ -50,12 +50,14 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
         metadata <- scdata@meta.data
     }
 
+    metadata[[idents]] <- factor(metadata[[idents]])
+    
     cat(paste0("attempting to subset the expression matrix to the ", length(genes), " genes provided"), sep = "\n")
     # expr_mat_filtered <- exp_mat[row.names(exp_mat) %in% genes, ]
     # exp_mat <- as.matrix(exp_mat)
     expr_mat_filtered <- exp_mat[match(rev(genes), row.names(exp_mat))[!is.na(match(rev(genes), row.names(exp_mat)))], ,drop = FALSE]
 
-    cat(paste0("found ", dim(expr_mat_filtered)[1], " genes in the expression matrix", sep ="\n"))
+    cat(paste0("found ", dim(expr_mat_filtered)[1], " genes in the expression matrix", sep ="\n"))    
 
     if(!is.null(split.by)){
         labels = paste0(as.character(metadata[[split.by]]), "_", as.character(metadata[[idents]]))
