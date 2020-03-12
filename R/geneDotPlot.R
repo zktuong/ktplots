@@ -139,8 +139,8 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
         if (!is.null(groups)){
             meltedMeanExpr$Var3 <- gsub('.*_', '', meltedMeanExpr$Var1)
             meltedfinal.pct$Var3 <- gsub('.*_', '', meltedfinal.pct$Var1)
-            meltedfinal.pct <- meltedfinal.pct[order(meltedfinal.pct$celltype, meltedfinal.pct$Var2),]
-            meltedMeanExpr <- meltedMeanExpr[order(meltedMeanExpr$celltype, meltedMeanExpr$Var2),]
+            meltedfinal.pct <- meltedfinal.pct[order(meltedfinal.pct$Var3, meltedfinal.pct$Var2),]
+            meltedMeanExpr <- meltedMeanExpr[order(meltedMeanExpr$Var3, meltedMeanExpr$Var2),]
             meltedfinal.pct <- meltedfinal.pct[,-4]
             meltedMeanExpr <- meltedMeanExpr[,-4]
         }else{
