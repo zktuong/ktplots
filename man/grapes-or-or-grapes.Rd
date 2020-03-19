@@ -25,7 +25,6 @@ a \%||\% b
 
 \item{...}{passed to ggplot2::layer}
 }
-\value{
 geom_flat_violin
 }
 \description{
