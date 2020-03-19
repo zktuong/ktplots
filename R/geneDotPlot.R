@@ -239,7 +239,7 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
                 panel.grid.minor = element_blank(),
                 panel.border = element_blank(),
                 strip.background = element_blank()) +
-            facet_grid(~cell_type)
+            facet_wrap(~cell_type)
         } else {
             if((length(scale.) > 0 && scale.) | (length(scale.) < 1 && length(standard_scale.) < 1) | (length(standard_scale.) > 0 && standard_scale.)){
                 g <- ggplot(obj, aes(x = group, y = gene, size = pct, colour = scale.mean))
@@ -262,7 +262,7 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
                 panel.grid.minor = element_blank(),
                 panel.border = element_blank(),
                 strip.background = element_blank()) +
-            facet_grid(~cell_type)
+            facet_wrap(~cell_type)
         }
 
         if(do.plot){
