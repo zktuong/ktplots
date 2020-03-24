@@ -6,7 +6,7 @@
 
 #' @rdname ktplots
 #' @name ktplots
-#' @usage NULL
+#' @usage \%\|\|\%(a,b)
 #' @param a 
 #' @param a 
 #' @export
