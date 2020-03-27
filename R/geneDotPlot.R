@@ -177,7 +177,7 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
     }
 
     if(!is.null(split.by)){
-        plot.df <- quick_prep(expr_mat_filtered, labels, levels(metadata[[split.by]]))
+        plot.df <- quick_prep(expr_mat_filtered, labels, unique(metadata[[split.by]]))
     } else {
         plot.df <- quick_prep(expr_mat_filtered, labels)
     }
