@@ -3,19 +3,22 @@
 \name{rainCloudPlot}
 \alias{rainCloudPlot}
 \title{rainCloudPlot}
+\source{
+\url{https://wellcomeopenresearch.org/articles/4-63}
+}
 \usage{
 rainCloudPlot(data, groupby, parameter, default = TRUE, ...)
 }
 \arguments{
 \item{data}{plotting data}
 
+\item{groupby}{x axis}
+
 \item{parameter}{y axis}
 
 \item{default}{default plotting options}
 
 \item{...}{passed to geom_glat_violin}
-
-\item{grouby}{x axis}
 }
 \value{
 rainCloudPlot
@@ -24,5 +27,8 @@ rainCloudPlot
 rainCloudPlot
 }
 \examples{
-rainCloudPlot(diamonds, cut, carat) + coord_flip()
+\donttest{
+data(iris)
+rainCloudPlot(data = iris, groupby = "Species", parameter = "Sepal.Length") + coord_flip()
+}
 }

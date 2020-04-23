@@ -18,23 +18,33 @@ devtools::install_github('zktuong/ktplots', dependencies = TRUE)
 ```R
 library(ktplots)
 ```
+There is a test dataset for most of these functions that can be loaded via
+```R
+# note, you need to load Seurat to interact with it
+# library(Seurat)
+data(kidneyimmune)
+```
+It is a seurat object which i downsampled from the [kidney cell atlas](https://kidneycellatlas.org). For more info, please see [Stewart et al. kidney single cell data set published in Science 2019](https://science.sciencemag.org/content/365/6460/1461).
 
 ### geneDotPlot
 plotting gene expression dot plots heatmaps
 ```R
-# conflicts with tidyr devel version
-geneDotPlot(scdata = seurat_object, # object 
-	idents = "seurat_clusters", # column name in meta data that holds the cell-cluster ID/assignment
+# Note, this conflicts with tidyr devel version
+geneDotPlot(scdata = kidneyimmune, # object 
 	genes = c("CD68", "CD80", "CD86", "CD74", "CD2", "CD5"), # genes to plot
-	split.by = "group", # column name in the meta data that you want to split the plotting by. If not provided, it will just plot according to idents
-	save.plot = FALSE) # If TRUE, it will save to a location that you can specify via filepath and filename
+	idents = "celltype", # column name in meta data that holds the cell-cluster ID/assignment
+	split.by = 'Project', # column name in the meta data that you want to split the plotting by. If not provided, it will just plot according to idents
+	standard_scale = TRUE) + # whether to scale expression values from 0 to 1. See ?geneDotPlot for other options
+theme(strip.text.x = element_text(angle=0, hjust = 0, size =7))
+
 ```
 hopefully you end up with something like this
-![heatmap](exampleImages/geneDotPlot_example.png)
+![geneDotPlot](exampleImages/geneDotPlot_example.png)
 
 ### plot_cpdb
 Generates the dot plot for cpdb output via specifying the cell types and the genes
 ```R
+# I'm in the process of setting up some example data so it can be more reproducible realistic examples
 pvals <- read.delim("pvalues.txt", check.names = FALSE) # pvalues.txt and means.txt are output from cpdb
 means <- read.delim("means.txt", check.names = FALSE) 
 plot_cpdb(cell_type1 = "Bcell", # cell_type1 and cell_type2 will call grep, so this will accept regex arguments. Additional options for grep can be specified, such as fixed = TRUE to stop grep from misinterpreting/converting symbols.
@@ -52,7 +62,7 @@ plot_cpdb("NK", "MNP", scdata, "final.labels", means, pvals, genes = c("CXCR3", 
 	guides(shape = guide_legend(override.aes = list(size = 4)), color = guide_legend(override.aes = list(size = 4))) +
 	theme(legend.title = element_text(size = 4), legend.text = element_text(size = 4), legend.key.size = unit(0.5, "lines"))
 ```
-![heatmap](exampleImages/plot_cpdb_example1.png)
+![plot_cpdb](exampleImages/plot_cpdb_example1.png)
 
 or, you can try by a crude grep via the 'gene.family'
 ```R
@@ -72,19 +82,19 @@ some examples
 ```R
 plot_cpdb("NK", "MNP", scdata, "final.labels", means, pvals, gene.family = "chemokines")
 ```
-![heatmap](exampleImages/plot_cpdb_example.png)
+![plot_cpdb](exampleImages/plot_cpdb_example.png)
 ```R
 plot_cpdb("NK", "MNP", scdata, "final.labels", means, pvals, gene.family = "chemokines", col_option = "maroon", highlight = "blue")
 ```
-![heatmap](exampleImages/plot_cpdb_example2.png)
+![plot_cpdb](exampleImages/plot_cpdb_example2.png)
 ```R
 plot_cpdb("NK", "MNP", scdata, "final.labels", means, pvals, gene.family = "chemokines", col_option = viridis::cividis(50))
 ```
-![heatmap](exampleImages/plot_cpdb_example3.png)
+![plot_cpdb](exampleImages/plot_cpdb_example3.png)
 ```R
 plot_cpdb("NK", "MNP", scdata, "final.labels", means, pvals, gene.family = "chemokines", noir = TRUE)
 ```
-![heatmap](exampleImages/plot_cpdb_example4.png)
+![plot_cpdb](exampleImages/plot_cpdb_example4.png)
 
 ```R
 # when there's two groups in your input table to cpdb
@@ -95,172 +105,31 @@ newLabels <- gsub("*-t"," : t",newLabels)
 newLabels <- gsub("*-n"," : n",newLabels) 
 p + scale_x_discrete(breaks=levels(p$data$Var2), labels=newLabels, position = "top")
 ```
-![heatmap](exampleImages/plot_cpdb_example5.png)
+![plot_cpdb](exampleImages/plot_cpdb_example5.png)
 
-### plotGSEA_Hallmark/plotGSEA_GO
-Generates the dot plot for GSEA results
-
+### StackedVlnPlot
+Generates a stacked violinplot like in scanpy's ```sc.pl.stacked_violin```. Credits to [@tangming2005](https://twitter.com/tangming2005)
 ```R
-plotGSEA_Hallmark(gsea_result, group_ref = "group3", cols = c("#1f77b4", "#ff7f0e", "#279e68"), newlabels = c("group1", "group2", "group3", "NotSig"))
-
-plotGSEA_GO(gsea_result, top = 30, group_ref = "group3", cols = c("#1f77b4", "#ff7f0e", "#279e68"), newlabels = c("group1", "group2", "group3", "NotSig"))
+features <- c("CD79A", "MS4A1", "CD8A", "CD8B", "LYZ", "LGALS3", "S100A8", "GNLY", "NKG7", "KLRB1", "FCGR3A", "FCER1A", "CST3")
+StackedVlnPlot(kidneyimmune, features = features) + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, hjust = 1, size = 8))
 ```
+![StackedVlnPlot](exampleImages/StackedVlnPlot_example.png)
 
-
-#### example to prepare the table for plotting enrichment of hallmark signatures
+### rainCloudPlot
+generates a raincloudplot to use boxplot, scatterplot and violin all at once!
+kudos to [https://wellcomeopenresearch.org/articles/4-63](https://wellcomeopenresearch.org/articles/4-63)
 ```R
-library(dplyr)
-library(readr)
-library(tibble)
-library(pbmcapply)
-
-# assuming the degs are in separate files to begin with
-files <- as.list(list.files(pattern='.csv'))
-degs <- lapply(files, read_csv)
-
-library(kelvinny)
-# read in gene set
-h <- as.list(parse_gmt("h.all.v6.2.symbols.gmt")) # from kelvinny
-h <- lapply(h, function(x) {x <- x[-1]; x <- x[!is.na(x)]; return(x)})
-
-# do the symbol conversion
-library(biomaRt)
-mart <- useMart("ensembl", dataset="hsapiens_gene_ensembl")
-m <- getBM(attributes=c("external_gene_name", "mmusculus_homolog_associated_gene_name"), mart=mart)
-
-h <- lapply(h , function(x){
-	y <- m$mmusculus_homolog_associated_gene_name[m$external_gene_name %in% x]
-	y <- y[-which(y == "")]	
-	return(y)
-})
-
-# filter the genes for the gsea?
-up_cutOff = 1.5
-down_cutOff = -1.5
-geneList <- pbmclapply(degs, function(x){
-	group1 <- x %>% dplyr::filter(!between(group1_logfoldchanges, down_cutOff, up_cutOff)) %>% dplyr::select(group1_gene, group1_logfoldchanges, group1_pvals)
-	group2 <- x %>% dplyr::filter(!between(group2_logfoldchanges, down_cutOff, up_cutOff)) %>% dplyr::select(group2_gene, group2_logfoldchanges, group2_pvals)
-	group3 <- x %>% dplyr::filter(!between(group3_logfoldchanges, down_cutOff, up_cutOff)) %>% dplyr::select(group3_gene, group3_logfoldchanges, group3_pvals)
-	
-	geneList_l <- list(group1 = group1, group2 = group2, group3 = group3)
-	geneList_l <- pbmclapply(geneList_l, function(y) {
-		y$neglog10pval <- -log10(y[,3, drop = TRUE])
-		rank <- unlist(y$neglog10pval*sign(y[,2, drop = TRUE]))
-		rank[which(rank == Inf)] <- -log10(10^-308)
-		rank[which(rank == -Inf)] <- log10(10^-308)
-		names(rank) <- y[,1, drop = TRUE]
-		rank <- rev(sort(rank))
-		# if there's are Inf values, just need to change those to -log10(10^-308) or inverse of that
-		return(rank)
-	}, mc.cores = 4)
-	return(geneList_l)
-}, mc.cores = 4)
-
-library(fgsea)
-result <- list()
-for(i in 1:length(geneList)){
-	result[[i]] <- lapply(geneList[[i]], function(x) fgsea(pathways = h, stats = x, nperm=10000, minSize = 0, maxSize = 1000))	
-}
-
-names(result) <- gsub('.csv', "",files)
-
-for(i in 1:length(geneList)){
-	result[[i]] <- lapply(result[[i]], function(x){
-		x$ranking <- -log10(x$pval)*sign(x$NES)	
-		x <- x[order(x$ranking), ]
-		x[[1]]$group = "group1"
-		x[[2]]$group = "group2"
-		x[[3]]$group = "group3"
-		return(x)
-	})
-}
-
-result2 <- lapply(result, function(x) {
-	y <- do.call(rbind, x)
-	y$group <- factor(y$group, levels = c('group1', 'group2', 'group3')) 
-	return(y)
-})
-
-
-for(i in 1:length(geneList)){
-p <- plotGSEA_Hallmark(result2[[i]], group_ref = "group3", cols = c("#1f77b4", "#ff7f0e", "#279e68"), newlabels = c("group1", "group2", "group3", "NotSig")) + ggtitle(paste0(names(result3)[i]))
-ggsave(paste0("./GSEA/plots/GSEA_Hallmarks", names(result3)[i],".pdf"), plot = p, w = 8.5)
-}
+rainCloudPlot(data = kidneyimmune@meta.data, groupby = "celltype", parameter = "n_counts") + coord_flip()
 ```
-example output #1
-![heatmap](exampleImages/plotGSEA_Hallmark_example.png)
+![rainCloudPlot](exampleImages/rainCloudPlot_example.png)
 
-#### for enrichment of Gene Ontologies
+### small_legend/small_guide/small_axis/topright_legend/topleft_legend/bottomleft_legend/bottomright_legend
+ever wanted to quickly adjust the size and position of ggplots? now you can with these helper functions that you can tag on!
 ```R
-# read in gene set
-c5 <- as.list(parse_gmt("c5.bp.v6.2.symbols.gmt")) # parse_gmt is from kelvinny
-c5 <- lapply(c5, function(x) {x <- x[-1]; x <- x[!is.na(x)]; return(x)})
-
-# do the symbol conversion
-c5 <- lapply(c5, function(x){
-	y <- m$mmusculus_homolog_associated_gene_name[m$external_gene_name %in% x]
-	y <- y[-which(y == "")]	
-	return(y)
-})
-
-# do the GSEA
-library(fgsea)
-result <- list()
-for(i in 1:length(geneList)){
-	result[[i]] <- lapply(geneList[[i]], function(x) fgsea(pathways = c5, stats = x, nperm=10000, minSize = 0, maxSize = 1000))	
-}
-
-# some crude processing to generate the final table
-names(result) <- gsub('.csv', "",files)
-for(i in 1:length(geneList)){
-result[[i]] <- lapply(result[[i]], function(x){
-	x$ranking <- -log10(x$pval)*sign(x$NES)	
-	x <- x[order(x$pathway), ]
-	return(x)
-})
-}
-
-# make the ranking of the last factor very big for plotting order
-for(i in 1:length(geneList)){
-	result[[i]][[3]]$ranking <- result[[i]][[3]]$ranking*999
-}
-
-# add in the grouping function
-result <- lapply(result ,function(x){
-	x[[1]]$group = "group1"
-	x[[2]]$group = "group2"
-	x[[3]]$group = "group3"
-	return(x)
-})
-
-# trim the results to only those that show significance
-sig <- list()
-for(i in 1:length(geneList)){
-	group1sig <- result[[i]][[1]]$pathway[which(result[[i]][[1]]$pval < 0.05 & result[[i]][[1]]$padj < 0.05)]
-	group2sig <- result[[i]][[2]]$pathway[which(result[[i]][[2]]$pval < 0.05 & result[[i]][[2]]$padj < 0.05)]
-	group3sig <- result[[i]][[3]]$pathway[which(result[[i]][[3]]$pval < 0.05 & result[[i]][[3]]$padj < 0.05)]
-	sig[[i]] <- Reduce(union, list(group1sig, group2sig, group3sig))
-}
-
-result2 <- lapply(result, function(x) {
-	x <- lapply(x, function(y) {
-		y <- y[order(y$ranking), ]
-		return(y)})
-	z <- do.call(rbind, x)
-	z$group <- factor(z$group, levels = c('group1', 'group2', 'group3')) 
-	return(z)
-})
-
-result3 <- mapply(function(x,y){
-	z <- x[x$pathway %in% y]
-	return(z)
-}, result2, sig, SIMPLIFY = FALSE)
-
-# and finally to plot
-for(i in 1:length(geneList)){
-p <- plotGSEA_GO(result3[[i]], top = 30, group_ref = "group3", cols = c("#1f77b4", "#ff7f0e", "#279e68"), newlabels = c("group1", "group2", "group3", "NotSig")) + ggtitle(paste0(names(result3)[i]))
-ggsave(paste0("./GSEA/plots/GSEA_GO_TOP30_", names(result3)[i],".pdf"), plot = p, w = 8.5)
-}
+# for example
+g <- Seurat::DimPlot(kidneyimmune, color = "celltype")
+g1 <- g + small_legend() + small_guide() + small_axis() + bottomleft_legend() 
+library(patchwork)
+g + g1
 ```
-example output #2
-![heatmap](exampleImages/plotGSEA_GO_example.png)
+![gghelperfunctions](gghelperfunctions_example.png)

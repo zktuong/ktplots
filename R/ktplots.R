@@ -1,12 +1,13 @@
 #' shortcut to initiate building of ktplots
-#' 
-#' @return runs init ktplots
+#'
+#' @name ktplots
+#' @return for internal use only. runs init ktplots
 #' @examples
+#' \donttest{
 #' ktplots()
+#' }
 #' @export
-#'      
-            
-ktplots <- function() 
+ktplots <- function()
 {
 	setwd("~/Documents/GitHub/ktplots")
 	library(ktplots)

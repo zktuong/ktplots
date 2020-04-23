@@ -3,6 +3,9 @@
 \name{StackedVlnPlot}
 \alias{StackedVlnPlot}
 \title{Plotting stacked violin plot}
+\source{
+\url{https://divingintogeneticsandgenomics.rbind.io/post/stacked-violin-plot-for-visualizing-single-cell-data-in-seurat/}
+}
 \usage{
 StackedVlnPlot(
   obj,
@@ -30,6 +33,7 @@ StackedVlnPlot
 Plotting stacked violin plot
 }
 \examples{
+data(kidneyimmune)
 features<- c("CD79A", "MS4A1", "CD8A", "CD8B", "LYZ", "LGALS3", "S100A8", "GNLY", "NKG7", "KLRB1", "FCGR3A", "FCER1A", "CST3")
-StackedVlnPlot(obj = pbmc, features = features)
+StackedVlnPlot(kidneyimmune, features = features) + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, hjust = 1, size = 8))
 }

@@ -14,15 +14,17 @@
 #' @param scale logical. scale the expression to mean +/- SD. NULL defaults to TRUE.
 #' @param standard_scale logical. scale the expression to range from 0 to 1. NULL defaults to FALSE.
 #' @param col_option specify plotting colours
-#' @param noir default = FALSE. Ben's current phase. makes it b/w
+#' @param noir default = FALSE. makes it b/w
 #' @param highlight colour for highlighting p <0.05
 #' @param ... passes arguments to grep for cell_type1 and cell_type2.
 #' @return ggplot dot plot object of cellphone db output
 #' @examples
-#' scdata <- readRDS("./scdata.RDS", check.names = FALSE)
-#' pvals <- read.delim("./cpdb/output/pvalues.txt", check.names = FALSE)
-#' means <- read.delim("./cpdb/output/means.txt", check.names = FALSE)
-#' plot_cpdb("Bcell", "Tcell", scdata, 'seurat_clusters', means, pvals, split.by = "group", genes = c("CXCL13", "CD274", "CXCR5"))
+#' \donttest{
+#' data(kidneyimmune)
+#' data(cpdb_ex)
+#' plot_cpdb("B cell", "CD4T cell", kidneyimmune, 'celltype', means, pvals, split.by = "Experiment", genes = c("CXCL13", "CD274", "CXCR5"))
+#' plot_cpdb("B cell", "CD4T cell", kidneyimmune, 'celltype', means, pvals, split.by = "Experiment", gene.family = 'chemokines')
+#' }
 #' @import viridis
 #' @import ggplot2
 #' @import reshape2
@@ -335,7 +337,6 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 	}
 
 	# scaling
-	range01 <- function(x){(x-min(x))/(max(x)-min(x))}
 	if (length(standard_scale) > 0){
 		if (standard_scale){
 			means_mat_ <- apply(means_mat,1,range01)

@@ -8,29 +8,34 @@
 #' @param plot.margin to adjust the white space between each plot.
 #' @param ... passed to Seurat::VlnPlot
 #' @return StackedVlnPlot
+#' @source \url{https://divingintogeneticsandgenomics.rbind.io/post/stacked-violin-plot-for-visualizing-single-cell-data-in-seurat/}
 #' @examples
+#' data(kidneyimmune)
 #' features<- c("CD79A", "MS4A1", "CD8A", "CD8B", "LYZ", "LGALS3", "S100A8", "GNLY", "NKG7", "KLRB1", "FCGR3A", "FCER1A", "CST3")
-#' StackedVlnPlot(obj = pbmc, features = features)
+#' StackedVlnPlot(kidneyimmune, features = features) + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, hjust = 1, size = 8))
 #' @import ggplot2 
+#' @import patchwork
+#' @import purrr
+#' @import Seurat
 #' @export
 StackedVlnPlot <- function(obj, features,
                           pt.size = 0, 
                           plot.margin = unit(c(-0.75, 0, -0.75, 0), "cm"),
                           ...) {
   
-  plot_list<- purrr::map(features, function(x) modify_vlnplot(obj = obj,feature = x, ...))
+  plot_list<- map(features, function(x) modify_vlnplot(obj = obj,feature = x, ...))
   
   # Add back x-axis title to bottom plot. patchwork is going to support this?
   plot_list[[length(plot_list)]]<- plot_list[[length(plot_list)]] +
     theme(axis.text.x=element_text(), axis.ticks.x = element_line())
   
   # change the y-axis tick to only max value 
-  ymaxs<- purrr::map_dbl(plot_list, extract_max)
-  plot_list<- purrr::map2(plot_list, ymaxs, function(x,y) x + 
+  ymaxs<- map_dbl(plot_list, extract_max)
+  plot_list<- map2(plot_list, ymaxs, function(x,y) x + 
                             scale_y_continuous(breaks = c(y)) + 
                             expand_limits(y = y))
 
-  p<- patchwork::wrap_plots(plotlist = plot_list, ncol = 1)
+  p <- wrap_plots(plotlist = plot_list, ncol = 1)
   return(p)
 }
 
@@ -47,7 +52,7 @@ modify_vlnplot<- function(obj,
                           pt.size = 0, 
                           plot.margin = unit(c(-0.75, 0, -0.75, 0), "cm"),
                           ...) {
-  p<- Seurat::VlnPlot(obj, features = feature, pt.size = pt.size, ... )  + 
+  p<- VlnPlot(obj, features = feature, pt.size = pt.size, ... )  + 
     xlab("") + ylab(feature) + ggtitle("") + 
     theme(legend.position = "none", 
           axis.text.x = element_blank(), 

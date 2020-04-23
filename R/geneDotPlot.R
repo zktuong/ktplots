@@ -17,20 +17,20 @@
 #' @param col_limits set limits to the color gradient
 #' @return ggplot dot plot object of selected genes
 #' @examples
-#' geneDotPlot(scdata, as.factor(scdata$split), genes = c("CD68","HLA-DRA"), save.plot = FALSE, groups = c("normal","tumor"))
+#' \donttest{
+#' data(kidneyimmune)
+#' geneDotPlot(kidneyimmune, genes = c("CD68", "CD80", "CD86", "CD74", "CD2", "CD5"), idents = "celltype", split.by = 'Project', standard_scale = TRUE) + theme(strip.text.x = element_text(angle=45, hjust = 0))
+#' }
 #' @import dplyr
 #' @import gtools
 #' @import Matrix
 #' @import ggplot2
 #' @import reshape2
+#' @import Seurat
+#' @import RColorBrewer
 #' @export
-
-geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 0.05, scale = NULL, standard_scale = NULL, keepLevels = TRUE, save.plot = FALSE, h = 5, w = 5, filepath = NULL, filename = NULL, heat_cols = rev(RColorBrewer::brewer.pal(9, "RdBu")), col_limits = NULL){
-    require(ggplot2)
-    require(dplyr)
-    require(Matrix)
-    require(reshape2)
-
+geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 0.05, scale = NULL, standard_scale = NULL, keepLevels = TRUE, save.plot = FALSE, h = 5, w = 5, filepath = NULL, filename = NULL, heat_cols = NULL, col_limits = NULL)
+{    
     if (class(scdata) %in% c("SingleCellExperiment", "SummarizedExperiment")) {
         cat("data provided is a SingleCellExperiment/SummarizedExperiment object", sep = "\n")
         cat("extracting expression matrix", sep = "\n")
@@ -49,13 +49,13 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
         })
         metadata <- scdata@meta.data
     }
-    
+
     cat(paste0("attempting to subset the expression matrix to the ", length(genes), " genes provided"), sep = "\n")
     # expr_mat_filtered <- exp_mat[row.names(exp_mat) %in% genes, ]
     # exp_mat <- as.matrix(exp_mat)
     expr_mat_filtered <- exp_mat[match(rev(genes), row.names(exp_mat))[!is.na(match(rev(genes), row.names(exp_mat)))], ,drop = FALSE]
 
-    cat(paste0("found ", dim(expr_mat_filtered)[1], " genes in the expression matrix", sep ="\n"))    
+    cat(paste0("found ", dim(expr_mat_filtered)[1], " genes in the expression matrix", sep ="\n"))
 
     if(!is.null(split.by)){
         labels = paste0(as.character(metadata[[split.by]]), "_", as.character(metadata[[idents]]))
@@ -77,12 +77,11 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
             x <- x %>% colMeans
             return(x)
         })
-        
+
         # names(meanExpr) <- levels(label)
         meanExpr <- do.call(rbind, meanExpr)
 
         # control the scaling here
-        range01 <- function(x){(x-min(x))/(max(x)-min(x))}
         if (length(standard_scale.) > 0){
             if (standard_scale.){
                 meanExpr_ <- apply(meanExpr,2,range01)
@@ -111,7 +110,7 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
                     }
                 } else {
                     meanExpr <- scale(meanExpr)
-                }           
+                }
             } else {
                 meanExpr <- meanExpr
             }
@@ -147,7 +146,7 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
             meltedfinal.pct <- meltedfinal.pct[order(meltedfinal.pct$Var1, meltedfinal.pct$Var2),]
             meltedMeanExpr <- meltedMeanExpr[order(meltedMeanExpr$Var1, meltedMeanExpr$Var2),]
         }
-        
+
         df <- cbind(meltedMeanExpr, meltedfinal.pct$value)
         if((length(scale.) > 0 && scale.) | (length(scale.) < 1 && length(standard_scale.) < 1) | (length(standard_scale.) > 0 && standard_scale.)){
             colnames(df) <- c("celltype", "gene", "scale.mean", "pct")
@@ -212,6 +211,12 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
     }
 
     plot.df.final$pct[plot.df.final$pct == 0] <- NA
+
+    if(!is.null(heat_cols)){
+        heat_cols = heat_cols
+    } else {
+        heat_cols = rev(brewer.pal(9, "RdBu"))
+    }
 
     # subset the plotting objects
     doplot <- function(obj, group. = NULL, file_name = filename, file_path = filepath, dim_w = w, dim_h = h, limits. = col_limits, do.plot = save.plot, scale. = scale, standard_scale. = standard_scale){

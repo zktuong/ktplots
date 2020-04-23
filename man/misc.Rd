@@ -7,6 +7,8 @@
 \alias{modify_vlnplot}
 \alias{extract_max}
 \alias{GeomFlatViolin}
+\alias{range01}
+\alias{\%nin\%}
 \alias{small_legend}
 \alias{small_guide}
 \alias{topright_legend}
@@ -30,6 +32,10 @@ modify_vlnplot(
 extract_max(p)
 
 GeomFlatViolin
+
+range01(x)
+
+x \%nin\% y
 
 small_legend(fontsize = 5, ...)
 
@@ -58,6 +64,10 @@ small_axis(fontsize = 8, linethickness = 0.1, ...)
 
 \item{p}{value}
 
+\item{x}{a vector}
+
+\item{y}{a vector}
+
 \item{fontsize}{float/int}
 
 \item{guidesize}{float/int}
@@ -71,5 +81,32 @@ miscellaneous functions
 }
 \description{
 miscellaneous functions
+}
+\examples{
+x <-  range01(runif(100))
+\donttest{
+data$width <- data$width \%nin\% params$width
+}
+\donttest{
+g + small_legend()
+}
+\donttest{
+g + small_guide()
+}
+\donttest{
+g + topright_legend()
+}
+\donttest{
+g + topleft_legend()
+}
+\donttest{
+g + bottomleft_legend()
+}
+\donttest{
+g + bottomright_legend()
+}
+\donttest{
+g + small_axis()
+}
 }
 \keyword{datasets}

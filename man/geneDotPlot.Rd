@@ -18,7 +18,7 @@ geneDotPlot(
   w = 5,
   filepath = NULL,
   filename = NULL,
-  heat_cols = rev(RColorBrewer::brewer.pal(9, "RdBu")),
+  heat_cols = NULL,
   col_limits = NULL
 )
 }
@@ -60,5 +60,8 @@ ggplot dot plot object of selected genes
 Plotting genes as dotplot
 }
 \examples{
-geneDotPlot(scdata, as.factor(scdata$split), genes = c("CD68","HLA-DRA"), save.plot = FALSE, groups = c("normal","tumor"))
+\donttest{
+data(kidneyimmune)
+geneDotPlot(kidneyimmune, genes = c("CD68", "CD80", "CD86", "CD74", "CD2", "CD5"), idents = "celltype", split.by = 'Project', standard_scale = TRUE) + theme(strip.text.x = element_text(angle=45, hjust = 0))
+}
 }

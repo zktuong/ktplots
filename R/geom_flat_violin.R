@@ -10,16 +10,14 @@
 #' @param inherit.aes see ggplot2::layer
 #' @param ... passed to ggplot2::layer
 #' @return geom_flat_violin
+#' @source \url{https://gist.githubusercontent.com/benmarwick/2a1bb0133ff568cbe28d/raw/fb53bd97121f7f9ce947837ef1a4c65a73bffb3f/geom_flat_violin.R}
 #' @examples
-#' sourced from https://gist.githubusercontent.com/benmarwick/2a1bb0133ff568cbe28d/raw/fb53bd97121f7f9ce947837ef1a4c65a73bffb3f/geom_flat_violin.R
-#' somewhat hackish solution to:
-#' https://twitter.com/EamonCaddigan/status/646759751242620928
-#' based mostly on copy/pasting from ggplot2 geom_violin source:
-#' https://github.com/hadley/ggplot2/blob/master/R/geom-violin.r
-#' 
-#' ggplot(diamonds, aes(cut, carat)) +
+#' \donttest{
+#' data(iris)
+#' ggplot(iris, aes(Species, Sepal.Length)) +
 #'     geom_flat_violin() +
 #'     coord_flip()
+#' }
 #' @import dplyr
 #' @import ggplot2 
 #' @export

@@ -53,7 +53,7 @@ plot_cpdb(
 
 \item{col_option}{specify plotting colours}
 
-\item{noir}{default = FALSE. Ben's current phase. makes it b/w}
+\item{noir}{default = FALSE. makes it b/w}
 
 \item{highlight}{colour for highlighting p <0.05}
 
@@ -66,8 +66,10 @@ ggplot dot plot object of cellphone db output
 Plotting cellphonedb results
 }
 \examples{
-scdata <- readRDS("./scdata.RDS", check.names = FALSE)
-pvals <- read.delim("./cpdb/output/pvalues.txt", check.names = FALSE)
-means <- read.delim("./cpdb/output/means.txt", check.names = FALSE)
-plot_cpdb("Bcell", "Tcell", scdata, 'seurat_clusters', means, pvals, split.by = "group", genes = c("CXCL13", "CD274", "CXCR5"))
+\donttest{
+data(kidneyimmune)
+data(cpdb_ex)
+plot_cpdb("B cell", "CD4T cell", kidneyimmune, 'celltype', means, pvals, split.by = "Experiment", genes = c("CXCL13", "CD274", "CXCR5"))
+plot_cpdb("B cell", "CD4T cell", kidneyimmune, 'celltype', means, pvals, split.by = "Experiment", gene.family = 'chemokines')
+}
 }
