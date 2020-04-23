@@ -104,7 +104,7 @@ bottomleft_legend <- function(legendmargin = margin(6, 6, 6, 6), ...){
 #' g + bottomright_legend()
 #' }
 #' @export
-bottomright_legend <- function(legendmarging = margin(6, 6, 6, 6), ...){
+bottomright_legend <- function(legendmargin = margin(6, 6, 6, 6), ...){
 	legend <- theme(legend.position = c(.99, .01), legend.justification = c('right', 'bottom'), legend.box.just = "left", legend.margin = legendmargin, ...)
 	return(legend)
 }

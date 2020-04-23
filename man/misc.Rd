@@ -47,7 +47,7 @@ topleft_legend(legendmargin = margin(6, 6, 6, 6), ...)
 
 bottomleft_legend(legendmargin = margin(6, 6, 6, 6), ...)
 
-bottomright_legend(legendmarging = margin(6, 6, 6, 6), ...)
+bottomright_legend(legendmargin = margin(6, 6, 6, 6), ...)
 
 small_axis(fontsize = 8, linethickness = 0.1, ...)
 }

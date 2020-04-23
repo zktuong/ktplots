@@ -31,10 +31,6 @@
 #' @export
 
 plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_file, p.adjust.method = NULL, keep_significant_only = FALSE, split.by = NULL, gene.family = NULL, genes = NULL, scale = NULL, standard_scale = NULL, col_option = viridis::viridis(50), noir = FALSE, highlight = "red", ...) {
-	require(ggplot2)
-	require(reshape2)
-	require(viridis)
-
 	if (class(scdata) %in% c("SingleCellExperiment", "SummarizedExperiment")) {
 		cat("data provided is a SingleCellExperiment/SummarizedExperiment object", sep = "\n")
 		cat("extracting expression matrix", sep = "\n")
@@ -43,6 +39,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 		exp_mat <- assay(scdata)
 		metadata <- ColData(scdata)
 	} else if (class(scdata) == "Seurat") {
+		require(Seurat)
 		cat("data provided is a Seurat object", sep = "\n")
 		cat("extracting expression matrix", sep = "\n")
 		exp_mat <- tryCatch(scdata@data, error = function(e) {
