@@ -113,7 +113,7 @@ p + scale_x_discrete(breaks=levels(p$data$Var2), labels=newLabels, position = "t
 Generates a stacked violinplot like in scanpy's ```sc.pl.stacked_violin```. Credits to [@tangming2005](https://twitter.com/tangming2005)
 ```R
 features <- c("CD79A", "MS4A1", "CD8A", "CD8B", "LYZ", "LGALS3", "S100A8", "GNLY", "NKG7", "KLRB1", "FCGR3A", "FCER1A", "CST3")
-StackedVlnPlot(kidneyimmune, features = features) + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, hjust = 1, size = 8))
+StackedVlnPlot(kidneyimmune, features = features) + theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 8))
 ```
 ![StackedVlnPlot](exampleImages/StackedVlnPlot_example.png)
 
@@ -134,4 +134,4 @@ g1 <- g + small_legend() + small_guide() + small_axis() + bottomleft_legend()
 library(patchwork)
 g + g1
 ```
-![gghelperfunctions](gghelperfunctions_example.png)
+![gghelperfunctions](exampleImages/gghelperfunctions_example.png)

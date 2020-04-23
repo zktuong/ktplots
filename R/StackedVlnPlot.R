@@ -12,29 +12,29 @@
 #' @examples
 #' data(kidneyimmune)
 #' features<- c("CD79A", "MS4A1", "CD8A", "CD8B", "LYZ", "LGALS3", "S100A8", "GNLY", "NKG7", "KLRB1", "FCGR3A", "FCER1A", "CST3")
-#' StackedVlnPlot(kidneyimmune, features = features) + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, hjust = 1, size = 8))
-#' @import ggplot2 
-#' @import patchwork
+#' StackedVlnPlot(kidneyimmune, features = features) + theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 8))
+#' @import ggplot2
 #' @import purrr
+#' @import patchwork
 #' @export
 StackedVlnPlot <- function(obj, features,
                           pt.size = 0, 
                           plot.margin = unit(c(-0.75, 0, -0.75, 0), "cm"),
                           ...) {
-  
-  plot_list<- map(features, function(x) modify_vlnplot(obj = obj,feature = x, ...))
+  require(purrr)
+  plot_list<- purrr::map(features, function(x) modify_vlnplot(obj = obj,feature = x, ...))
   
   # Add back x-axis title to bottom plot. patchwork is going to support this?
   plot_list[[length(plot_list)]]<- plot_list[[length(plot_list)]] +
     theme(axis.text.x=element_text(), axis.ticks.x = element_line())
   
   # change the y-axis tick to only max value 
-  ymaxs<- map_dbl(plot_list, extract_max)
-  plot_list<- map2(plot_list, ymaxs, function(x,y) x + 
+  ymaxs<- purrr::map_dbl(plot_list, extract_max)
+  plot_list<- purrr::map2(plot_list, ymaxs, function(x,y) x + 
                             scale_y_continuous(breaks = c(y)) + 
                             expand_limits(y = y))
 
-  p <- wrap_plots(plotlist = plot_list, ncol = 1)
+  p <- patchwork::wrap_plots(plotlist = plot_list, ncol = 1)
   return(p)
 }
 
