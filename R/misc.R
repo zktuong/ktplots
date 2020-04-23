@@ -3,7 +3,7 @@
 #' @return miscellaneous functions
 #' @import dplyr
 #' @import ggplot2 
-#' @name ktplots
+#' @name misc
 #' @param fontsize float/int
 #' @param ... passed to ggplot2::theme
 #' @export
@@ -15,7 +15,7 @@ small_legend <- function(fontsize = 5, ...){
 	return(small_legend_theme)
 }
 
-#' @name ktplots
+#' @name misc
 #' @param guidesize float/int
 #' @param ... passed to ggplot2::theme
 #' @export
@@ -26,7 +26,7 @@ small_guide <- function(guidesize = 1, ...){
 	return(small_guide)
 }
 
-#' @name ktplots
+#' @name misc
 #' @param legendmargin margin(float/int, float/int, float/int, float/int)
 #' @param ... passed to ggplot2::theme
 #' @export
@@ -35,7 +35,7 @@ topright_legend <- function(legendmargin = margin(6, 6, 6, 6), ...){
 	return(legend)
 }
 
-#' @name ktplots
+#' @name misc
 #' @param legendmargin margin(float/int, float/int, float/int, float/int)
 #' @param ... passed to ggplot2::theme
 #' @export
@@ -44,7 +44,7 @@ topleft_legend <- function(legendmargin = margin(6, 6, 6, 6), ...){
 	return(legend)
 }
 
-#' @name ktplots
+#' @name misc
 #' @param legendmargin margin(float/int, float/int, float/int, float/int)
 #' @param ... passed to ggplot2::theme
 #' @export
@@ -53,7 +53,7 @@ bottomleft_legend <- function(legendmargin = margin(6, 6, 6, 6), ...){
 	return(legend)
 }
 
-#' @name ktplots
+#' @name misc
 #' @param legendmargin margin(float/int, float/int, float/int, float/int)
 #' @param ... passed to ggplot2::theme
 #' @export
@@ -62,7 +62,7 @@ bottomright_legend <- function(legendmarging = margin(6, 6, 6, 6), ...){
 	return(legend)
 }
 
-#' @name ktplots
+#' @name misc
 #' @param fontsize float/int
 #' @param linethickness float/int
 #' @param ... passed to ggplot2::theme
