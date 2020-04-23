@@ -42,7 +42,6 @@ geom_flat_violin <- function(mapping = NULL, data = NULL, stat = "ydensity",
     )
   )
 }
-​
 #' @name misc
 #' @export
 GeomFlatViolin <- ggproto("GeomFlatViolin", Geom,
