@@ -26,7 +26,6 @@
 #' @import Matrix
 #' @import ggplot2
 #' @import reshape2
-#' @import Seurat
 #' @import RColorBrewer
 #' @export
 geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 0.05, scale = NULL, standard_scale = NULL, keepLevels = TRUE, save.plot = FALSE, h = 5, w = 5, filepath = NULL, filename = NULL, heat_cols = NULL, col_limits = NULL)
@@ -41,6 +40,7 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
     } else if (class(scdata) == "Seurat") {
         cat("data provided is a Seurat object", sep = "\n")
         cat("extracting expression matrix", sep = "\n")
+        require(Seurat)
         exp_mat <- tryCatch(scdata@data, error = function(e) {
             tryCatch(GetAssayData(object = scdata), error = function(e) {
                 stop(paste0("are you sure that your data is normalized?"))

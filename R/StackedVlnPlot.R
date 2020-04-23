@@ -16,7 +16,6 @@
 #' @import ggplot2 
 #' @import patchwork
 #' @import purrr
-#' @import Seurat
 #' @export
 StackedVlnPlot <- function(obj, features,
                           pt.size = 0, 
@@ -52,6 +51,7 @@ modify_vlnplot<- function(obj,
                           pt.size = 0, 
                           plot.margin = unit(c(-0.75, 0, -0.75, 0), "cm"),
                           ...) {
+  require(Seurat)
   p<- VlnPlot(obj, features = feature, pt.size = pt.size, ... )  + 
     xlab("") + ylab(feature) + ggtitle("") + 
     theme(legend.position = "none", 

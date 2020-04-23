@@ -13,6 +13,8 @@ if (!requireNamespace("devtools", quietly = TRUE))
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 devtools::install_github('zktuong/ktplots', dependencies = TRUE)
+# also maybe install Seurat if you haven't already
+install.packages('Seurat')
 ```
 ## Usage instructions
 ```R
@@ -21,7 +23,7 @@ library(ktplots)
 There is a test dataset for most of these functions that can be loaded via
 ```R
 # note, you need to load Seurat to interact with it
-# library(Seurat)
+library(Seurat)
 data(kidneyimmune)
 ```
 It is a seurat object which i downsampled from the [kidney cell atlas](https://kidneycellatlas.org). For more info, please see [Stewart et al. kidney single cell data set published in Science 2019](https://science.sciencemag.org/content/365/6460/1461).
