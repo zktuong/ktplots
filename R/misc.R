@@ -7,7 +7,7 @@
 #' @rdname nin
 #' @name ktplots
 #' @usage a \%nin\% b
-#' @param a a valute
+#' @param a a value
 #' @param b a value 
 #' @export
 "%nin%" <- function(a, b) {
