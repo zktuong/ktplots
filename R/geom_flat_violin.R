@@ -25,10 +25,6 @@
 #' @export
 #' 
 
-"%||%" <- function(a, b) {
-  if (!is.null(a)) a else b
-}
-​
 #' @export
 geom_flat_violin <- function(mapping = NULL, data = NULL, stat = "ydensity",
                         position = "dodge", trim = TRUE, scale = "area",
@@ -53,8 +49,8 @@ geom_flat_violin <- function(mapping = NULL, data = NULL, stat = "ydensity",
 GeomFlatViolin <-
   ggproto("GeomFlatViolin", Geom,
           setup_data = function(data, params) {
-            data$width <- data$width %||%
-              params$width %||% (resolution(data$x, FALSE) * 0.9)
+            data$width <- data$width %nin%
+              params$width %nin% (resolution(data$x, FALSE) * 0.9)
             
             # ymin, ymax, xmin, and xmax define the bounding rectangle for each group
             data %>%

@@ -4,13 +4,13 @@
 #' @import dplyr
 #' @import ggplot2 
 
-#' @rdname ktplots
+#' @rdname nin
 #' @name ktplots
-#' @usage \%\|\|\%(a,b)
-#' @param a 
-#' @param a 
+#' @usage a \%nin\% b
+#' @param a a valute
+#' @param b a value 
 #' @export
-"%||%" <- function(a, b) {
+"%nin%" <- function(a, b) {
   if (!is.null(a)) a else b
 }
 
