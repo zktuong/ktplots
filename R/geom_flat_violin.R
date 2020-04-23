@@ -29,6 +29,10 @@
 geom_flat_violin <- function(mapping = NULL, data = NULL, stat = "ydensity",
                         position = "dodge", trim = TRUE, scale = "area",
                         show.legend = NA, inherit.aes = TRUE, ...) {
+  "%nin%" <- function(a, b) {
+  if (!is.null(a)) a else b
+  }
+
   layer(
     data = data,
     mapping = mapping,
@@ -45,6 +49,8 @@ geom_flat_violin <- function(mapping = NULL, data = NULL, stat = "ydensity",
   )
 }
 ​
+
+
 #' @export
 GeomFlatViolin <-
   ggproto("GeomFlatViolin", Geom,

@@ -40,9 +40,13 @@ small_axis(fontsize = 8, linethickness = 0.1, ...)
 }
 \value{
 runs init ktplots
+
+miscellaneous functions
 }
 \description{
 shortcut to initiate building of ktplots
+
+miscellaneous functions
 }
 \examples{
 ktplots()

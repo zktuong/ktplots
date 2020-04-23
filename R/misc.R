@@ -3,17 +3,6 @@
 #' @return miscellaneous functions
 #' @import dplyr
 #' @import ggplot2 
-
-#' @rdname nin
-#' @name ktplots
-#' @usage a \%nin\% b
-#' @param a a valute
-#' @param b a value 
-#' @export
-"%nin%" <- function(a, b) {
-  if (!is.null(a)) a else b
-}
-
 #' @name ktplots
 #' @param fontsize float/int
 #' @param ... passed to ggplot2::theme
