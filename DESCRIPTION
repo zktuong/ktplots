@@ -18,6 +18,8 @@ Imports:
 	SingleCellExperiment,
 	multtest
 Suggests:
+	Seurat,
+	patchwork,
 	RColorBrewer
 LazyData: true
 RoxygenNote: 7.1.0
