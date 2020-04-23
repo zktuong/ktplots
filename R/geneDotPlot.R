@@ -49,8 +49,6 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
         })
         metadata <- scdata@meta.data
     }
-
-    metadata[[idents]] <- factor(metadata[[idents]])
     
     cat(paste0("attempting to subset the expression matrix to the ", length(genes), " genes provided"), sep = "\n")
     # expr_mat_filtered <- exp_mat[row.names(exp_mat) %in% genes, ]
@@ -80,7 +78,7 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
             return(x)
         })
         
-        # names(meanExpr) <- unique(label)
+        # names(meanExpr) <- levels(label)
         meanExpr <- do.call(rbind, meanExpr)
 
         # control the scaling here
@@ -119,8 +117,8 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
             }
         }
 
-        label.list <- as.list(unique(label))
-        names(label.list) <- unique(label)
+        label.list <- as.list(levels(label))
+        names(label.list) <- levels(label)
         exp <- lapply(label.list, function(x) {
             exp_f <- expr.df %>% dplyr::filter(label == x) %>% dplyr::select(-matches("label"))
             return(exp_f)
@@ -131,7 +129,7 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
         pct <- list()
         pct <- lapply(exp, function(y) sapply(y, function(x) length(which(x > 0))))
 
-        names(pct) <- unique(label)
+        names(pct) <- levels(label)
         pct <- do.call(rbind, pct)
         final.pct <- pct/cellNumbers
 
@@ -177,11 +175,10 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
     }
 
     if(!is.null(split.by)){
-        plot.df <- quick_prep(expr_mat_filtered, labels, unique(metadata[[split.by]]))
+        plot.df <- quick_prep(expr_mat_filtered, labels, levels(droplevels(factor(metadata[[split.by]]))))
     } else {
         plot.df <- quick_prep(expr_mat_filtered, labels)
     }
-
 
     if(!is.null(pct.threshold)){
         cat(paste0("setting minimum percentage of cells expressing gene to be ", pct.threshold*100, "% of cluster/cell-type"), sep ="\n")
@@ -217,7 +214,7 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
     plot.df.final$pct[plot.df.final$pct == 0] <- NA
 
     # subset the plotting objects
-    doplot <- function(obj, group. = NULL, file_name = filename, file_path = filepath, dim_w, dim_h, limits. = col_limits, do.plot = save.plot, scale. = scale, standard_scale. = standard_scale){
+    doplot <- function(obj, group. = NULL, file_name = filename, file_path = filepath, dim_w = w, dim_h = h, limits. = col_limits, do.plot = save.plot, scale. = scale, standard_scale. = standard_scale){
         if(is.null(group.)){
             if((length(scale.) > 0 && scale.) | (length(scale.) < 1 && length(standard_scale.) < 1) | (length(standard_scale.) > 0 && standard_scale.)){
                 g <- ggplot(obj, aes(x = 0, y = gene, size = pct, colour = scale.mean))
@@ -225,7 +222,7 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
                 g <- ggplot(obj, aes(x = 0, y = gene, size = pct, colour = mean))
             }
             g <- g + geom_point(pch = 16) +
-            scale_y_discrete(position = "top") +
+            scale_y_discrete(position = "left") +
             scale_x_discrete(position = "bottom") +
             scale_colour_gradientn(colors = heat_cols, limits = limits., na.value = "grey90", oob = scales::squish) +
             scale_radius(range = c(0,4), limits = c(0, 1)) +
@@ -248,7 +245,7 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
             }
 
             g <- g + geom_point(pch = 16) +
-            scale_y_discrete(position = "top") +
+            scale_y_discrete(position = "left") +
             scale_x_discrete(position = "bottom") +
             scale_colour_gradientn(colors = heat_cols, limits = limits., na.value = "grey90", oob = scales::squish) +
             scale_radius(range = c(0,4), limits = c(0, 1)) +
