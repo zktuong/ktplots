@@ -37,8 +37,7 @@ geneDotPlot(scdata = kidneyimmune, # object
 	idents = "celltype", # column name in meta data that holds the cell-cluster ID/assignment
 	split.by = 'Project', # column name in the meta data that you want to split the plotting by. If not provided, it will just plot according to idents
 	standard_scale = TRUE) + # whether to scale expression values from 0 to 1. See ?geneDotPlot for other options
-theme(strip.text.x = element_text(angle=0, hjust = 0, size =7))
-
+theme(strip.text.x = element_text(angle=0, hjust = 0, size =7)) + small_guide() + small_legend()
 ```
 hopefully you end up with something like this
 ![geneDotPlot](exampleImages/geneDotPlot_example.png)
@@ -65,18 +64,6 @@ small_axis(fontsize = 3) + small_grid() + small_guide() + small_legend(fontsize 
 
 You can try by a crude grep via the 'gene.family'
 ```R
-plot_cpdb(cell_type1 = "Bcell",
-	cell_type2 = "Tcell",
-	means,
-	seurat_object,
-	"clusternames",
-	pvals,
-	split.by = "group",
-	gene.family = "chemokines") # can also try Th1, Th2, Th17, Treg, costimulatory, coinhibitory, niche
-```
-if ```genes``` and ```gene.family``` are both not specified, by default it will plot everything.
-Specifying ```keep_significant_only``` will only keep those that are p<0.05 (with or without adjustment via ```p.adjust.method```).
-
 some examples
 ```R
 plot_cpdb(cell_type1 = 'B cell', cell_type2 = 'CD4T cell', scdata = kidneyimmune,
@@ -103,6 +90,9 @@ plot_cpdb(cell_type1 = 'B cell', cell_type2 = 'CD4T cell', scdata = kidneyimmune
 ```
 ![plot_cpdb](exampleImages/plot_cpdb_example4.png)
 
+if ```genes``` and ```gene.family``` are both not specified, by default it will plot everything.
+Specifying ```keep_significant_only``` will only keep those that are p<0.05 (with or without adjustment via ```p.adjust.method```).
+
 ### StackedVlnPlot
 Generates a stacked violinplot like in scanpy's ```sc.pl.stacked_violin```. Credits to [@tangming2005](https://twitter.com/tangming2005)
 ```R
@@ -119,8 +109,8 @@ rainCloudPlot(data = kidneyimmune@meta.data, groupby = "celltype", parameter = "
 ```
 ![rainCloudPlot](exampleImages/rainCloudPlot_example.png)
 
-### small_legend/small_guide/small_axis/topright_legend/topleft_legend/bottomleft_legend/bottomright_legend
-ever wanted to quickly adjust the size and position of ggplots? now you can with these helper functions that you can tag on!
+### small_legend/small_guide/small_axis/small_grid/topright_legend/topleft_legend/bottomleft_legend/bottomright_legend
+As shown above, some functions to quickly adjust the size and position of ggplots.
 ```R
 # for example
 g <- Seurat::DimPlot(kidneyimmune, color = "celltype")
