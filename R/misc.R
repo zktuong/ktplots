@@ -34,11 +34,13 @@ range01 <- function(x){(x-min(x))/(max(x)-min(x))}
 #' g + small_legend()
 #' }
 #' @export
-small_legend <- function(fontsize = 5, ...){
+small_legend <- function(fontsize = 5, keysize=.1, marginsize=c(-.1,0,0,0),...){
 	small_legend_theme <- theme(
 		legend.title = element_text(size = fontsize), 
 		legend.text  = element_text(size = fontsize),
-		legend.key.size = unit(0.1, "lines"), ...)
+		legend.key.size = unit(keysize, "lines"),
+		legend.margin = margin(marginsize[1],marginsize[2],marginsize[3],marginsize[4], unit="cm"), 
+		...)
 	return(small_legend_theme)
 }
 
@@ -55,6 +57,38 @@ small_guide <- function(guidesize = 1, ...){
 		shape = guide_legend(override.aes = list(size = guidesize)), 
 		color = guide_legend(override.aes = list(size = guidesize)), ...)
 	return(small_guide)
+}
+
+#' @name misc
+#' @param fontsize float/int
+#' @param linethickness float/int
+#' @param ... passed to ggplot2::theme
+#' @examples
+#' \donttest{
+#' g + small_axis()
+#' }
+#' @export
+small_axis <- function(fontsize=4, linethickness=0.1, ...){
+	axis <- theme(text = element_text(size=fontsize), 
+		axis.text = element_text(size=fontsize), 
+		axis.text.x = element_text(size=fontsize), 
+		axis.text.y = element_text(size=fontsize), 
+		axis.line = element_line(size = linethickness), 
+		axis.ticks = element_line(size = linethickness), ...)
+	return(axis)
+}
+
+#' @name misc
+#' @param linethickness float/int
+#' @param ... passed to ggplot2::theme
+#' @examples
+#' \donttest{
+#' g + small_grid()
+#' }
+#' @export
+small_grid <- function(linethickness=0.1,panelthickness=.3, ...){
+	grid <- theme(panel.grid = element_line(size=linethickness), panel.border = element_rect(size=panelthickness), ...)
+	return(grid)
 }
 
 #' @name misc
@@ -108,18 +142,3 @@ bottomright_legend <- function(legendmargin = margin(6, 6, 6, 6), ...){
 	legend <- theme(legend.position = c(.99, .01), legend.justification = c('right', 'bottom'), legend.box.just = "left", legend.margin = legendmargin, ...)
 	return(legend)
 }
-
-#' @name misc
-#' @param fontsize float/int
-#' @param linethickness float/int
-#' @param ... passed to ggplot2::theme
-#' @examples
-#' \donttest{
-#' g + small_axis()
-#' }
-#' @export
-small_axis <- function(fontsize=8, linethickness=0.1, ...){
-	axis <- theme(text = element_text(size=fontsize), axis.text = element_text(size=fontsize), axis.line = element_line(size = linethickness), axis.ticks = element_line(size = linethickness), ...)
-	return(axis)
-}
-

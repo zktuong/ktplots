@@ -30,7 +30,7 @@
 #' @import reshape2
 #' @export
 
-plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_file, p.adjust.method = NULL, keep_significant_only = FALSE, split.by = NULL, gene.family = NULL, genes = NULL, scale = NULL, standard_scale = NULL, col_option = viridis::viridis(50), noir = FALSE, highlight = "red", ...) {
+plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, p.adjust.method = NULL, keep_significant_only = FALSE, split.by = NULL, gene.family = NULL, genes = NULL, scale = NULL, standard_scale = NULL, col_option = viridis::viridis(50), noir = FALSE, highlight = "red", ...) {
 	if (class(scdata) %in% c("SingleCellExperiment", "SummarizedExperiment")) {
 		cat("data provided is a SingleCellExperiment/SummarizedExperiment object", sep = "\n")
 		cat("extracting expression matrix", sep = "\n")
@@ -51,8 +51,8 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 		metadata <- scdata@meta.data
 	}
 
-	means_mat <- means_file
-	pvals_mat <- pvals_file
+	means_mat <- means
+	pvals_mat <- pvals
 	rownames(means_mat) <- make.names(means_mat$interacting_pair, unique = TRUE)
 	rownames(pvals_mat) <- make.names(pvals_mat$interacting_pair, unique = TRUE)
 	colnames(means_mat) <- gsub("\\|", "-", colnames(means_mat))
@@ -110,7 +110,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 
 			ct1 = grep(cell_type1, labels, value = TRUE, ...)
 			ct2 = grep(cell_type2, labels, value = TRUE, ...)
-		}
+		}		
 	} else {
 		if(length(idents) > 1){
 			labels <- idents
@@ -125,15 +125,17 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 		ct2 = paste0(ct2, collapse = '|')
 	}
 
-	if (ct1 == ''){ct1 = NA}
-	if (ct2 == ''){ct2 = NA}
+	ct1[ct1 %in% ''] <- NA
+	ct2[ct2 %in% ''] <- NA
 	checklabels2 <- any(colnames(means_mat) %in% c(ct1,ct2))
 
 	if(!checklabels1){
 		if(length(idents) > 1){
     		# relatively relaxed criteria to allow for the program to continue
+			options(warn=-1)
 			ct_1 <- grep(ct1, idents, value = TRUE, ...)
 			ct_2 <- grep(ct2, idents, value = TRUE, ...)
+			options(warn=0)
 			checklabels2 <- any(idents %in% ct_1)
 			if(checklabels2){
 				checklabels2 <- any(idents %in% ct_2)
@@ -144,8 +146,10 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 				stop('Cannot find cell types.\nThe error is mismatch between cell_type1 and the single cell metadata (or idents provided).')
 			}
 		} else {
+			options(warn=-1)
 			ct_1 <- grep(ct1, metadata[[idents]], value = TRUE, ...)
 			ct_2 <- grep(ct2, metadata[[idents]], value = TRUE, ...)
+			options(warn=0)
 			checklabels2 <- any(metadata[[idents]] %in% ct_1)
 			if(checklabels2){
 				checklabels2 <- any(metadata[[idents]] %in% ct_2)
@@ -160,8 +164,10 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 
 	if(!checklabels2){
     	# relatively relaxed criteria to allow for the program to continue
+		options(warn=-1)
 		ct_1 <- grep(ct1, colnames(means_mat), value = TRUE)
 		ct_2 <- grep(ct2, colnames(means_mat), value = TRUE)
+		options(warn=0)
 		checklabels2 <- any(colnames(means_mat) %in% ct_1)
 		if(checklabels2){
 			checklabels2 <- any(colnames(means_mat) %in% ct_2)
@@ -463,7 +469,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means_file, pvals_
 		axis.title.y = element_blank()) +
 	scale_x_discrete(position = "top") +
 	scale_color_gradientn(colors = highlight, na.value = "white") +
-	scale_radius(range = c(0,5))
+	scale_radius(range = c(0,3))
 
 	if(noir){
 		g <- g + scale_fill_gradient(low = "white", high = "#131313", na.value = "white")

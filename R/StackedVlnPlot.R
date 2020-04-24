@@ -21,7 +21,7 @@ StackedVlnPlot <- function(obj, features,
                           pt.size = 0, 
                           plot.margin = unit(c(-0.75, 0, -0.75, 0), "cm"),
                           ...) {
-  requireNamespace(purrr)
+  requireNamespace('purrr')
   plot_list<- purrr::map(features, function(x) modify_vlnplot(obj = obj,feature = x, ...))
   
   # Add back x-axis title to bottom plot. patchwork is going to support this?
@@ -33,7 +33,7 @@ StackedVlnPlot <- function(obj, features,
   plot_list<- purrr::map2(plot_list, ymaxs, function(x,y) x + 
                             scale_y_continuous(breaks = c(y)) + 
                             expand_limits(y = y))
-  requireNamespace(patchwork)
+  requireNamespace('patchwork')
   p <- patchwork::wrap_plots(plotlist = plot_list, ncol = 1)
   return(p)
 }
@@ -51,7 +51,7 @@ modify_vlnplot<- function(obj,
                           pt.size = 0, 
                           plot.margin = unit(c(-0.75, 0, -0.75, 0), "cm"),
                           ...) {
-  requireNamespace(Seurat)
+  requireNamespace('Seurat')
   p<- Seurat::VlnPlot(obj, features = feature, pt.size = pt.size, ... )  + 
     xlab("") + ylab(feature) + ggtitle("") + 
     theme(legend.position = "none", 

@@ -44,29 +44,26 @@ hopefully you end up with something like this
 ![geneDotPlot](exampleImages/geneDotPlot_example.png)
 
 ### plot_cpdb
-Generates the dot plot for cpdb output via specifying the cell types and the genes
+Generates the dot plot for CellPhoneDB analysis via specifying the cell types and the genes. Importantly, the plotting is largely controlled by what is the meta file provided to CellPhoneDB analysis i.e. the annotations must match if you specify split.by or not.
 ```R
-# I'm in the process of setting up some example data so it can be more reproducible realistic examples
-pvals <- read.delim("pvalues.txt", check.names = FALSE) # pvalues.txt and means.txt are output from cpdb
-means <- read.delim("means.txt", check.names = FALSE) 
-plot_cpdb(cell_type1 = "Bcell", # cell_type1 and cell_type2 will call grep, so this will accept regex arguments. Additional options for grep can be specified, such as fixed = TRUE to stop grep from misinterpreting/converting symbols.
-	cell_type2 = "Tcell",
-	seurat_object,
-	"clusternames", # column name where the cell ids are located in the metadata
-	means,
-	pvals,
-	split.by = "group", # column name where the grouping column is
-	genes = c("CXCR3", "CD274", "CXCR5"))
-```
+# read in pvalues.txt and means.txt that are in the out folder after CellPhoneDB analysis
+# pvals <- read.delim("pvalues.txt", check.names = FALSE)
+# means <- read.delim("means.txt", check.names = FALSE)
 
-```R
-plot_cpdb("NK", "MNP", scdata, "final.labels", means, pvals, genes = c("CXCR3", "CD274", "CXCR5")) + 
-	guides(shape = guide_legend(override.aes = list(size = 4)), color = guide_legend(override.aes = list(size = 4))) +
-	theme(legend.title = element_text(size = 4), legend.text = element_text(size = 4), legend.key.size = unit(0.5, "lines"))
+# I've provided an example dataset
+data(cdpb_outout) 
+plot_cpdb(cell_type1 = 'B cell', cell_type2 = 'CD4T cell',
+	scdata = kidneyimmune,
+	idents = 'celltype', # column name where the cell ids are located in the metadata
+	means = means,
+	pvals = pvals,
+	split.by = 'Experiment', # column name where the grouping column is. Optional.
+	genes = c("XCR1", "CXCL10", "CCL5")) + # some helper functions included in ktplots to help with the plotting
+small_axis(fontsize = 3) + small_grid() + small_guide() + small_legend(fontsize = 2) 
 ```
-![plot_cpdb](exampleImages/plot_cpdb_example1.png)
+![plot_cpdb](exampleImages/plot_cpdb_example.png)
 
-or, you can try by a crude grep via the 'gene.family'
+You can try by a crude grep via the 'gene.family'
 ```R
 plot_cpdb(cell_type1 = "Bcell",
 	cell_type2 = "Tcell",
@@ -82,32 +79,29 @@ Specifying ```keep_significant_only``` will only keep those that are p<0.05 (wit
 
 some examples
 ```R
-plot_cpdb("NK", "MNP", scdata, "final.labels", means, pvals, gene.family = "chemokines")
+plot_cpdb(cell_type1 = 'B cell', cell_type2 = 'CD4T cell', scdata = kidneyimmune,
+	idents = 'celltype', means = means, pvals = pvals, split.by = 'Experiment',
+	gene.family = 'chemokines') + small_guide() + small_axis() + small_legend(keysize=.5)
 ```
-![plot_cpdb](exampleImages/plot_cpdb_example.png)
+![plot_cpdb](exampleImages/plot_cpdb_example1.png)
 ```R
-plot_cpdb("NK", "MNP", scdata, "final.labels", means, pvals, gene.family = "chemokines", col_option = "maroon", highlight = "blue")
+plot_cpdb(cell_type1 = 'B cell', cell_type2 = 'CD4T cell', scdata = kidneyimmune,
+	idents = 'celltype', means = means, pvals = pvals, split.by = 'Experiment',
+	gene.family = 'chemokines', col_option = "maroon", highlight = "blue") + small_guide() + small_axis() + small_legend(keysize=.5)
 ```
 ![plot_cpdb](exampleImages/plot_cpdb_example2.png)
 ```R
-plot_cpdb("NK", "MNP", scdata, "final.labels", means, pvals, gene.family = "chemokines", col_option = viridis::cividis(50))
+plot_cpdb(cell_type1 = 'B cell', cell_type2 = 'CD4T cell', scdata = kidneyimmune,
+	idents = 'celltype', means = means, pvals = pvals, split.by = 'Experiment',
+	gene.family = 'chemokines', col_option = viridis::cividis(50)) + small_guide() + small_axis() + small_legend(keysize=.5)
 ```
 ![plot_cpdb](exampleImages/plot_cpdb_example3.png)
 ```R
-plot_cpdb("NK", "MNP", scdata, "final.labels", means, pvals, gene.family = "chemokines", noir = TRUE)
+plot_cpdb(cell_type1 = 'B cell', cell_type2 = 'CD4T cell', scdata = kidneyimmune,
+	idents = 'celltype', means = means, pvals = pvals, split.by = 'Experiment',
+	gene.family = 'chemokines', noir = TRUE) + small_guide() + small_axis() + small_legend(keysize=.5)
 ```
 ![plot_cpdb](exampleImages/plot_cpdb_example4.png)
-
-```R
-# when there's two groups in your input table to cpdb
-p <- plot_cpdb("MNP_1", "Lymphoid_[12]", px.cpdb, "Combined.labels", means, pvals, gene.family = "chemokines", split.by = "group")
-newLabels <- gsub("Lymphoid_[12]|MNP_1","",levels(p$data$Var2))
-newLabels <- gsub("__"," ",newLabels) 
-newLabels <- gsub("*-t"," : t",newLabels) 
-newLabels <- gsub("*-n"," : n",newLabels) 
-p + scale_x_discrete(breaks=levels(p$data$Var2), labels=newLabels, position = "top")
-```
-![plot_cpdb](exampleImages/plot_cpdb_example5.png)
 
 ### StackedVlnPlot
 Generates a stacked violinplot like in scanpy's ```sc.pl.stacked_violin```. Credits to [@tangming2005](https://twitter.com/tangming2005)

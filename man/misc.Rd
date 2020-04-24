@@ -11,11 +11,12 @@
 \alias{\%nin\%}
 \alias{small_legend}
 \alias{small_guide}
+\alias{small_axis}
+\alias{small_grid}
 \alias{topright_legend}
 \alias{topleft_legend}
 \alias{bottomleft_legend}
 \alias{bottomright_legend}
-\alias{small_axis}
 \title{miscellaneous functions}
 \format{
 An object of class \code{GeomFlatViolin} (inherits from \code{Geom}, \code{ggproto}, \code{gg}) of length 6.
@@ -37,9 +38,13 @@ range01(x)
 
 x \%nin\% y
 
-small_legend(fontsize = 5, ...)
+small_legend(fontsize = 5, keysize = 0.1, marginsize = c(-0.1, 0, 0, 0), ...)
 
 small_guide(guidesize = 1, ...)
+
+small_axis(fontsize = 4, linethickness = 0.1, ...)
+
+small_grid(linethickness = 0.1, panelthickness = 0.3, ...)
 
 topright_legend(legendmargin = margin(6, 6, 6, 6), ...)
 
@@ -48,8 +53,6 @@ topleft_legend(legendmargin = margin(6, 6, 6, 6), ...)
 bottomleft_legend(legendmargin = margin(6, 6, 6, 6), ...)
 
 bottomright_legend(legendmargin = margin(6, 6, 6, 6), ...)
-
-small_axis(fontsize = 8, linethickness = 0.1, ...)
 }
 \arguments{
 \item{obj}{single-cell data. can be seurat/summarizedexperiment object}
@@ -72,9 +75,9 @@ small_axis(fontsize = 8, linethickness = 0.1, ...)
 
 \item{guidesize}{float/int}
 
-\item{legendmargin}{margin(float/int, float/int, float/int, float/int)}
-
 \item{linethickness}{float/int}
+
+\item{legendmargin}{margin(float/int, float/int, float/int, float/int)}
 }
 \value{
 miscellaneous functions
@@ -94,6 +97,12 @@ g + small_legend()
 g + small_guide()
 }
 \donttest{
+g + small_axis()
+}
+\donttest{
+g + small_grid()
+}
+\donttest{
 g + topright_legend()
 }
 \donttest{
@@ -104,9 +113,6 @@ g + bottomleft_legend()
 }
 \donttest{
 g + bottomright_legend()
-}
-\donttest{
-g + small_axis()
 }
 }
 \keyword{datasets}

@@ -9,8 +9,8 @@ plot_cpdb(
   cell_type2,
   scdata,
   idents,
-  means_file,
-  pvals_file,
+  means,
+  pvals,
   p.adjust.method = NULL,
   keep_significant_only = FALSE,
   split.by = NULL,
@@ -33,10 +33,6 @@ plot_cpdb(
 
 \item{idents}{vector holding the idents for each cell or column name of scdata's metadata. MUST match cpdb's columns}
 
-\item{means_file}{object holding means.txt from cpdb output}
-
-\item{pvals_file}{object holding pvals.txt from cpdb output}
-
 \item{p.adjust.method}{correction method. p.adjust.methods of one of these options: c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none")}
 
 \item{keep_significant_only}{logical. Default is FALSE. Switch to TRUE if you only want to plot the significant hits from cpdb.}
@@ -58,6 +54,10 @@ plot_cpdb(
 \item{highlight}{colour for highlighting p <0.05}
 
 \item{...}{passes arguments to grep for cell_type1 and cell_type2.}
+
+\item{means_file}{object holding means.txt from cpdb output}
+
+\item{pvals_file}{object holding pvals.txt from cpdb output}
 }
 \value{
 ggplot dot plot object of cellphone db output
