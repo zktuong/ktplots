@@ -9,6 +9,7 @@
 #' @import devtools
 #' @export
 init_ktplots <- function() {
+	requireNamespace('devtools')
 	devtools::document()
 	setwd('..')
 	devtools::install('ktplots')

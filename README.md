@@ -13,20 +13,21 @@ if (!requireNamespace("devtools", quietly = TRUE))
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 devtools::install_github('zktuong/ktplots', dependencies = TRUE)
-# also maybe install Seurat if you haven't already
-install.packages('Seurat')
 ```
 ## Usage instructions
 ```R
 library(ktplots)
 ```
-There is a test dataset for most of these functions that can be loaded via
+There is a test dataset in Seurat format to test the functions.
 ```R
 # note, you need to load Seurat to interact with it
+# so maybe install Seurat if you haven't already
+# if (!requireNamespace("Seurat", quietly = TRUE))
+    # install.packages("Seurat")
 library(Seurat)
 data(kidneyimmune)
 ```
-It is a seurat object which i downsampled from the [kidney cell atlas](https://kidneycellatlas.org). For more info, please see [Stewart et al. kidney single cell data set published in Science 2019](https://science.sciencemag.org/content/365/6460/1461).
+The data is downsampled from the [kidney cell atlas](https://kidneycellatlas.org). For more info, please see [Stewart et al. kidney single cell data set published in Science 2019](https://science.sciencemag.org/content/365/6460/1461).
 
 ### geneDotPlot
 plotting gene expression dot plots heatmaps
@@ -43,28 +44,32 @@ hopefully you end up with something like this
 ![geneDotPlot](exampleImages/geneDotPlot_example.png)
 
 ### plot_cpdb
-Generates the dot plot for CellPhoneDB analysis via specifying the cell types and the genes. Importantly, the plotting is largely controlled by what is the meta file provided to CellPhoneDB analysis i.e. the annotations must match if you specify split.by or not.
+Generates a dot plot after CellPhoneDB analysis via specifying the query celltypes and genes. 
+The plotting is largely determined by the format of the meta file provided to CellPhoneDB analysis. 
+For the ```split.by``` option to work, the annotation in the meta file must be defined in the following format:
 ```R
-# read in pvalues.txt and means.txt that are in the out folder after CellPhoneDB analysis
+{split.by}_{idents}
+# so to set up a an example vector, it would be akin to
+annotation <- paste0(kidneyimmune$Experiment, '_', kidneyimmune$celltype)
+```
+
+To run, you will need to load in the means.txt and pvals.txt from the analysis.
+```R
 # pvals <- read.delim("pvalues.txt", check.names = FALSE)
 # means <- read.delim("means.txt", check.names = FALSE)
 
 # I've provided an example dataset
 data(cdpb_output) 
-plot_cpdb(cell_type1 = 'B cell', cell_type2 = 'CD4T cell',
-	scdata = kidneyimmune,
+plot_cpdb(cell_type1 = 'B cell', cell_type2 = 'CD4T cell', scdata = kidneyimmune,
 	idents = 'celltype', # column name where the cell ids are located in the metadata
-	means = means,
-	pvals = pvals,
 	split.by = 'Experiment', # column name where the grouping column is. Optional.
-	genes = c("XCR1", "CXCL10", "CCL5")) + # some helper functions included in ktplots to help with the plotting
-small_axis(fontsize = 3) + small_grid() + small_guide() + small_legend(fontsize = 2) 
+	means = means, pvals = pvals,
+	genes = c("XCR1", "CXCL10", "CCL5")) + 
+small_axis(fontsize = 3) + small_grid() + small_guide() + small_legend(fontsize = 2) # some helper functions included in ktplots to help with the plotting
 ```
 ![plot_cpdb](exampleImages/plot_cpdb_example.png)
 
-You can try by a crude grep via the 'gene.family'
-```R
-some examples
+You can also try specifying ```gene.family``` option which will grep some pre-determined genes.
 ```R
 plot_cpdb(cell_type1 = 'B cell', cell_type2 = 'CD4T cell', scdata = kidneyimmune,
 	idents = 'celltype', means = means, pvals = pvals, split.by = 'Experiment',
@@ -90,11 +95,12 @@ plot_cpdb(cell_type1 = 'B cell', cell_type2 = 'CD4T cell', scdata = kidneyimmune
 ```
 ![plot_cpdb](exampleImages/plot_cpdb_example4.png)
 
-if ```genes``` and ```gene.family``` are both not specified, by default it will plot everything.
-Specifying ```keep_significant_only``` will only keep those that are p<0.05 (with or without adjustment via ```p.adjust.method```).
+if ```genes``` and ```gene.family``` are both not specified, the function will try to plot everything.
+Specifying ```keep_significant_only``` will only keep those that are p<0.05 (which you can try to adjust with ```p.adjust.method```).
 
 ### StackedVlnPlot
 Generates a stacked violinplot like in scanpy's ```sc.pl.stacked_violin```. Credits to [@tangming2005](https://twitter.com/tangming2005)
+Seems like standard ggplot ```theme``` functions only work on the x-axis. Need to work out how to adjust that.
 ```R
 features <- c("CD79A", "MS4A1", "CD8A", "CD8B", "LYZ", "LGALS3", "S100A8", "GNLY", "NKG7", "KLRB1", "FCGR3A", "FCER1A", "CST3")
 StackedVlnPlot(kidneyimmune, features = features) + theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 8))
@@ -102,15 +108,15 @@ StackedVlnPlot(kidneyimmune, features = features) + theme(axis.text.x = element_
 ![StackedVlnPlot](exampleImages/StackedVlnPlot_example.png)
 
 ### rainCloudPlot
-generates a raincloudplot to use boxplot, scatterplot and violin all at once!
-kudos to [https://wellcomeopenresearch.org/articles/4-63](https://wellcomeopenresearch.org/articles/4-63)
+Generates a raincloudplot to use boxplot, scatterplot and violin all at once!
+Adopted from [https://wellcomeopenresearch.org/articles/4-63](https://wellcomeopenresearch.org/articles/4-63)
 ```R
 rainCloudPlot(data = kidneyimmune@meta.data, groupby = "celltype", parameter = "n_counts") + coord_flip()
 ```
 ![rainCloudPlot](exampleImages/rainCloudPlot_example.png)
 
 ### small_legend/small_guide/small_axis/small_grid/topright_legend/topleft_legend/bottomleft_legend/bottomright_legend
-As shown above, some functions to quickly adjust the size and position of ggplots.
+As shown in the examples above, these are some functions to quickly adjust the size and position of ggplots.
 ```R
 # for example
 g <- Seurat::DimPlot(kidneyimmune, color = "celltype")

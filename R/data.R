@@ -1,6 +1,6 @@
 #' kidneyimmune
 #'
-#' A small set of demo data from Stewart et al. 2019 Science
+#' kidneyimmune - A small set of demo data from Stewart et al. 2019 Science. See \url{https://www.kidneycellatlas.org/}
 #' @docType data
 #' @usage data(kidneyimmune)
 #' @format A Seurat object with the following slots filled
@@ -21,7 +21,7 @@
 
 #' means
 #'
-#' A small set of demo data from Stewart et al. 2019 Science - CellPhoneDB outut
+#' means - Dataframe of CellPhoneDB output means.txt file
 #' @rdname kidneyimmune
 #' @docType data
 #' @usage data(cpdb_output)
@@ -35,7 +35,7 @@
 
 #' pvals
 #'
-#' A small set of demo data from Stewart et al. 2019 Science - CellPhoneDB outut
+#' pvals - Dataframe of CellPhoneDB output means.txt file
 #' @rdname kidneyimmune
 #' @docType data
 #' @usage data(cpdb_output)
@@ -45,4 +45,4 @@
 #' }
 #' @examples
 #' data(cpdb_output)
-"means"
+"pvals"

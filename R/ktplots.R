@@ -10,7 +10,7 @@
 ktplots <- function()
 {
 	setwd("~/Documents/GitHub/ktplots")
-	library(ktplots)
-	library(roxygen2)
+	requireNamespace('ktplots')
+	requireNamespace('roxygen2')
 	init_ktplots()
 }

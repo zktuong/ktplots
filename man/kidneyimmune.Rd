@@ -4,6 +4,7 @@
 \name{kidneyimmune}
 \alias{kidneyimmune}
 \alias{means}
+\alias{pvals}
 \title{kidneyimmune}
 \format{
 A Seurat object with the following slots filled
@@ -39,11 +40,11 @@ data(cpdb_output)
 data(cpdb_output)
 }
 \description{
-A small set of demo data from Stewart et al. 2019 Science
+kidneyimmune - A small set of demo data from Stewart et al. 2019 Science. See \url{https://www.kidneycellatlas.org/}
 
-A small set of demo data from Stewart et al. 2019 Science - CellPhoneDB outut
+means - Dataframe of CellPhoneDB output means.txt file
 
-A small set of demo data from Stewart et al. 2019 Science - CellPhoneDB outut
+pvals - Dataframe of CellPhoneDB output means.txt file
 }
 \examples{
 data(kidneyimmune)
