@@ -50,7 +50,7 @@ Generates the dot plot for CellPhoneDB analysis via specifying the cell types an
 # means <- read.delim("means.txt", check.names = FALSE)
 
 # I've provided an example dataset
-data(cdpb_outout) 
+data(cdpb_output) 
 plot_cpdb(cell_type1 = 'B cell', cell_type2 = 'CD4T cell',
 	scdata = kidneyimmune,
 	idents = 'celltype', # column name where the cell ids are located in the metadata

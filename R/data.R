@@ -18,3 +18,17 @@
 #' @examples
 #' data(kidneyimmune)
 "kidneyimmune"
+
+#' cpdb_output
+#'
+#' A small set of demo data from Stewart et al. 2019 Science - CellPhoneDB outut
+#' @docType data
+#' @usage data(cpdb_output)
+#' @format Data frames containing outputs after CellPhoneDB analysis
+#' \describe{
+#'   \item{means}{data frame containing mean expression values for each interacting pair}
+#'   \item{pvals}{data frame containing p values for each interacting pair}
+#' }
+#' @examples
+#' data(cpdb_output)
+"cpdb_output"
