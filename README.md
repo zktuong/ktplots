@@ -27,10 +27,12 @@ There is a test dataset in Seurat format to test the functions.
 library(Seurat)
 data(kidneyimmune)
 ```
-The data is downsampled from the [kidney cell atlas](https://kidneycellatlas.org). For more info, please see [Stewart et al. kidney single cell data set published in Science 2019](https://science.sciencemag.org/content/365/6460/1461).
+The data is downsampled from the [kidney cell atlas](https://kidneycellatlas.org). 
+
+For more info, please see [Stewart et al. kidney single cell data set published in Science 2019](https://science.sciencemag.org/content/365/6460/1461).
 
 ### geneDotPlot
-plotting gene expression dot plots heatmaps
+Plotting gene expression dot plots heatmaps.
 ```R
 # Note, this conflicts with tidyr devel version
 geneDotPlot(scdata = kidneyimmune, # object 
@@ -40,16 +42,20 @@ geneDotPlot(scdata = kidneyimmune, # object
 	standard_scale = TRUE) + # whether to scale expression values from 0 to 1. See ?geneDotPlot for other options
 theme(strip.text.x = element_text(angle=0, hjust = 0, size =7)) + small_guide() + small_legend()
 ```
-hopefully you end up with something like this
+Hopefully you end up with something like this:
 ![geneDotPlot](exampleImages/geneDotPlot_example.png)
 
 ### plot_cpdb
 Generates a dot plot after CellPhoneDB analysis via specifying the query celltypes and genes. 
+
 The plotting is largely determined by the format of the meta file provided to CellPhoneDB analysis. 
+
 For the ```split.by``` option to work, the annotation in the meta file must be defined in the following format:
 ```R
 {split.by}_{idents}
-# so to set up a an example vector, it would be akin to
+```
+### so to set up a an example vector, it would be akin to
+```R
 annotation <- paste0(kidneyimmune$Experiment, '_', kidneyimmune$celltype)
 ```
 
@@ -96,19 +102,23 @@ plot_cpdb(cell_type1 = 'B cell', cell_type2 = 'CD4T cell', scdata = kidneyimmune
 ![plot_cpdb](exampleImages/plot_cpdb_example4.png)
 
 if ```genes``` and ```gene.family``` are both not specified, the function will try to plot everything.
+
 Specifying ```keep_significant_only``` will only keep those that are p<0.05 (which you can try to adjust with ```p.adjust.method```).
 
 ### StackedVlnPlot
-Generates a stacked violinplot like in scanpy's ```sc.pl.stacked_violin```. Credits to [@tangming2005](https://twitter.com/tangming2005)
-Seems like standard ggplot ```theme``` functions only work on the x-axis. Need to work out how to adjust that.
+Generates a stacked violinplot like in scanpy's ```sc.pl.stacked_violin```. 
+
+Credits to [@tangming2005](https://twitter.com/tangming2005). 
 ```R
 features <- c("CD79A", "MS4A1", "CD8A", "CD8B", "LYZ", "LGALS3", "S100A8", "GNLY", "NKG7", "KLRB1", "FCGR3A", "FCER1A", "CST3")
 StackedVlnPlot(kidneyimmune, features = features) + theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 8))
 ```
 ![StackedVlnPlot](exampleImages/StackedVlnPlot_example.png)
+Seems like standard ggplot ```theme``` functions only work on the x-axis. Need to work out how to adjust that.
 
 ### rainCloudPlot
 Generates a raincloudplot to use boxplot, scatterplot and violin all at once!
+
 Adopted from [https://wellcomeopenresearch.org/articles/4-63](https://wellcomeopenresearch.org/articles/4-63)
 ```R
 rainCloudPlot(data = kidneyimmune@meta.data, groupby = "celltype", parameter = "n_counts") + coord_flip()

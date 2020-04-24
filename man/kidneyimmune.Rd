@@ -22,12 +22,10 @@ A Seurat object with the following slots filled
 Data frames containing outputs after CellPhoneDB analysis
 \describe{
   \item{means}{data frame containing mean expression values for each interacting pair}
-}
-
-Data frames containing outputs after CellPhoneDB analysis
-\describe{
   \item{pvals}{data frame containing p values for each interacting pair}
 }
+
+An object of class \code{data.frame} with 765 rows and 11892 columns.
 }
 \source{
 \url{https://www.kidneycellatlas.org/}
@@ -37,18 +35,17 @@ data(kidneyimmune)
 
 data(cpdb_output)
 
-data(cpdb_output)
+pvals
 }
 \description{
 kidneyimmune - A small set of demo data from Stewart et al. 2019 Science. See \url{https://www.kidneycellatlas.org/}
 
 means - Dataframe of CellPhoneDB output means.txt file
 
-pvals - Dataframe of CellPhoneDB output means.txt file
+pvals - Dataframe of CellPhoneDB output pvalues.txt file
 }
 \examples{
 data(kidneyimmune)
-data(cpdb_output)
 data(cpdb_output)
 }
 \keyword{datasets}

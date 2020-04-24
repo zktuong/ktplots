@@ -15,7 +15,6 @@ Imports:
 	viridis,
 	gtools,	
 	RColorBrewer,
-	multtest,
 	purrr,
 	patchwork
 Suggests:
