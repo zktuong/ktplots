@@ -33,14 +33,14 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
     if (class(scdata) %in% c("SingleCellExperiment", "SummarizedExperiment")) {
         cat("data provided is a SingleCellExperiment/SummarizedExperiment object", sep = "\n")
         cat("extracting expression matrix", sep = "\n")
-        require(SummarizedExperiment)
-        require(SingleCellExperiment)
+        requireNamespace("SummarizedExperiment")
+        requireNamespace("SingleCellExperiment")
         exp_mat <- assay(scdata)
         metadata <- colData(scdata)
     } else if (class(scdata) == "Seurat") {
         cat("data provided is a Seurat object", sep = "\n")
         cat("extracting expression matrix", sep = "\n")
-        require(Seurat)
+        requireNamespace("Seurat")
         exp_mat <- tryCatch(scdata@data, error = function(e) {
             tryCatch(GetAssayData(object = scdata), error = function(e) {
                 stop(paste0("are you sure that your data is normalized?"))
