@@ -54,7 +54,8 @@ For the ```split.by``` option to work, the annotation in the meta file must be d
 ```R
 {split.by}_{idents}
 ```
-### so to set up a an example vector, it would be akin to
+
+so to set up a an example vector, it would be something like:
 ```R
 annotation <- paste0(kidneyimmune$Experiment, '_', kidneyimmune$celltype)
 ```
