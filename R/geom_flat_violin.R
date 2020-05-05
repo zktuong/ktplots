@@ -23,7 +23,7 @@
 #' @export
 geom_flat_violin <- function(mapping = NULL, data = NULL, stat = "ydensity",
                         position = "dodge", trim = TRUE, scale = "area",
-                        show.legend = NA, inherit.aes = TRUE, pt.size = 0.5, ...) {
+                        show.legend = NA, inherit.aes = TRUE, ...) {
   
   layer(
     data = data,
@@ -36,7 +36,6 @@ geom_flat_violin <- function(mapping = NULL, data = NULL, stat = "ydensity",
     params = list(
       trim = trim,
       scale = scale,
-      size = pt.size,
       ...
     )
   )
