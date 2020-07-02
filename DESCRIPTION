@@ -15,7 +15,8 @@ Imports:
 	viridis,
 	gtools,	
 	RColorBrewer,
-	purrr
+	purrr,
+	patchwork
 Suggests:
 	SummarizedExperiment,
 	SingleCellExperiment,
