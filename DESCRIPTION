@@ -15,13 +15,14 @@ Imports:
 	viridis,
 	gtools,	
 	RColorBrewer,
-	purrr,
-	patchwork
+	purrr
 Suggests:
 	SummarizedExperiment,
 	SingleCellExperiment,
 	Seurat
 Depends:
 	ggplot2
+Remotes: 
+  	zktuong/patchwork
 LazyData: true
 RoxygenNote: 7.1.0
