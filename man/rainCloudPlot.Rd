@@ -7,7 +7,7 @@
 \url{https://wellcomeopenresearch.org/articles/4-63}
 }
 \usage{
-rainCloudPlot(data, groupby, parameter, default = TRUE, ...)
+rainCloudPlot(data, groupby, parameter, default = TRUE, pt.size = 0.5, ...)
 }
 \arguments{
 \item{data}{plotting data}
