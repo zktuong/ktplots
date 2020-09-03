@@ -86,8 +86,8 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, p.ad
 			labels <- paste0(metadata[[split.by]], "_", metadata[[idents]])
 		}
 
-		labels <- unique(labels)
-		groups <- unique(metadata[[split.by]])
+		labels <- tryCatch(levels(labels), error = function(e) unique(labels))
+		groups <- tryCatch(levels(metadata[[split.by]]), error = function(e) unique(metadata[[split.by]]))
 
 		if(length(groups) > 0){
         	# the purpose for this step is to allow for special characters to be used in the celltype grepping
@@ -106,7 +106,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, p.ad
 			} else {
 				labels <- metadata[[idents]]
 			}
-			labels <- unique(labels)
+			labels <- tryCatch(levels(labels), error = function(e) unique(labels))
 
 			ct1 = grep(cell_type1, labels, value = TRUE, ...)
 			ct2 = grep(cell_type2, labels, value = TRUE, ...)
@@ -117,7 +117,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, p.ad
 		} else {
 			labels <- metadata[[idents]]
 		}
-		labels <- unique(labels)
+		labels <- tryCatch(levels(labels), error = function(e) unique(labels))
 
 		ct1 = grep(cell_type1, labels, value = TRUE, ...)
 		ct2 = grep(cell_type2, labels, value = TRUE, ...)
@@ -241,8 +241,8 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, p.ad
 			labels <- paste0(metadata[[split.by]], "_", metadata[[idents]])
 		}
 
-		labels <- unique(labels)
-		groups <- unique(metadata[[split.by]])
+		labels <- tryCatch(levels(labels), error = function(e) unique(labels))
+		groups <- tryCatch(levels(metadata[[split.by]]), error = function(e) unique(metadata[[split.by]]))
 
 		if(length(groups) > 0){
           		# the purpose for this step is to allow for special characters to be used in the celltype grepping
@@ -277,7 +277,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, p.ad
 			} else {
 				labels <- metadata[[idents]]
 			}
-			labels <- unique(labels)
+			labels <- tryCatch(levels(labels), error = function(e) unique(labels))
 
 			c_type1 = as.list(grep(cell_type1, labels, value = TRUE, ...))
 			c_type2 = as.list(grep(cell_type2, labels, value = TRUE, ...))
@@ -294,7 +294,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, p.ad
 		} else {
 			labels <- metadata[[idents]]
 		}
-		labels <- unique(labels)
+		labels <- tryCatch(levels(labels), error = function(e) unique(labels))
 
 		c_type1 = as.list(grep(cell_type1, labels, value = TRUE, ...))
 		c_type2 = as.list(grep(cell_type2, labels, value = TRUE, ...))
