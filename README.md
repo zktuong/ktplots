@@ -66,7 +66,7 @@ To run, you will need to load in the means.txt and pvals.txt from the analysis.
 # means <- read.delim("means.txt", check.names = FALSE)
 
 # I've provided an example dataset
-data(cdpb_output) 
+data(cpdb_output) 
 plot_cpdb(cell_type1 = 'B cell', cell_type2 = 'CD4T cell', scdata = kidneyimmune,
 	idents = 'celltype', # column name where the cell ids are located in the metadata
 	split.by = 'Experiment', # column name where the grouping column is. Optional.

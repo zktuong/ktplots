@@ -4,10 +4,15 @@ cache: packages
 
 before_install:
   - curl -OL http://raw.github.com/craigcitro/r-travis/master/scripts/travis-tool.sh
-  - chmod 755 ./travis-tool.sh
+  - curl -OL https://github.com/bimberlabinternal/OOSAP/blob/Dev/travis-config.sh
+  - chmod 755 ./travis-config.sh
+
+# See: https://travis-ci.community/t/in-r-version-4-0-0-library-path-not-writable/9744/9
+bioc_required: false
 
 r:
-  - bioc-release
+  - oldrel
+  # - bioc-release
 
 after_failure:
   - ./travis-tool.sh dump_logs
