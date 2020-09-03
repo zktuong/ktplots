@@ -12,7 +12,8 @@ bioc_required: false
 
 r:
   - oldrel
-  - bioc-release
+  - release
+  # - bioc-release
 
 after_failure:
   - ./travis-tool.sh dump_logs
