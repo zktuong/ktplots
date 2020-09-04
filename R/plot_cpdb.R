@@ -86,8 +86,10 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, p.ad
 			labels <- paste0(metadata[[split.by]], "_", metadata[[idents]])
 		}
 
-		labels <- tryCatch(levels(labels), error = function(e) unique(labels))
-		groups <- tryCatch(levels(metadata[[split.by]]), error = function(e) unique(metadata[[split.by]]))
+		labels <- factor(labels)
+		labels <- levels(labels)
+		groups <- factor(metadata[[split.by]])
+		groups <- levels(groups)
 
 		if(length(groups) > 0){
         	# the purpose for this step is to allow for special characters to be used in the celltype grepping
@@ -106,7 +108,8 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, p.ad
 			} else {
 				labels <- metadata[[idents]]
 			}
-			labels <- tryCatch(levels(labels), error = function(e) unique(labels))
+			labels <- factor(labels)
+			labels <- levels(labels)
 
 			ct1 = grep(cell_type1, labels, value = TRUE, ...)
 			ct2 = grep(cell_type2, labels, value = TRUE, ...)
@@ -117,7 +120,8 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, p.ad
 		} else {
 			labels <- metadata[[idents]]
 		}
-		labels <- tryCatch(levels(labels), error = function(e) unique(labels))
+		labels <- factor(labels)
+		labels <- levels(labels)
 
 		ct1 = grep(cell_type1, labels, value = TRUE, ...)
 		ct2 = grep(cell_type2, labels, value = TRUE, ...)
@@ -247,8 +251,10 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, p.ad
 			labels <- paste0(metadata[[split.by]], "_", metadata[[idents]])
 		}
 
-		labels <- tryCatch(levels(labels), error = function(e) unique(labels))
-		groups <- tryCatch(levels(metadata[[split.by]]), error = function(e) unique(metadata[[split.by]]))
+		labels <- factor(labels)
+		labels <- levels(labels)
+		groups <- factor(metadata[[split.by]])
+		groups <- levels(groups)
 
 		if(length(groups) > 0){
           		# the purpose for this step is to allow for special characters to be used in the celltype grepping
@@ -283,7 +289,8 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, p.ad
 			} else {
 				labels <- metadata[[idents]]
 			}
-			labels <- tryCatch(levels(labels), error = function(e) unique(labels))
+			labels <- factor(labels)
+			labels <- levels(labels)
 
 			c_type1 = as.list(grep(cell_type1, labels, value = TRUE, ...))
 			c_type2 = as.list(grep(cell_type2, labels, value = TRUE, ...))
@@ -300,7 +307,8 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, p.ad
 		} else {
 			labels <- metadata[[idents]]
 		}
-		labels <- tryCatch(levels(labels), error = function(e) unique(labels))
+		labels <- factor(labels)
+		labels <- levels(labels)
 
 		c_type1 = as.list(grep(cell_type1, labels, value = TRUE, ...))
 		c_type2 = as.list(grep(cell_type2, labels, value = TRUE, ...))
@@ -383,8 +391,11 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, p.ad
 
 	pvals_mat2 <- as.matrix(pvals_mat)
 	means_mat2 <- as.matrix(means_mat2)
-	means_mat2[which(means_mat == 0)] <- NA
-
+	xx <- which(means_mat == 0)
+	if (length(xx) > 0){
+		means_mat2[which(means_mat == 0)] <- NA	
+	}
+	
 	# remove rows that are entirely NA
 	pvals_mat2 <- pvals_mat2[rowSums(is.na(means_mat2)) != ncol(means_mat2), ,drop = FALSE]
 	means_mat2 <- means_mat2[rowSums(is.na(means_mat2)) != ncol(means_mat2), ,drop = FALSE]
@@ -398,7 +409,10 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, p.ad
 	if(length(p.adjust.method) > 0){
 		df_pvals <- melt(pvals_mat2, value.name = "padj")
 		df <- data.frame(cbind(df_means, padj = df_pvals$padj))
-		df$padj[which(df$padj >= 0.05)] <- NA
+		xp <- which(df$padj >= 0.05)
+		if (length(xp) > 0){
+			df$padj[which(df$padj >= 0.05)] <- NA
+		}
 		if (keep_significant_only){
 			# keep the entire row/ all the comparisons
 			df_ <- split(df, as.character(df$Var1))
@@ -414,7 +428,10 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, p.ad
 	} else {
 		df_pvals <- melt(pvals_mat2, value.name = "pvals")
 		df <- data.frame(cbind(df_means, pvals = df_pvals$pvals))
-		df$pvals[which(df$pvals >= 0.05)] <- NA
+		xp <- which(df$pvals >= 0.05)
+		if (length(xp) > 0){
+			df$pvals[which(df$pvals >= 0.05)] <- NA
+		}
 		if (keep_significant_only){
 			# keep the entire row/ all the comparisons
 			df_ <- split(df, as.character(df$Var1))
