@@ -127,10 +127,10 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, p.ad
 
 	x1 = ct1[ct1 %in% '']
 	x2 = ct2[ct2 %in% '']
-	if (lenght(x1) > 0){
+	if (length(x1) > 0){
 		ct1[ct1 %in% ''] <- NA	
 	}
-	if (lenght(x2) > 0){
+	if (length(x2) > 0){
 		ct2[ct2 %in% ''] <- NA	
 	}
 	checklabels2 <- any(colnames(means_mat) %in% c(ct1,ct2))
