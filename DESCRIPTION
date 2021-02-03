@@ -19,8 +19,7 @@ Imports:
 	patchwork
 Suggests:
 	SummarizedExperiment,
-	SingleCellExperiment,
-	Seurat
+	SingleCellExperiment
 Depends:
 	ggplot2
 Remotes: 
