@@ -11,7 +11,8 @@ before_install:
 bioc_required: false
 
 r:
-  - oldrel
+  # - oldrel
+  - release
   # - bioc-release
 
 after_failure:
