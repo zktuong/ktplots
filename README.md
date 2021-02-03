@@ -1,6 +1,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![codecov](https://codecov.io/gh/zktuong/ktplots/branch/master/graph/badge.svg)](https://codecov.io/gh/zktuong/ktplots)
 [![Build Status](https://travis-ci.com/zktuong/ktplots.svg?branch=master)](https://travis-ci.com/zktuong/ktplots)
+[![HitCount](http://hits.dwyl.com/zktuong/ktplots.svg)](http://hits.dwyl.com/zktuong/ktplots)
+
 # ktplots
 R plotting functions to plot gene expression data of single-cell data.
 
