@@ -16,11 +16,11 @@ Imports:
 	gtools,	
 	RColorBrewer,
 	purrr,
-	patchwork
+	patchwork,
+	Seurat
 Suggests:
 	SummarizedExperiment,
-	SingleCellExperiment,
-	Seurat
+	SingleCellExperiment
 Depends:
 	ggplot2
 Remotes: 
