@@ -16,14 +16,14 @@ Imports:
 	gtools,	
 	RColorBrewer,
 	purrr,
-	patchwork,
-	Seurat
+	patchwork
 Suggests:
 	SummarizedExperiment,
-	SingleCellExperiment
+	SingleCellExperiment,
+	Seurat
 Depends:
 	ggplot2
 Remotes: 
   	zktuong/patchwork
 LazyData: true
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
