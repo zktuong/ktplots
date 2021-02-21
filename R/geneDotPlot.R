@@ -34,15 +34,14 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
         cat("data provided is a SingleCellExperiment/SummarizedExperiment object", sep = "\n")
         cat("extracting expression matrix", sep = "\n")
         requireNamespace("SummarizedExperiment")
-        requireNamespace("SingleCellExperiment")
-        exp_mat <- assay(scdata)
-        metadata <- colData(scdata)
+        exp_mat <- SummarizedExperiment::assay(scdata)
+        metadata <- SummarizedExperiment::colData(scdata)
     } else if (class(scdata) == "Seurat") {
         cat("data provided is a Seurat object", sep = "\n")
         cat("extracting expression matrix", sep = "\n")
         requireNamespace("Seurat")
         exp_mat <- tryCatch(scdata@data, error = function(e) {
-            tryCatch(GetAssayData(object = scdata), error = function(e) {
+            tryCatch(Seurat::GetAssayData(object = scdata), error = function(e) {
                 stop(paste0("are you sure that your data is normalized?"))
                 return(NULL)
             })
@@ -226,7 +225,7 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
             } else {
                 g <- ggplot(obj, aes(x = 0, y = gene, size = pct, colour = mean))
             }
-            g <- g + geom_point(pch = 16) +
+            g <- g + geom_point(pch = 16, na.rm=TRUE) +
             scale_y_discrete(position = "left") +
             scale_x_discrete(position = "bottom") +
             scale_colour_gradientn(colors = heat_cols, limits = limits., na.value = "grey90", oob = scales::squish) +
@@ -249,7 +248,7 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
                 g <- ggplot(obj, aes(x = group, y = gene, size = pct, colour = mean))
             }
 
-            g <- g + geom_point(pch = 16) +
+            g <- g + geom_point(pch = 16, na.rm=TRUE) +
             scale_y_discrete(position = "left") +
             scale_x_discrete(position = "bottom") +
             scale_colour_gradientn(colors = heat_cols, limits = limits., na.value = "grey90", oob = scales::squish) +
