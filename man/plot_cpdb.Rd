@@ -21,6 +21,7 @@ plot_cpdb(
   col_option = viridis::viridis(50),
   noir = FALSE,
   highlight = "red",
+  separator = NULL,
   ...
 )
 }
@@ -52,6 +53,8 @@ plot_cpdb(
 \item{noir}{default = FALSE. makes it b/w}
 
 \item{highlight}{colour for highlighting p <0.05}
+
+\item{separator}{separator to use to split between celltypes. Unless otherwise specified, the separator will be `>@<`. Make sure the idents and split.by doesn't overlap with this.}
 
 \item{...}{passes arguments to grep for cell_type1 and cell_type2.}
 
