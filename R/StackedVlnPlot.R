@@ -51,6 +51,7 @@ modify_vlnplot<- function(obj,
                           pt.size = 0, 
                           plot.margin = unit(c(-0.75, 0, -0.75, 0), "cm"),
                           ...) {
+  requireNamespace('Seurat')
   p<- Seurat::VlnPlot(obj, features = feature, pt.size = pt.size, ... )  + 
     xlab("") + ylab(feature) + ggtitle("") + 
     theme(legend.position = "none", 
