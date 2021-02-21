@@ -16,6 +16,7 @@
 #' @param col_option specify plotting colours
 #' @param noir default = FALSE. makes it b/w
 #' @param highlight colour for highlighting p <0.05
+#' @param separator separator to use to split between celltypes. Unless otherwise specified, the separator will be `>@<`. Make sure the idents and split.by doesn't overlap with this.
 #' @param ... passes arguments to grep for cell_type1 and cell_type2.
 #' @return ggplot dot plot object of cellphone db output
 #' @examples
@@ -30,7 +31,7 @@
 #' @import reshape2
 #' @export
 
-plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, p.adjust.method = NULL, keep_significant_only = FALSE, split.by = NULL, gene.family = NULL, genes = NULL, scale = NULL, standard_scale = NULL, col_option = viridis::viridis(50), noir = FALSE, highlight = "red", ...) {
+plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, p.adjust.method = NULL, keep_significant_only = FALSE, split.by = NULL, gene.family = NULL, genes = NULL, scale = NULL, standard_scale = NULL, col_option = viridis::viridis(50), noir = FALSE, highlight = "red", separator = NULL,  ...) {
 	if (class(scdata) %in% c("SingleCellExperiment", "SummarizedExperiment")) {
 		cat("data provided is a SingleCellExperiment/SummarizedExperiment object", sep = "\n")
 		cat("extracting expression matrix", sep = "\n")
@@ -43,7 +44,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, p.ad
 		cat("data provided is a Seurat object", sep = "\n")
 		cat("extracting expression matrix", sep = "\n")
 		exp_mat <- tryCatch(scdata@data, error = function(e) {
-			tryCatch(GetAssayData(object = scdata), error = function(e) {
+			tryCatch(Seurat::GetAssayData(object = scdata), error = function(e) {
 				stop(paste0("are you sure that your data is normalized?"))
 				return(NULL)
 			})
@@ -51,14 +52,20 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, p.ad
 		metadata <- scdata@meta.data
 	}
 
+	if (length(separator) > 0){
+		sep = separator
+	} else {
+		sep = '>@<'
+	}
+
 	means_mat <- means
 	pvals_mat <- pvals
 	rownames(means_mat) <- make.names(means_mat$interacting_pair, unique = TRUE)
 	rownames(pvals_mat) <- make.names(pvals_mat$interacting_pair, unique = TRUE)
-	colnames(means_mat) <- gsub("\\|", "-", colnames(means_mat))
+	colnames(means_mat) <- gsub("\\|", sep, colnames(means_mat))
 	rownames(means_mat) <- gsub("_", "-", rownames(means_mat))
 	rownames(means_mat) <- gsub("[.]", " ", rownames(means_mat))
-	colnames(pvals_mat) <- gsub("\\|", "-", colnames(pvals_mat))
+	colnames(pvals_mat) <- gsub("\\|", sep, colnames(pvals_mat))
 	rownames(pvals_mat) <- gsub("_", "-", rownames(pvals_mat))
 	rownames(pvals_mat) <- gsub("[.]", " ", rownames(pvals_mat))
 
@@ -222,12 +229,12 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, p.ad
 		query <- grep(paste(genes, collapse="|"), means_mat$interacting_pair)
 	}
 
-	create_celltype_query <- function(ctype1, ctype2){
+	create_celltype_query <- function(ctype1, ctype2, sep){
 		ct1 = list()
 		ct2 = list()
 		for (i in 1:length(ctype2)){
-			ct1[i] = paste0(ctype1, "-", ctype2[i])
-			ct2[i] = paste0(ctype2[i], "-", ctype1)
+			ct1[i] = paste0(ctype1, sep, ctype2[i])
+			ct2[i] = paste0(ctype2[i], sep, ctype1)
 		}
 		ct_1 = do.call(paste0, list(ct1, collapse = '|'))
 		ct_2 = do.call(paste0, list(ct2, collapse = '|'))
@@ -236,9 +243,9 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, p.ad
 		return(ct)
 	}
 
-	keep_interested_groups <- function(g, ct){
+	keep_interested_groups <- function(g, ct, sep){
 		ctx <- strsplit(ct, "\\|")[[1]]
-		idx <- grep(paste0(g, ".*-", g), ctx)
+		idx <- grep(paste0(g, paste0(".*",sep), g), ctx)
 		ctx <- ctx[idx]
 		ctx <- paste0(ctx, collapse = "|")
 		return(ctx)
@@ -273,8 +280,8 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, p.ad
 			grp <- as.list(groups)
 			celltype = list()
 			for (i in 1:length(c_type1)){
-				celltype[[i]] <- create_celltype_query(c_type1[[i]], c_type2)
-				celltype[[i]] <- lapply(grp, keep_interested_groups, celltype[[i]])
+				celltype[[i]] <- create_celltype_query(c_type1[[i]], c_type2, sep)
+				celltype[[i]] <- lapply(grp, keep_interested_groups, celltype[[i]], sep)
 			}
 
 			for (i in 1:length(celltype)){
@@ -297,7 +304,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, p.ad
 
 			celltype = list()
 			for (i in 1:length(c_type1)){
-				celltype[[i]] <- create_celltype_query(c_type1[[i]], c_type2)
+				celltype[[i]] <- create_celltype_query(c_type1[[i]], c_type2, sep)
 			}
 			cell_type <- do.call(paste0, list(celltype, collapse = "|"))
 		}
@@ -315,7 +322,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, p.ad
 
 		celltype = list()
 		for (i in 1:length(c_type1)){
-			celltype[[i]] <- create_celltype_query(c_type1[[i]], c_type2)
+			celltype[[i]] <- create_celltype_query(c_type1[[i]], c_type2, sep)
 		}
 		cell_type <- do.call(paste0, list(celltype, collapse = "|"))
 	}
@@ -470,6 +477,8 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, p.ad
 		}
 	} 
 	
+	df$Var2 <- gsub(sep, '-', df$Var2)
+
 	if ((length(standard_scale) > 0 && standard_scale) | (length(scale) > 0 && scale) | (length(scale) < 1 && length(standard_scale) < 1)){
 		if(length(p.adjust.method) > 0 && p.adjust.method != 'none'){
 			g <- ggplot(df, aes(x = Var2, y = Var1, color = -log10(padj), fill = scaled_means, size = scaled_means))
@@ -484,7 +493,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, p.ad
 		}
 	}
 
-	g <- g + geom_point(pch = 21) +
+	g <- g + geom_point(pch = 21, na.rm=TRUE) +
 	theme_bw() +
 	theme(axis.text.x = element_text(angle = 45, hjust = 0),
 		axis.ticks = element_blank(),
