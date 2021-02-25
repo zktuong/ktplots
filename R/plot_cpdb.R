@@ -6,6 +6,7 @@
 #' @param idents vector holding the idents for each cell or column name of scdata's metadata. MUST match cpdb's columns
 #' @param means_file object holding means.txt from cpdb output
 #' @param pvals_file object holding pvals.txt from cpdb output
+#' @param max_size max size of points.
 #' @param p.adjust.method correction method. p.adjust.methods of one of these options: c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none")
 #' @param keep_significant_only logical. Default is FALSE. Switch to TRUE if you only want to plot the significant hits from cpdb.
 #' @param split.by column name in the metadata/coldata table to split the spots by. Can only take columns with binary options. If specified, name to split by MUST be specified in the meta file provided to cpdb prior to analysis.
@@ -32,7 +33,7 @@
 #' @import reshape2
 #' @export
 
-plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, p.adjust.method = NULL, keep_significant_only = FALSE, split.by = NULL, gene.family = NULL, genes = NULL, scale = NULL, standard_scale = NULL, col_option = viridis::viridis(50), default_style = TRUE, noir = FALSE, highlight = "red", separator = NULL,  ...) {
+plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_size = 8, p.adjust.method = NULL, keep_significant_only = FALSE, split.by = NULL, gene.family = NULL, genes = NULL, scale = NULL, standard_scale = NULL, col_option = viridis::viridis(50), default_style = TRUE, noir = FALSE, highlight = "red", separator = NULL,  ...) {
 	if (class(scdata) %in% c("SingleCellExperiment", "SummarizedExperiment")) {
 		cat("data provided is a SingleCellExperiment/SummarizedExperiment object", sep = "\n")
 		cat("extracting expression matrix", sep = "\n")
@@ -509,7 +510,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, p.ad
 			axis.title.y = element_blank()) +
 		scale_x_discrete(position = "top") +
 		scale_color_gradientn(colors = highlight, na.value = "white") +
-		scale_radius(range = c(0,3))
+		scale_radius(range = c(0,max_size))
 
 		if(noir){
 			g <- g + scale_fill_gradient(low = "white", high = "#131313", na.value = "white")
@@ -541,7 +542,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, p.ad
 			axis.title.x = element_blank(),
 			axis.title.y = element_blank()) +
 		scale_x_discrete(position = "top") +
-		scale_radius(range = c(0,3))
+		scale_radius(range = c(0,max_size))
 	}
 	
 	if(!is.null(gene.family) & is.null(genes)){
