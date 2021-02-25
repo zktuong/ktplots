@@ -522,11 +522,15 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, p.ad
 		}
 	} else {
 		if ((length(standard_scale) > 0 && standard_scale) | (length(scale) > 0 && scale) | (length(scale) < 1 && length(standard_scale) < 1)){			
-			g <- ggplot(df, aes(x = Var2, y = Var1, size = scaled_means, color = scaled_means, stroke = x_stroke, fill = x_means_))
-			g <- g + geom_point(pch = 21, na.rm = TRUE)
+			g <- ggplot(df, aes(x = Var2, y = Var1, size = scaled_means, color = scaled_means))
+			df2 <- df %>% filter(is.na(x_means_))			
+			g <- g + geom_point(pch = 16, na.rm = TRUE)
+			g <- g + geom_point(data = df2, aes(x = Var2, y = Var1, size = scaled_means, fill = x_means_, stroke = x_stroke), pch = 21, na.rm = TRUE)
 		} else {
-			g <- ggplot(df, aes(x = Var2, y = Var1, size = means, color = means, stroke = x_stroke, fill = x_means_))
-			g <- g + geom_point(, pch = 21, na.rm = TRUE)
+			g <- ggplot(df, aes(x = Var2, y = Var1, size = means, color = means))
+			df2 <- df %>% filter(is.na(x_means_))			
+			g <- g + geom_point(pch = 16, na.rm = TRUE)
+			g <- g + geom_point(data = df2, aes(x = Var2, y = Var1, size = scaled_means, fill = x_means_, stroke = x_stroke), pch = 21, na.rm = TRUE)
 		}
 		g <- g + 
 		theme_bw() +
