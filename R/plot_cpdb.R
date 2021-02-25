@@ -488,15 +488,15 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, p.ad
 	if (default_style){
 		if ((length(standard_scale) > 0 && standard_scale) | (length(scale) > 0 && scale) | (length(scale) < 1 && length(standard_scale) < 1)){
 			if(length(p.adjust.method) > 0 && p.adjust.method != 'none'){
-				g <- ggplot(df, aes(x = Var2, y = Var1, color = -log10(padj), fill = scaled_means, size = scaled_means, stroke = x_stroke))
+				g <- ggplot(df, aes(x = Var2, y = Var1, color = -log10(padj), fill = scaled_means, size = scaled_means))
 			} else {
-				g <- ggplot(df, aes(x = Var2, y = Var1, color = -log10(pvals), fill = scaled_means, size = scaled_means, stroke = x_stroke))
+				g <- ggplot(df, aes(x = Var2, y = Var1, color = -log10(pvals), fill = scaled_means, size = scaled_means))
 			}
 		} else {
 			if(length(p.adjust.method) > 0 && p.adjust.method != 'none'){
-				g <- ggplot(df, aes(x = Var2, y = Var1, color = -log10(padj), fill = means, size = means, stroke = x_stroke))
+				g <- ggplot(df, aes(x = Var2, y = Var1, color = -log10(padj), fill = means, size = means))
 			} else {
-				g <- ggplot(df, aes(x = Var2, y = Var1, color = -log10(pvals), fill = means, size = means, stroke = x_stroke))
+				g <- ggplot(df, aes(x = Var2, y = Var1, color = -log10(pvals), fill = means, size = means))
 			}
 		}
 	
@@ -509,7 +509,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, p.ad
 			axis.title.y = element_blank()) +
 		scale_x_discrete(position = "top") +
 		scale_color_gradientn(colors = highlight, na.value = "white") +
-		scale_radius(range = c(0,5))
+		scale_radius(range = c(0,3))
 
 		if(noir){
 			g <- g + scale_fill_gradient(low = "white", high = "#131313", na.value = "white")
@@ -537,7 +537,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, p.ad
 			axis.title.x = element_blank(),
 			axis.title.y = element_blank()) +
 		scale_x_discrete(position = "top") +
-		scale_radius(range = c(0,5))
+		scale_radius(range = c(0,3))
 	}
 	
 	if(!is.null(gene.family) & is.null(genes)){
