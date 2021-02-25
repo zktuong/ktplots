@@ -38,7 +38,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, p.ad
 		requireNamespace('SummarizedExperiment')
 		requireNamespace('SingleCellExperiment')
 		exp_mat <- assay(scdata)
-		metadata <- ColData(scdata)
+		metadata <- colData(scdata)
 	} else if (class(scdata) == "Seurat") {
 		requireNamespace('Seurat')
 		cat("data provided is a Seurat object", sep = "\n")
