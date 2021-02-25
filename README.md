@@ -109,7 +109,7 @@ plot_cpdb(cell_type1 = 'B cell', cell_type2 = 'CD4T cell', scdata = kidneyimmune
 	idents = 'celltype', means = means, pvals = pvals, split.by = 'Experiment',
 	gene.family = 'chemokines', default_style = FALSE) + small_guide() + small_axis() + small_legend(keysize=.5)
 ```
-![plot_cpdb](exampleImages/plot_cpdb_alternate.png)
+![plot_cpdb](exampleImages/plot_cpdb_alternate2.png)
 
 if ```genes``` and ```gene.family``` are both not specified, the function will try to plot everything.
 
