@@ -11,6 +11,7 @@ plot_cpdb(
   idents,
   means,
   pvals,
+  max_size = 8,
   p.adjust.method = NULL,
   keep_significant_only = FALSE,
   split.by = NULL,
@@ -34,6 +35,8 @@ plot_cpdb(
 \item{scdata}{single-cell data. can be seurat/summarizedexperiment object}
 
 \item{idents}{vector holding the idents for each cell or column name of scdata's metadata. MUST match cpdb's columns}
+
+\item{max_size}{max size of points.}
 
 \item{p.adjust.method}{correction method. p.adjust.methods of one of these options: c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none")}
 
