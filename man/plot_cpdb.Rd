@@ -19,6 +19,7 @@ plot_cpdb(
   scale = NULL,
   standard_scale = NULL,
   col_option = viridis::viridis(50),
+  default_style = TRUE,
   noir = FALSE,
   highlight = "red",
   separator = NULL,
@@ -61,6 +62,8 @@ plot_cpdb(
 \item{means_file}{object holding means.txt from cpdb output}
 
 \item{pvals_file}{object holding pvals.txt from cpdb output}
+
+\item{default_stlye}{default = TRUE. Show all mean values and trace significant interactions with `higlight` colour. If FALSE, significant interactions will be presented as a white ring.}
 }
 \value{
 ggplot dot plot object of cellphone db output
@@ -71,7 +74,7 @@ Plotting cellphonedb results
 \examples{
 \donttest{
 data(kidneyimmune)
-data(cpdb_ex)
+data(cpdb_output)
 plot_cpdb("B cell", "CD4T cell", kidneyimmune, 'celltype', means, pvals, split.by = "Experiment", genes = c("CXCL13", "CD274", "CXCR5"))
 plot_cpdb("B cell", "CD4T cell", kidneyimmune, 'celltype', means, pvals, split.by = "Experiment", gene.family = 'chemokines')
 }

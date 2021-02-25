@@ -101,7 +101,14 @@ plot_cpdb(cell_type1 = 'B cell', cell_type2 = 'CD4T cell', scdata = kidneyimmune
 	idents = 'celltype', means = means, pvals = pvals, split.by = 'Experiment',
 	gene.family = 'chemokines', noir = TRUE) + small_guide() + small_axis() + small_legend(keysize=.5)
 ```
-![plot_cpdb](exampleImages/plot_cpdb_example4.png)
+![plot_cpdb](exampleImages/plot_cpdb_alternate.png)
+
+A new style to plot inspired from `squidpy.pl.ligrec` where significant interactions are shown as outline instead.
+```R
+plot_cpdb(cell_type1 = 'B cell', cell_type2 = 'CD4T cell', scdata = kidneyimmune,
+	idents = 'celltype', means = means, pvals = pvals, split.by = 'Experiment',
+	gene.family = 'chemokines', default_style = FALSE) + small_guide() + small_axis() + small_legend(keysize=.5)
+```
 
 if ```genes``` and ```gene.family``` are both not specified, the function will try to plot everything.
 

@@ -14,6 +14,7 @@
 #' @param scale logical. scale the expression to mean +/- SD. NULL defaults to TRUE.
 #' @param standard_scale logical. scale the expression to range from 0 to 1. NULL defaults to FALSE.
 #' @param col_option specify plotting colours
+#' @param default_stlye default = TRUE. Show all mean values and trace significant interactions with `higlight` colour. If FALSE, significant interactions will be presented as a white ring.
 #' @param noir default = FALSE. makes it b/w
 #' @param highlight colour for highlighting p <0.05
 #' @param separator separator to use to split between celltypes. Unless otherwise specified, the separator will be `>@<`. Make sure the idents and split.by doesn't overlap with this.
@@ -22,7 +23,7 @@
 #' @examples
 #' \donttest{
 #' data(kidneyimmune)
-#' data(cpdb_ex)
+#' data(cpdb_output)
 #' plot_cpdb("B cell", "CD4T cell", kidneyimmune, 'celltype', means, pvals, split.by = "Experiment", genes = c("CXCL13", "CD274", "CXCR5"))
 #' plot_cpdb("B cell", "CD4T cell", kidneyimmune, 'celltype', means, pvals, split.by = "Experiment", gene.family = 'chemokines')
 #' }
@@ -31,7 +32,7 @@
 #' @import reshape2
 #' @export
 
-plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, p.adjust.method = NULL, keep_significant_only = FALSE, split.by = NULL, gene.family = NULL, genes = NULL, scale = NULL, standard_scale = NULL, col_option = viridis::viridis(50), noir = FALSE, highlight = "red", separator = NULL,  ...) {
+plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, p.adjust.method = NULL, keep_significant_only = FALSE, split.by = NULL, gene.family = NULL, genes = NULL, scale = NULL, standard_scale = NULL, col_option = viridis::viridis(50), default_style = TRUE, noir = FALSE, highlight = "red", separator = NULL,  ...) {
 	if (class(scdata) %in% c("SingleCellExperiment", "SummarizedExperiment")) {
 		cat("data provided is a SingleCellExperiment/SummarizedExperiment object", sep = "\n")
 		cat("extracting expression matrix", sep = "\n")
@@ -416,9 +417,9 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, p.ad
 	if(length(p.adjust.method) > 0){
 		df_pvals <- melt(pvals_mat2, value.name = "padj")
 		df <- data.frame(cbind(df_means, padj = df_pvals$padj))
-		xp <- which(df$padj >= 0.05)
+		xp <- which(df$padj == 1)
 		if (length(xp) > 0){
-			df$padj[which(df$padj >= 0.05)] <- NA
+			df$padj[which(df$padj == 1)] <- NA
 		}
 		if (keep_significant_only){
 			# keep the entire row/ all the comparisons
@@ -435,9 +436,9 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, p.ad
 	} else {
 		df_pvals <- melt(pvals_mat2, value.name = "pvals")
 		df <- data.frame(cbind(df_means, pvals = df_pvals$pvals))
-		xp <- which(df$pvals >= 0.05)
+		xp <- which(df$pvals == 1)
 		if (length(xp) > 0){
-			df$pvals[which(df$pvals >= 0.05)] <- NA
+			df$pvals[which(df$pvals == 1)] <- NA
 		}
 		if (keep_significant_only){
 			# keep the entire row/ all the comparisons
@@ -478,40 +479,67 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, p.ad
 	} 
 	
 	df$Var2 <- gsub(sep, '-', df$Var2)
+	df$x_means_ <- df[,colnames(df_means)[3]]
+	df$x_means_[df[,colnames(df)[4]] < 0.05] <- NA
+	df$x_stroke = df$x_means_
+	df$x_stroke[!is.na(df$x_stroke)] <- 0
+	df$x_stroke[is.na(df$x_stroke)] <- 2
 
-	if ((length(standard_scale) > 0 && standard_scale) | (length(scale) > 0 && scale) | (length(scale) < 1 && length(standard_scale) < 1)){
-		if(length(p.adjust.method) > 0 && p.adjust.method != 'none'){
-			g <- ggplot(df, aes(x = Var2, y = Var1, color = -log10(padj), fill = scaled_means, size = scaled_means))
+	if (default_style){
+		if ((length(standard_scale) > 0 && standard_scale) | (length(scale) > 0 && scale) | (length(scale) < 1 && length(standard_scale) < 1)){
+			if(length(p.adjust.method) > 0 && p.adjust.method != 'none'){
+				g <- ggplot(df, aes(x = Var2, y = Var1, color = -log10(padj), fill = scaled_means, size = scaled_means, stroke = x_stroke))
+			} else {
+				g <- ggplot(df, aes(x = Var2, y = Var1, color = -log10(pvals), fill = scaled_means, size = scaled_means, stroke = x_stroke))
+			}
 		} else {
-			g <- ggplot(df, aes(x = Var2, y = Var1, color = -log10(pvals), fill = scaled_means, size = scaled_means))
+			if(length(p.adjust.method) > 0 && p.adjust.method != 'none'){
+				g <- ggplot(df, aes(x = Var2, y = Var1, color = -log10(padj), fill = means, size = means, stroke = x_stroke))
+			} else {
+				g <- ggplot(df, aes(x = Var2, y = Var1, color = -log10(pvals), fill = means, size = means, stroke = x_stroke))
+			}
+		}
+	
+		g <- g + geom_point(pch = 21, na.rm=TRUE) +
+		theme_bw() +
+		theme(axis.text.x = element_text(angle = 45, hjust = 0, color = '#000000'),
+			axis.text.y = element_text(color = '#000000'),
+			axis.ticks = element_blank(),
+			axis.title.x = element_blank(),
+			axis.title.y = element_blank()) +
+		scale_x_discrete(position = "top") +
+		scale_color_gradientn(colors = highlight, na.value = "white") +
+		scale_radius(range = c(0,5))
+
+		if(noir){
+			g <- g + scale_fill_gradient(low = "white", high = "#131313", na.value = "white")
+		} else {
+			if(length(col_option) == 1){
+				g <- g + scale_fill_gradientn(colors = colorRampPalette(c("white", col_option))(100), na.value = "white")
+			} else {
+				g <- g + scale_fill_gradientn(colors = c("white", colorRampPalette(col_option)(99)), na.value = "white")
+			}
 		}
 	} else {
-		if(length(p.adjust.method) > 0 && p.adjust.method != 'none'){
-			g <- ggplot(df, aes(x = Var2, y = Var1, color = -log10(padj), fill = means, size = means))
+		if ((length(standard_scale) > 0 && standard_scale) | (length(scale) > 0 && scale) | (length(scale) < 1 && length(standard_scale) < 1)){			
+			g <- ggplot(df, aes(x = Var2, y = Var1, size = scaled_means, color = scaled_means, stroke = x_stroke, fill = x_means_))
+			g <- g + geom_point(pch = 21, na.rm = TRUE)
 		} else {
-			g <- ggplot(df, aes(x = Var2, y = Var1, color = -log10(pvals), fill = means, size = means))
+			g <- ggplot(df, aes(x = Var2, y = Var1, size = means, color = means, stroke = x_stroke, fill = x_means_))
+			g <- g + geom_point(, pch = 21, na.rm = TRUE)
 		}
+		g <- g + 
+		theme_bw() +
+		scale_fill_gradientn(colors = col_option, na.value = 'white', guide = FALSE) + scale_colour_gradientn(colors = col_option) +
+		theme(axis.text.x = element_text(angle = 45, hjust = 0, color = '#000000'),
+			axis.text.y = element_text(color = '#000000'),
+			axis.ticks = element_blank(),
+			axis.title.x = element_blank(),
+			axis.title.y = element_blank()) +
+		scale_x_discrete(position = "top") +
+		scale_radius(range = c(0,5))
 	}
-
-	g <- g + geom_point(pch = 21, na.rm=TRUE) +
-	theme_bw() +
-	theme(axis.text.x = element_text(angle = 45, hjust = 0),
-		axis.ticks = element_blank(),
-		axis.title.x = element_blank(),
-		axis.title.y = element_blank()) +
-	scale_x_discrete(position = "top") +
-	scale_color_gradientn(colors = highlight, na.value = "white") +
-	scale_radius(range = c(0,3))
-
-	if(noir){
-		g <- g + scale_fill_gradient(low = "white", high = "#131313", na.value = "white")
-	} else {
-		if(length(col_option) == 1){
-			g <- g + scale_fill_gradientn(colors = colorRampPalette(c("white", col_option))(100), na.value = "white")
-		} else {
-			g <- g + scale_fill_gradientn(colors = c("white", colorRampPalette(col_option)(99)), na.value = "white")
-		}
-	}
+	
 	if(!is.null(gene.family) & is.null(genes)){
 		g <- g + ggtitle(gene.family)
 	}
