@@ -350,11 +350,21 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
 				return(gx)
 			})
 			group_id <- do.call(rbind, group_i)
-			means_mat <- means_mat[,as.vector(group_id)]
-			pvals_mat <- pvals_mat[,as.vector(group_id)]
+			means_mat <- means_mat[,as.vector(group_id)]			
+			if (dim(pvals_mat)[2] > 0){
+				pvals_mat <- pvals_mat[,as.vector(group_id)]
+			} else {
+				stop('No significant hits.')
+			}
 		}
 	}
 
+	if (keep_significant_only){
+		if (dim(pvals_mat)[2] > 0){
+			stop('No significant hits.')
+		}	
+	}
+	
 	if(nrow(means_mat) > 2){
 		d <- dist(as.data.frame(means_mat))
 		h <- hclust(d)
