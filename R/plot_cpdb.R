@@ -292,14 +292,24 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
 
 			celltype <- lapply(celltype, unlist)
 			
-			celltype <- lapply(celltype, function(x) {
-				xx <- strsplit(x, "[|]")
-				xx <- lapply(xx, function(z) paste0('^', z, '$'))
+			celltype2 <- lapply(celltype, function(x) {
+				xx <- as.list(unlist(strsplit(x, "[|]")))
+				xx <- lapply(xx, function(z) {
+					xz <- paste0('^', z, '$')
+					pattern <- "/|:|\\?|\\|\\\\|\\*|\\+"
+					tmp_ <- unlist(strsplit(xz, '*'))
+					if (any(grepl(pattern, tmp_))){
+						idxz <- grep(pattern, tmp_)
+						tmp_[idxz] <- paste0("\\", tmp_[idxz])
+					}
+					xz <- do.call(paste, c(as.list(tmp_), sep = ""))
+					return(xz)})
 				zz <- paste0(unlist(xx), collapse = "|")
 				return(zz)
 			})
 
-			cell_type <- do.call(paste0, list(celltype, collapse = "|"))
+			cell_type <- do.call(paste0, list(celltype2, collapse = "|"))
+			
 		} else {
 			if(length(idents) > 1){
 				labels <- idents
