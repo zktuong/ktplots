@@ -291,9 +291,12 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
 			}
 
 			celltype <- lapply(celltype, unlist)
-			
+			if (any(unlist(lapply(celltype, is.null)))){
+				rm <- which(unlist(lapply(celltype, is.null)))
+				celltype <- celltype[-rm]
+			}
 			celltype2 <- lapply(celltype, function(x) {
-				xx <- as.list(unlist(strsplit(x, "[|]")))
+				xx <- as.list(unlist(strsplit(x, "\\|")))
 				xx <- lapply(xx, function(z) {
 					xz <- paste0('^', z, '$')
 					pattern <- "/|:|\\?|\\|\\\\|\\*|\\+"
