@@ -78,6 +78,25 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
 		pvals <- cbind(pvals[,c(1:11)], pvals_adj)
 	}
 
+	pattern <- "/|:|\\?|\\|\\\\|\\*|\\+"
+	cell_type1_tmp <- unlist(strsplit(cell_type1, '*'))
+	cell_type2_tmp <- unlist(strsplit(cell_type2, '*'))
+
+	if (any(grepl(pattern, cell_type1_tmp))){
+		idxz <- grep(pattern, cell_type1_tmp)
+		cell_type1_tmp[idxz] <- paste0("\\", cell_type1_tmp[idxz])
+		cell_type1 <- do.call(paste, c(as.list(cell_type1_tmp), sep = ""))
+	} else {
+		cell_type1 <- cell_type1
+	}
+	if (any(grepl(pattern, cell_type2_tmp))){
+		idxz <- grep(pattern, cell_type2_tmp)
+		cell_type2_tmp[idxz] <- paste0("\\", cell_type2_tmp[idxz])
+		cell_type2 <- do.call(paste, c(as.list(cell_type2_tmp), sep = ""))
+	} else {
+		cell_type2 <- cell_type2
+	}
+
 	if(length(idents) > 1){
 		ct1 = grep(cell_type1, idents, value = TRUE, ...)
 		ct2 = grep(cell_type2, idents, value = TRUE, ...)
@@ -298,8 +317,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
 			celltype2 <- lapply(celltype, function(x) {
 				xx <- as.list(unlist(strsplit(x, "\\|")))
 				xx <- lapply(xx, function(z) {
-					xz <- paste0('^', z, '$')
-					pattern <- "/|:|\\?|\\|\\\\|\\*|\\+"
+					xz <- paste0('^', z, '$')			
 					tmp_ <- unlist(strsplit(xz, '*'))
 					if (any(grepl(pattern, tmp_))){
 						idxz <- grep(pattern, tmp_)
