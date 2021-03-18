@@ -291,6 +291,14 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
 			}
 
 			celltype <- lapply(celltype, unlist)
+			
+			celltype <- lapply(celltype, function(x) {
+				xx <- strsplit(x, "[|]")
+				xx <- lapply(xx, function(z) paste0('^', z, '$'))
+				zz <- paste0(unlist(xx), collapse = "|")
+				return(zz)
+			})
+
 			cell_type <- do.call(paste0, list(celltype, collapse = "|"))
 		} else {
 			if(length(idents) > 1){
