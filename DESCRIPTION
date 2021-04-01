@@ -11,6 +11,8 @@ Imports:
 	Matrix,
 	dplyr,
 	ggplot2,
+	ggraph,
+	ggrepel,
 	reshape2,
 	viridis,
 	gtools,	
