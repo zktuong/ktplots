@@ -120,6 +120,9 @@ Specifying ```keep_significant_only``` will only keep those that are p<0.05 (whi
 Generates a circos-style wire/arc/chord plot for cellphonedb results.
 
 This functions piggy-backs on the original plot_cpdb function and generates the results like this:
+
+Credits to Ben Stewart for coming up with the base code!
+
 ```R
 # code example but not using the example datasets 
 library(SingleCellExperiment)
