@@ -10,10 +10,8 @@
 #' @param p.adjust.method correction method. p.adjust.methods of one of these options: c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none")
 #' @param keep_significant_only logical. Default is FALSE. Switch to TRUE if you only want to plot the significant hits from cpdb.
 #' @param split.by column name in the metadata/coldata table to split the spots by. Can only take columns with binary options. If specified, name to split by MUST be specified in the meta file provided to cpdb prior to analysis.
-#' @param gene.family default = NULL. some predefined group of genes. can take one of these options: "chemokines", "Th1", "Th2", "Th17", "Treg", "costimulatory", "coinhibitory", "niche"
-#' @param genes default = NULL. can specify custom list of genes if gene.family is NULL
 #' @param scale logical. scale the expression to mean +/- SD. NULL defaults to TRUE.
-#' @param standard_scale logical. scale the expression to range from 0 to 1. NULL defaults to FALSE.
+#' @param standard_scale logical. scale the expression to range from 0 to 1. Default is TRUE
 #' @param separator default = NULL. separator to use to split between celltypes. Unless otherwise specified, the separator will be `>@<`. Make sure the idents and split.by doesn't overlap with this.
 #' @param gene_symbol_mapping default = NULL.column name for rowData in sce holding the actual gene symbols if row names aren't gene symbols
 #' @param frac default = 0.2. Does nothing at the moment.
@@ -22,7 +20,7 @@
 #' @param interaction_grouping default = NULL. dataframe specifying groupings of cellphonedb interactions. First column must be cellphonedb's interacting_pair column. second column is whatever grouping you want.
 #' @param edge_group_colors default = NULL. vector for colour mapping for edge groups. only used if split.by is specified.
 #' @param node_group_colors default = NULL. vector for colour mapping for node labels.
-#' @param ... passes arguments to grep for cell_type1 and cell_type2.
+#' @param ... passes arguments plot_cpdb
 #' @return ggplot dot plot object of cellphone db output
 #' @examples
 #' \donttest{
@@ -32,7 +30,7 @@
 #' @import ggrepel
 #' @export
 
-plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, deconvoluted, p.adjust.method = NULL, keep_significant_only = FALSE, split.by = NULL, gene.family = NULL, genes = NULL, scale = NULL, standard_scale = NULL, separator = NULL, gene_symbol_mapping = NULL, frac = 0.2, remove_self = TRUE, desiredInteractions = NULL, interaction_grouping = NULL, edge_group_colors = NULL, node_group_colors = NULL, ...){
+plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, deconvoluted, p.adjust.method = NULL, keep_significant_only = FALSE, split.by = NULL, standard_scale = TRUE, separator = NULL, gene_symbol_mapping = NULL, frac = 0.2, remove_self = TRUE, desiredInteractions = NULL, interaction_grouping = NULL, edge_group_colors = NULL, node_group_colors = NULL, ...){
 
 	if (length(separator) > 0){
 		sep = separator
