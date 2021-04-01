@@ -27,9 +27,9 @@
 #' @examples
 #' \donttest{
 #' }
-#' @import viridis
 #' @import ggplot2
-#' @import reshape2
+#' @import ggraph
+#' @import ggrepel
 #' @export
 
 plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, deconvoluted, p.adjust.method = NULL, keep_significant_only = FALSE, split.by = NULL, gene.family = NULL, genes = NULL, scale = NULL, standard_scale = NULL, separator = NULL, gene_symbol_mapping = NULL, frac = 0.2, remove_self = TRUE, desiredInteractions = NULL, interaction_grouping = NULL, edge_group_colors = NULL, node_group_colors = NULL, ...){
