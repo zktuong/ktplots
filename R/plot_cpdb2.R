@@ -74,9 +74,7 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
 	sce_subset_tmp <- sce_subset[geneid, ]
 	
 	# split to list and calculate celltype mean for each treatment group
-	if (class(scdata) %in% c("SingleCellExperiment", "SummarizedExperiment")) {
-		cat("data provided is a SingleCellExperiment/SummarizedExperiment object", sep = "\n")
-		cat("extracting expression matrix", sep = "\n")
+	if (class(scdata) %in% c("SingleCellExperiment", "SummarizedExperiment")) {		
 		requireNamespace('SummarizedExperiment')
 		requireNamespace('SingleCellExperiment')
 		meta <- as.data.frame(colData(sce_subset_tmp))
