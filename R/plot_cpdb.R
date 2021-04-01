@@ -4,8 +4,8 @@
 #' @param cell_type2 cell type 2
 #' @param scdata single-cell data. can be seurat/summarizedexperiment object
 #' @param idents vector holding the idents for each cell or column name of scdata's metadata. MUST match cpdb's columns
-#' @param means_file object holding means.txt from cpdb output
-#' @param pvals_file object holding pvals.txt from cpdb output
+#' @param means object holding means.txt from cpdb output
+#' @param pvals object holding pvals.txt from cpdb output
 #' @param max_size max size of points.
 #' @param p.adjust.method correction method. p.adjust.methods of one of these options: c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none")
 #' @param keep_significant_only logical. Default is FALSE. Switch to TRUE if you only want to plot the significant hits from cpdb.
