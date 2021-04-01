@@ -115,6 +115,56 @@ if ```genes``` and ```gene.family``` are both not specified, the function will t
 
 Specifying ```keep_significant_only``` will only keep those that are p<0.05 (which you can try to adjust with ```p.adjust.method```).
 
+## New feature
+### plot_cpdb2
+Generates a circos-style wire/arc/chord plot for cellphonedb results.
+
+This functions piggy-backs on the original plot_cpdb function and generates the results like this:
+```R
+# code example but not using the example datasets 
+library(SingleCellExperiment)
+library(reticulate)
+library(ktplots)
+ad=import('anndata')
+
+adata = ad$read_h5ad('rna.h5ad')
+counts <- Matrix::t(adata$X)
+row.names(counts) <- row.names(adata$var)
+colnames(counts) <- row.names(adata$obs)
+sce <- SingleCellExperiment(list(counts = counts), colData = adata$obs, rowData = adata$var)
+
+means <- read.delim('out/means.txt', check.names = FALSE)
+pvalues <- read.delim('out/pvalues.txt', check.names = FALSE)
+deconvoluted <- read.delim('out/deconvoluted.txt', check.names = FALSE)
+interaction_grouping <- read.delim('interactions_groups.txt')
+# > head(interaction_grouping)
+#     interaction       role
+# 1 ALOX5_ALOX5AP Activating
+# 2    ANXA1_FPR1 Inhibitory
+# 3 BTLA_TNFRSF14 Inhibitory
+# 4     CCL5_CCR5 Chemotaxis
+# 5      CD2_CD58 Activating
+# 6     CD28_CD86 Activating
+
+test <- plot_cpdb2(cell_type1 = "CD4_Tem|CD4_Tcm|CD4_Treg", # same usage style as plot_cpdb
+	cell_type2 = "cDC",
+	idents = 'fine_clustering',
+	split.by = 'treatment_group_1',
+	scdata = sce,
+	means = means,
+	pvals = pvalues,
+	deconvoluted = deconvoluted, # new options specific to plot_cpdb
+	gene_symbol_mapping = 'index', # column name in rowData holding the actual gene symbols if the row names is ENSG Ids. Might be a bit buggy
+	desiredInteractions = list(c('CD4_Tcm', 'cDC1'), c('CD4_Tcm', 'cDC2'), c('CD4_Tem', 'cDC1'), c('CD4_Tem', 'cDC2	'), c('CD4_Treg', 'cDC1'), c('CD4_Treg', 'cDC2')), 
+	interaction_grouping = interaction_grouping,
+    edge_group_colors = c("Activating" = "#e15759", "Chemotaxis" = "#59a14f", "Inhibitory" = "#4e79a7", "   Intracellular trafficking" = "#9c755f", "DC_development" = "#B07aa1"),
+    node_group_colors = c("CD4_Tcm" = "#86bc86", "CD4_Tem" = "#79706e", "CD4_Treg" = "#ff7f0e", "cDC1" = "#bcbd22"  ,"cDC2" = "#17becf"),
+    keep_significant_only = TRUE,
+    standard_scale = TRUE,
+    remove_self = TRUE)
+```
+![plot_cpd2](exampleImages/plot_cpdb2.png)
+
 ### StackedVlnPlot
 Generates a stacked violinplot like in scanpy's ```sc.pl.stacked_violin```. 
 
