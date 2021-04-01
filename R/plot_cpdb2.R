@@ -253,9 +253,7 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
 		'receiver_fraction' = as.numeric(cell_type_fractions[receptor,rc]))
 	df_$from = paste0(df_$producer, "_", df_$ligand)
 	df_$to = paste0(df_$receiver, "_", df_$receptor)
-	if (!is.null(splitted)){
-		df_$from_ = df_$from
-		df_$to_ = df_$to
+	if (!is.null(splitted)){		
 		df_$producer_ = df_$producer
 		df_$receiver_ = df_$receiver
 		df_$from = gsub(paste0(splitted, '_'), '', df_$from)
@@ -263,7 +261,10 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
 		df_$producer = gsub(paste0(splitted, '_'), '', df_$producer)
 		df_$receiver = gsub(paste0(splitted, '_'), '', df_$receiver)
 		df_$barcode = paste0(df_$producer_, '-', df_$receiver_, sep, converted_pair)
+	} else {
+		df_$barcode = paste0(df_$producer, '-', df_$receiver, sep, converted_pair)
 	}
+
 	return(df_)}
 
 	dfx <- list()
