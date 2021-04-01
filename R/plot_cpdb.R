@@ -465,24 +465,24 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
 	}
 
 	if(length(p.adjust.method) > 0){
-		df_pvals <- melt(pvals_mat2, value.name = "padj")
-		df <- data.frame(cbind(df_means, padj = df_pvals$padj))
-		xp <- which(df$padj == 1)
+		df_pvals <- melt(pvals_mat2, value.name = "pvals_adj")
+		df <- data.frame(cbind(df_means, pvals_adj = df_pvals$pvals_adj))
+		xp <- which(df$pvals_adj == 1)
 		if (length(xp) > 0){
-			df$padj[which(df$padj == 1)] <- NA
+			df$pvals_adj[which(df$pvals_adj == 1)] <- NA
 		}
 		if (keep_significant_only){
 			# keep the entire row/ all the comparisons
 			df_ <- split(df, as.character(df$Var1))
 			anysig <- lapply(df_, function(x){
-				keep <- any(x$padj < 0.05)
+				keep <- any(x$pvals_adj < 0.05)
 				return(keep)
 			})
 			df_ <- df_[which(unlist(anysig))]
 			names(df_) <- NULL
 			df <- do.call(rbind, df_)			
 		}
-		df$padj[which(df$padj == 0)] <- 0.001
+		df$pvals_adj[which(df$pvals_adj == 0)] <- 0.001
 	} else {
 		df_pvals <- melt(pvals_mat2, value.name = "pvals")
 		df <- data.frame(cbind(df_means, pvals = df_pvals$pvals))
@@ -538,13 +538,13 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
 	if (default_style){
 		if ((length(standard_scale) > 0 && standard_scale) | (length(scale) > 0 && scale) | (length(scale) < 1 && length(standard_scale) < 1)){
 			if(length(p.adjust.method) > 0 && p.adjust.method != 'none'){
-				g <- ggplot(df, aes(x = Var2, y = Var1, color = -log10(padj), fill = scaled_means, size = scaled_means))
+				g <- ggplot(df, aes(x = Var2, y = Var1, color = -log10(pvals_adj), fill = scaled_means, size = scaled_means))
 			} else {
 				g <- ggplot(df, aes(x = Var2, y = Var1, color = -log10(pvals), fill = scaled_means, size = scaled_means))
 			}
 		} else {
 			if(length(p.adjust.method) > 0 && p.adjust.method != 'none'){
-				g <- ggplot(df, aes(x = Var2, y = Var1, color = -log10(padj), fill = means, size = means))
+				g <- ggplot(df, aes(x = Var2, y = Var1, color = -log10(pvals_adj), fill = means, size = means))
 			} else {
 				g <- ggplot(df, aes(x = Var2, y = Var1, color = -log10(pvals), fill = means, size = means))
 			}
