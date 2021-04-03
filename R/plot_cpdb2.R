@@ -381,9 +381,9 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
   	#plot the graph
 		pl <- ggraph(gr, layout = 'dendrogram', circular = TRUE) +
 		geom_conn_bundle(data = get_con(from = from, to = to, group = group, `-log10(sig)` = pval, interaction_score = interaction_score),
-			aes(colour = group, alpha = `-log10(sig)`, width = interaction_score), tension = 0.5) +
-		scale_edge_width(range = c(0, 2)) +
-		scale_edge_alpha(range = c(0.1, 3)) +
+			aes(colour = group, alpha = interaction_score, width = `-log10(sig)`), tension = 0.5) +
+		scale_edge_width(range = c(1, 3)) +
+		scale_edge_alpha(range = c(0, 3)) +
 		scale_edge_color_manual(values = edge_group_colors)+
 		geom_node_point(pch =19, aes(size = fraction, filter = leaf, color = celltype, alpha = type)) +
 		theme_void() + coord_fixed() +
