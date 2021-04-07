@@ -70,7 +70,10 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
 	
 	# extract all the possible genes.
 	geneid = unique(c(interactions_subset$gene_a, interactions_subset$gene_b))
-	geneid = geneid[-which(geneid == "")]
+	rmg = which(geneid == "")
+	if (length(rmg) > 0){
+		geneid = geneid[-which(geneid == "")]	
+	}
 	sce_subset_tmp <- sce_subset[geneid, ]
 	
 	# split to list and calculate celltype mean for each treatment group
@@ -155,51 +158,57 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
 	}
 	
 	decon_subset <- deconvoluted[deconvoluted$complex_name %in% findComplex(interactions_subset), ]
-	# although multiple rows are returned, really it's the same value for the same complex
-	decon_subset <- split(decon_subset, decon_subset$complex_name)
-	decon_subset_expr <- lapply(decon_subset, function(x) {
-		x <- x[,colnames(sce_list2)]
-		x <- colMeans(x)
-		return(x)
-	})
-
-	# to retrieve the fraction, we use the average fraction of all genes mapping to the complex
-	cellTypeFraction_complex <- function(sce_, genes, gene_symbol_mapping = NULL){
-		scex <- tryCatch(sce_[genes, ], error = function(e){
-			if (!is.null(gene_symbol_mapping)){
-				sce_[which(rowData(sce_)[,gene_symbol_mapping] %in% genes), ]
-			} else {
-				sce_[which(rowData(sce_)[,'index'] %in% genes), ]
-			}
+	if (nrow(decon_subset) > 0){
+		# although multiple rows are returned, really it's the same value for the same complex
+		decon_subset <- split(decon_subset, decon_subset$complex_name)
+		decon_subset_expr <- lapply(decon_subset, function(x) {
+			x <- x[,colnames(sce_list2)]
+			x <- colMeans(x)
+			return(x)
 		})
-	
-		cm <- mean(Matrix::rowMeans(counts(scex) > 0))
-		return(cm)
+
+		# to retrieve the fraction, we use the average fraction of all genes mapping to the complex
+		cellTypeFraction_complex <- function(sce_, genes, gene_symbol_mapping = NULL){
+			scex <- tryCatch(sce_[genes, ], error = function(e){
+				if (!is.null(gene_symbol_mapping)){
+					sce_[which(rowData(sce_)[,gene_symbol_mapping] %in% genes), ]
+				} else {
+					sce_[which(rowData(sce_)[,'index'] %in% genes), ]
+				}
+			})
+		
+			cm <- mean(Matrix::rowMeans(counts(scex) > 0))
+			return(cm)
+		}
+		
+		decon_subset_fraction <- lapply(decon_subset, function(x) {
+			x <- unique(x$gene_name)
+			test <- lapply(sce_list_alt, function(y){
+				return(lapply(y, cellTypeFraction_complex, x, gene_symbol_mapping))
+			})
+			return(test)
+		})
+		
+		decon_subset_fraction <- lapply(decon_subset_fraction, function(x) {
+			y <- lapply(x, function(z) do.call(cbind, z))
+			for (i in 1:length(y)){
+				colnames(y[[i]]) <- paste0(names(y[i]), '_', colnames(y[[i]]))
+			}
+			y <- do.call(cbind, y)
+			return(y)
+		})
+		
+		decon_subset_expr <- do.call(rbind, decon_subset_expr)
+		decon_subset_fraction <- do.call(rbind, decon_subset_fraction)
+		row.names(decon_subset_fraction) <- row.names(decon_subset_expr)
+		
+		expr_df <- rbind(sce_list2, decon_subset_expr)
+		fraction_df <- rbind(sce_list3, decon_subset_fraction)
+	} else {
+		expr_df <- sce_list2
+		fraction_df <- sce_list3
 	}
 	
-	decon_subset_fraction <- lapply(decon_subset, function(x) {
-		x <- unique(x$gene_name)
-		test <- lapply(sce_list_alt, function(y){
-			return(lapply(y, cellTypeFraction_complex, x, gene_symbol_mapping))
-		})
-		return(test)
-	})
-	
-	decon_subset_fraction <- lapply(decon_subset_fraction, function(x) {
-		y <- lapply(x, function(z) do.call(cbind, z))
-		for (i in 1:length(y)){
-			colnames(y[[i]]) <- paste0(names(y[i]), '_', colnames(y[[i]]))
-		}
-		y <- do.call(cbind, y)
-		return(y)
-	})
-	
-	decon_subset_expr <- do.call(rbind, decon_subset_expr)
-	decon_subset_fraction <- do.call(rbind, decon_subset_fraction)
-	row.names(decon_subset_fraction) <- row.names(decon_subset_expr)
-	
-	expr_df <- rbind(sce_list2, decon_subset_expr)
-	fraction_df <- rbind(sce_list3, decon_subset_fraction)
 
 	# make a big fat edgelist
 	if (!is.null(desiredInteractions)){
