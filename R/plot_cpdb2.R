@@ -30,7 +30,7 @@
 #' @import ggrepel
 #' @export
 
-plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, deconvoluted, p.adjust.method = NULL, keep_significant_only = FALSE, split.by = NULL, standard_scale = TRUE, separator = NULL, gene_symbol_mapping = NULL, frac = 0.2, remove_self = TRUE, desiredInteractions = NULL, interaction_grouping = NULL, edge_group_colors = NULL, node_group_colors = NULL, ...){
+plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, deconvoluted, p.adjust.method = NULL, keep_significant_only = TRUE, split.by = NULL, standard_scale = TRUE, separator = NULL, gene_symbol_mapping = NULL, frac = 0.2, remove_self = TRUE, desiredInteractions = NULL, interaction_grouping = NULL, edge_group_colors = NULL, node_group_colors = NULL, ...){
 
 	if (length(separator) > 0){
 		sep = separator
