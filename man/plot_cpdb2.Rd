@@ -13,12 +13,9 @@ plot_cpdb2(
   pvals,
   deconvoluted,
   p.adjust.method = NULL,
-  keep_significant_only = FALSE,
+  keep_significant_only = TRUE,
   split.by = NULL,
-  gene.family = NULL,
-  genes = NULL,
-  scale = NULL,
-  standard_scale = NULL,
+  standard_scale = TRUE,
   separator = NULL,
   gene_symbol_mapping = NULL,
   frac = 0.2,
@@ -51,13 +48,7 @@ plot_cpdb2(
 
 \item{split.by}{column name in the metadata/coldata table to split the spots by. Can only take columns with binary options. If specified, name to split by MUST be specified in the meta file provided to cpdb prior to analysis.}
 
-\item{gene.family}{default = NULL. some predefined group of genes. can take one of these options: "chemokines", "Th1", "Th2", "Th17", "Treg", "costimulatory", "coinhibitory", "niche"}
-
-\item{genes}{default = NULL. can specify custom list of genes if gene.family is NULL}
-
-\item{scale}{logical. scale the expression to mean +/- SD. NULL defaults to TRUE.}
-
-\item{standard_scale}{logical. scale the expression to range from 0 to 1. NULL defaults to FALSE.}
+\item{standard_scale}{logical. scale the expression to range from 0 to 1. Default is TRUE}
 
 \item{separator}{default = NULL. separator to use to split between celltypes. Unless otherwise specified, the separator will be `>@<`. Make sure the idents and split.by doesn't overlap with this.}
 
@@ -75,7 +66,9 @@ plot_cpdb2(
 
 \item{node_group_colors}{default = NULL. vector for colour mapping for node labels.}
 
-\item{...}{passes arguments to grep for cell_type1 and cell_type2.}
+\item{...}{passes arguments plot_cpdb}
+
+\item{scale}{logical. scale the expression to mean +/- SD. NULL defaults to TRUE.}
 }
 \value{
 ggplot dot plot object of cellphone db output
