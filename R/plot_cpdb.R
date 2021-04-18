@@ -279,7 +279,13 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
 			labels <- paste0(metadata[[split.by]], "_", metadata[[idents]])
 		}
 
-		labels <- factor(labels)
+		chk1 = class(metadata[[split.by]])
+		chk2 = class(metadata[[idents]])
+		if (chk1 == 'factor' & chk2 == 'factor'){
+			labels <- factor(labels, levels = paste0(levels(metadata[[split.by]]), '_', rep(levels(metadata[[idents]]), each = length(levels(metadata[[split.by]])))))
+		} else {
+			labels <- factor(labels)	
+		}
 		labels <- levels(labels)
 		groups <- factor(metadata[[split.by]])
 		groups <- levels(groups)
@@ -529,6 +535,8 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
 	} 
 	
 	df$Var2 <- gsub(sep, '-', df$Var2)
+	final_levels = unique(df$Var2)
+	df$Var2 <- factor(df$Var2, unique(df$Var2))
 	df$x_means_ <- df[,colnames(df_means)[3]]
 	df$x_means_[df[,colnames(df)[4]] < 0.05] <- NA
 	df$x_stroke = df$x_means_
