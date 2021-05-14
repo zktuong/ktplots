@@ -374,6 +374,15 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
 		cell_type <- do.call(paste0, list(celltype, collapse = "|"))
 	}
 
+	cell_type_tmp <- unlist(strsplit(cell_type, '*'))
+	if (any(grepl(pattern, cell_type_tmp))){
+		idxz <- grep(pattern, cell_type_tmp)
+		cell_type_tmp[idxz] <- paste0("\\", cell_type_tmp[idxz])
+		cell_type <- do.call(paste, c(as.list(cell_type_tmp), sep = ""))
+	} else {
+		cell_type <- cell_type
+	}
+
 	if(!is.null(gene.family) & is.null(genes)){
 		means_mat <- means_mat[query_group[[tolower(gene.family)]], grep(cell_type, colnames(means_mat), ...)]
 		pvals_mat <- pvals_mat[query_group[[tolower(gene.family)]], grep(cell_type, colnames(pvals_mat), ...)]
