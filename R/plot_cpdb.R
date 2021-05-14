@@ -171,8 +171,8 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
 		if(length(idents) > 1){
     		# relatively relaxed criteria to allow for the program to continue
 			options(warn=-1)
-			ct_1 <- grep(ct1, idents, value = TRUE, ...)
-			ct_2 <- grep(ct2, idents, value = TRUE, ...)
+			ct_1 <- grep(cell_type1, idents, value = TRUE, ...)
+			ct_2 <- grep(cell_type2, idents, value = TRUE, ...)
 			options(warn=0)
 			checklabels2 <- any(idents %in% ct_1)
 			if(checklabels2){
@@ -185,8 +185,8 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
 			}
 		} else {
 			options(warn=-1)
-			ct_1 <- grep(ct1, metadata[[idents]], value = TRUE, ...)
-			ct_2 <- grep(ct2, metadata[[idents]], value = TRUE, ...)
+			ct_1 <- grep(cell_type1, metadata[[idents]], value = TRUE, ...)
+			ct_2 <- grep(cell_type2, metadata[[idents]], value = TRUE, ...)
 			options(warn=0)
 			checklabels2 <- any(metadata[[idents]] %in% ct_1)
 			if(checklabels2){
@@ -203,8 +203,8 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
 	if(!checklabels2){
     	# relatively relaxed criteria to allow for the program to continue
 		options(warn=-1)
-		ct_1 <- grep(ct1, colnames(means_mat), value = TRUE)
-		ct_2 <- grep(ct2, colnames(means_mat), value = TRUE)
+		ct_1 <- grep(cell_type1, colnames(means_mat), value = TRUE)
+		ct_2 <- grep(cell_type2, colnames(means_mat), value = TRUE)
 		options(warn=0)
 		checklabels2 <- any(colnames(means_mat) %in% ct_1)
 		if(checklabels2){
