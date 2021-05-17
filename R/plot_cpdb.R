@@ -19,6 +19,7 @@
 #' @param noir default = FALSE. makes it b/w
 #' @param highlight colour for highlighting p <0.05
 #' @param separator separator to use to split between celltypes. Unless otherwise specified, the separator will be `>@<`. Make sure the idents and split.by doesn't overlap with this.
+#' @param special_character_search_pattern search pattern if the cell type names contains special character. NULL defaults to "/|:|\\?|\\*|\\+|[\\]".
 #' @param ... passes arguments to grep for cell_type1 and cell_type2.
 #' @return ggplot dot plot object of cellphone db output
 #' @examples
@@ -33,7 +34,7 @@
 #' @import reshape2
 #' @export
 
-plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_size = 8, p.adjust.method = NULL, keep_significant_only = FALSE, split.by = NULL, gene.family = NULL, genes = NULL, scale = NULL, standard_scale = NULL, col_option = viridis::viridis(50), default_style = TRUE, noir = FALSE, highlight = "red", separator = NULL,  ...) {
+plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_size = 8, p.adjust.method = NULL, keep_significant_only = FALSE, split.by = NULL, gene.family = NULL, genes = NULL, scale = NULL, standard_scale = NULL, col_option = viridis::viridis(50), default_style = TRUE, noir = FALSE, highlight = "red", separator = NULL, special_character_search_pattern = NULL, ...) {
 	if (class(scdata) %in% c("SingleCellExperiment", "SummarizedExperiment")) {
 		cat("data provided is a SingleCellExperiment/SummarizedExperiment object", sep = "\n")
 		cat("extracting expression matrix", sep = "\n")
@@ -78,7 +79,12 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
 		pvals <- cbind(pvals[,c(1:11)], pvals_adj)
 	}
 
-	pattern <- "/|:|\\?|\\|\\\\|\\*|\\+"
+	if (is.null(special_character_search_pattern)){
+		pattern <- "/|:|\\?|\\*|\\+|[\\]"	
+	} else {
+		pattern <- special_character_search_pattern
+	}
+	
 	cell_type1_tmp <- unlist(strsplit(cell_type1, '*'))
 	cell_type2_tmp <- unlist(strsplit(cell_type2, '*'))
 
