@@ -23,6 +23,7 @@ plot_cpdb(
   default_style = TRUE,
   noir = FALSE,
   highlight = "red",
+  highlight_size = NULL,
   separator = NULL,
   special_character_search_pattern = NULL,
   ...
@@ -62,6 +63,8 @@ plot_cpdb(
 \item{noir}{default = FALSE. makes it b/w}
 
 \item{highlight}{colour for highlighting p <0.05}
+
+\item{highlight_size}{stroke size for highlight if p < 0.05. if NULL, scales to -log10(pval).}
 
 \item{separator}{separator to use to split between celltypes. Unless otherwise specified, the separator will be `>@<`. Make sure the idents and split.by doesn't overlap with this.}
 
