@@ -19,7 +19,10 @@ geneDotPlot(
   filepath = NULL,
   filename = NULL,
   heat_cols = NULL,
-  col_limits = NULL
+  col_limits = NULL,
+  fill = FALSE,
+  outline_col = "black",
+  outline_size = 0.2
 )
 }
 \arguments{
@@ -52,6 +55,10 @@ geneDotPlot(
 \item{heat_cols}{colour gradient for the dot plot}
 
 \item{col_limits}{set limits to the color gradient}
+
+\item{outline_col}{colour of outlines if fill = TRUE}
+
+\item{outline_size}{stroke size of outlines if fill = TRUE}
 }
 \value{
 ggplot dot plot object of selected genes

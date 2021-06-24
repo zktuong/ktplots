@@ -15,6 +15,8 @@
 #' @param filename path to file
 #' @param heat_cols colour gradient for the dot plot
 #' @param col_limits set limits to the color gradient
+#' @param outline_col colour of outlines if fill = TRUE
+#' @param outline_size stroke size of outlines if fill = TRUE
 #' @return ggplot dot plot object of selected genes
 #' @examples
 #' \donttest{
@@ -28,7 +30,7 @@
 #' @import reshape2
 #' @import RColorBrewer
 #' @export
-geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 0.05, scale = NULL, standard_scale = NULL, keepLevels = TRUE, save.plot = FALSE, h = 5, w = 5, filepath = NULL, filename = NULL, heat_cols = NULL, col_limits = NULL)
+geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 0.05, scale = NULL, standard_scale = NULL, keepLevels = TRUE, save.plot = FALSE, h = 5, w = 5, filepath = NULL, filename = NULL, heat_cols = NULL, col_limits = NULL, fill = FALSE, outline_col = 'black', outline_size = .2)
 {    
     if (class(scdata) %in% c("SingleCellExperiment", "SummarizedExperiment")) {
         cat("data provided is a SingleCellExperiment/SummarizedExperiment object", sep = "\n")
@@ -297,7 +299,98 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
         }
         return(g)
     }
-    gg <- doplot(plot.df.final, split.by, dim_w = w , dim_h = h)
+
+    fillplot <- function(obj, group. = NULL, file_name = filename, file_path = filepath, dim_w = w, dim_h = h, limits. = col_limits, do.plot = save.plot, scale. = scale, standard_scale. = standard_scale, outline_col. = outline_col, outline_size. = outline_size) {
+        if (is.null(group.)) {
+            if ((length(scale.) > 0 && scale.) | (length(scale.) < 1 && length(standard_scale.) < 1) | (length(standard_scale.) > 0 && standard_scale.)) {
+                g <- ggplot(obj, aes(x = 0, y = gene, size = pct, fill = scale.mean))
+            }
+            else {
+                g <- ggplot(obj, aes(x = 0, y = gene, size = pct, fill = mean))
+            }
+            g <- g + geom_point(pch = 21, color = outline_col., stroke = outline_size.) + 
+            scale_y_discrete(position = "left") + 
+            scale_x_discrete(position = "bottom") + 
+            scale_fill_gradientn(colors = heat_cols, limits = limits., na.value = "grey90", oob = scales::squish) + 
+            scale_radius(range = c(0, 4), limits = c(0, 1)) + 
+            theme_bw() + theme(axis.text.x = element_text(angle = 90, hjust = 1),
+             axis.title.x = element_blank(),
+             axis.ticks = element_blank(),
+             axis.title.y = element_blank(),
+             axis.line = element_blank(),
+             panel.grid.major = element_blank(),
+             panel.grid.minor = element_blank(),
+             panel.border = element_blank(),
+             strip.background = element_blank()) + 
+            facet_grid(~cell_type)
+        }
+        else {
+            if ((length(scale.) > 0 && scale.) | (length(scale.) < 
+                1 && length(standard_scale.) < 1) | (length(standard_scale.) > 
+                0 && standard_scale.)) {
+                g <- ggplot(obj, aes(x = group, y = gene, size = pct, 
+                    fill = scale.mean))
+            }
+            else {
+                g <- ggplot(obj, aes(x = group, y = gene, size = pct, 
+                    fill = mean))
+            }
+            g <- g + geom_point(pch = 21, color = outline_col., stroke = outline_size.) + scale_y_discrete(position = "left") + 
+            scale_x_discrete(position = "bottom") + 
+            scale_fill_gradientn(colors = heat_cols, limits = limits., na.value = "grey90", oob = scales::squish) + 
+            scale_radius(range = c(0, 4), limits = c(0, 1)) + 
+            theme_bw() + theme(axis.text.x = element_text(angle = 90, hjust = 1), 
+             axis.title.x = element_blank(), 
+             axis.ticks = element_blank(), 
+             axis.title.y = element_blank(),
+             axis.line = element_blank(), 
+             panel.grid.major = element_blank(),
+             panel.grid.minor = element_blank(), 
+             panel.border = element_blank(),
+             strip.background = element_blank()) + 
+            facet_grid(~cell_type)
+        }
+        if (do.plot) {
+            if (is.null(file_name) && is.null(file_path)) {
+                out_path <- "./geneDotPlot.df"
+                warning("no file name provided. saving plot to ", getwd(), "/geneDotPlot.pdf")
+                ggsave("./geneDotPlot.pdf", plot = g, width = dim_w, height = dim_h, device = "pdf", useDingbats = FALSE)
+            }
+            else if (!is.null(file_name) && is.null(file_path)) {
+                cat(paste0("saving plot to ", file_name), sep = "\n")
+                tryCatch(ggsave(file_name, plot = g, width = dim_w, height = dim_h, device = "pdf", useDingbats = FALSE), error = function(e) {
+                    ggsave("./geneDotPlot.df", plot = g, width = dim_w, height = dim_h, device = "pdf", useDingbats = FALSE)
+                    warning("file name provided is not suitable. saving as geneDotPlot.pdf")
+                })
+            }
+            else if (is.null(file_name) && !is.null(file_path)) {
+                cat(paste0("saving plot to ", file_path), sep = "\n")
+                if (grepl(".pdf", file_path)) {
+                    ggsave(file_path, plot = g, width = dim_w, height = dim_h, device = "pdf", useDingbats = FALSE)
+                }
+                else {
+                    dir.create(file_path, recursive = TRUE)
+                    ggsave(paste0(file_path, "/geneDotPlot.df"), plot = g, width = dim_w, height = dim_h, device = "pdf", useDingbats = FALSE)
+                    warning(paste0("file path provided is not suitable. saving as ", file_path, "/geneDotPlot.pdf"))
+                }
+            }
+            else if (!is.null(file_name) && !is.null(file_path)) {
+                cat(paste0("saving plot to ", paste0(file_path, "/", file_name)), sep = "\n")
+                dir.create(file_path, recursive = TRUE)
+                tryCatch(ggsave(paste0(file_path, "/", file_name), plot = g, width = dim_w, height = dim_h, device = "pdf", useDingbats = FALSE), error = function(e) {
+                    ggsave("./geneDotPlot.df", plot = g, width = dim_w, height = dim_h, device = "pdf", useDingbats = FALSE)
+                    warning("file path provided is not suitable. saving as geneDotPlot.pdf")
+                })
+            }
+        }
+        return(g)
+    }
+    if (fill){
+        gg <- fillplot(plot.df.final, split.by, file_name = filename, file_path = filepath, dim_w = w , dim_h = h, limits. = col_limits, do.plot = save.plot, scale. = scale, standard_scale. = standard_scale, outline_col. = outline_col, outline_size. = outline_size)
+    } else {
+        gg <- doplot(plot.df.final, split.by, file_name = filename, file_path = filepath, dim_w = w , dim_h = h, limits. = col_limits, do.plot = save.plot, scale. = scale, standard_scale. = standard_scale)
+    }
+    
     gg
     return(gg)
 }
