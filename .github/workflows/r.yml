@@ -1,0 +1,96 @@
+name: R
+
+on:
+  push:
+    branches:
+      - "master"
+  pull_request:
+    branches:
+      - "*"
+
+env:
+  cache-version: 'cache-v1'
+
+jobs:
+  build:
+    strategy:
+      max-parallel: 5
+      matrix:
+        config:
+          - { r-version: 4.0, os: ubuntu-latest, python-version: 3.8 }
+          - { r-version: 4.1, os: ubuntu-latest, python-version: 3.8 }
+          - { r-version: 4.0, os: macos-latest, python-version: 3.8 }
+          - { r-version: 4.1, os: macos-latest, python-version: 3.8 }
+    runs-on: ${{ matrix.config.os }}
+    env:
+      R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
+      NOT_CRAN: true
+      TZ: UTC
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v1
+        with:
+          r-version: ${{ matrix.config.r-version}}
+
+      - name: Setup r-lib/remotes
+        run: |
+          install.packages('remotes')
+        shell: Rscript {0}
+
+      - id: bioc
+        name: Check bioc version
+        run: |
+          echo "##[set-output name=mainbiocversion;]$(Rscript -e 'cat(unlist(tools:::.BioC_version_associated_with_R_version()))' | awk '{print $1}')"
+          echo "##[set-output name=subbiocversion;]$(Rscript -e 'cat(unlist(tools:::.BioC_version_associated_with_R_version()))' | awk '{print $2}')"
+          echo "##[set-output name=biocversion;]$(Rscript -e 'cat(as.character(tools:::.BioC_version_associated_with_R_version()))' | awk '{print $1}')"
+        shell: bash -l {0}
+
+      - name: Install ubuntu system dependencies
+        if: matrix.config.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get install libcurl4-openssl-dev
+          sysreqs=$(Rscript -e 'cat("apt-get update -y && apt-get install -y", paste(gsub("apt-get install -y ", "", remotes::system_requirements("ubuntu", "20.04", package = c("textrank","udpipe","dplyr","pbmcapply","superml","igraph","FNN","S4Vectors","ggraph","leiden","devtools","roxygen2"))), collapse = " "))')
+          echo $sysreqs
+          sudo -s eval "$sysreqs"
+      - name: Install macOS system dependencies
+        if: matrix.config.os == 'macos-latest'
+        run: |
+          brew install cairo pkg-config autoconf automake libtool
+
+      - name: Cache ubuntu R packages
+        if: "!contains(github.event.head_commit.message, '/nocache') && matrix.config.os == 'ubuntu-latest'"
+        uses: actions/cache@v2
+        with:
+          path: /home/runner/work/_temp/Library
+          key: ${{ env.cache-version }}-${{ matrix.config.os }}-biocversion-RELEASE_${{ steps.bioc.outputs.mainbiocversion}}_${{ steps.bioc.outputs.subbiocversion}}-r-${{ matrix.config.r-version}}-${{ hashFiles('.github/depends.Rds') }}
+          restore-keys: ${{ env.cache-version }}-${{ matrix.config.os }}-biocversion-RELEASE_${{ steps.bioc.outputs.mainbiocversion}}_${{ steps.bioc.outputs.subbiocversion}}-r-${{ matrix.config.r-version}}-
+
+      - name: Cache macOS R packages
+        if: "!contains(github.event.head_commit.message, '/nocache') && matrix.config.os != 'ubuntu-latest'"
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.R_LIBS_USER }}
+          key: ${{ env.cache-version }}-${{ matrix.config.os }}-biocversion-RELEASE_${{ steps.bioc.outputs.mainbiocversion}}_${{ steps.bioc.outputs.subbiocversion}}-r-${{ matrix.config.r-version}}-${{ hashFiles('.github/depends.Rds') }}
+          restore-keys: ${{ env.cache-version }}-${{ matrix.config.os }}-biocversion-RELEASE_${{ steps.bioc.outputs.mainbiocversion}}_${{ steps.bioc.outputs.subbiocversion}}-r-${{ matrix.config.r-version}}-
+
+      - name: Install dependencies
+        run: |
+          install.packages(c("rcmdcheck", "covr"))
+          remotes::install_deps(dependencies = TRUE)
+        shell: Rscript {0}
+
+      - name: Check
+        run: |
+          Rscript -e 'rcmdcheck::rcmdcheck(args = "--no-manual", error_on = "error")'
+        shell: bash -l {0}
+
+      - name: Test coverage
+        run: |
+          Rscript -e 'covr::codecov(token = "${{ secrets.CODECOV_TOKEN }}")'
+        shell: bash -l {0}
