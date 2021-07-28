@@ -22,7 +22,9 @@ Imports:
 Suggests:
 	SummarizedExperiment,
 	SingleCellExperiment,
-	Seurat
+	Seurat,
+	testthat,
+	covr
 Depends:
 	ggplot2
 Remotes: 
