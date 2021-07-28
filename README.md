@@ -215,7 +215,7 @@ rainCloudPlot(data = kidneyimmune@meta.data, groupby = "celltype", parameter = "
 As shown in the examples above, these are some functions to quickly adjust the size and position of ggplots.
 ```R
 # for example
-g <- Seurat::DimPlot(kidneyimmune, color = "celltype")
+g <- Seurat::DimPlot(kidneyimmune, group.by = "celltype")
 g1 <- g + small_legend() + small_guide() + small_axis() + bottomleft_legend() 
 library(patchwork)
 g + g1
