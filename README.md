@@ -121,6 +121,8 @@ Generates a circos-style wire/arc/chord plot for cellphonedb results.
 
 This functions piggy-backs on the original plot_cpdb function and generates the results like this:
 
+Please help contribute to the interaction grouping list [here](https://docs.google.com/spreadsheets/d/1O9OKU7J0NdeQNJAIMpsHtWAFvY014GDQ7aigdGUSTmc/edit?usp=sharing)!
+
 Credits to Ben Stewart for coming up with the base code!
 
 ```R
