@@ -20,7 +20,7 @@
 #' @param highlight colour for highlighting p <0.05
 #' @param highlight_size stroke size for highlight if p < 0.05. if NULL, scales to -log10(pval).
 #' @param separator separator to use to split between celltypes. Unless otherwise specified, the separator will be `>@<`. Make sure the idents and split.by doesn't overlap with this.
-#' @param special_character_search_pattern search pattern if the cell type names contains special character. NULL defaults to "/|:|\\?|\\*|\\+|[\\]".
+#' @param special_character_search_pattern search pattern if the cell type names contains special character. NULL defaults to "/|:|\\?|\\*|\\+|[\\]|\\(|\\)".
 #' @param ... passes arguments to grep for cell_type1 and cell_type2.
 #' @return ggplot dot plot object of cellphone db output
 #' @examples
@@ -81,7 +81,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
 	}
 
 	if (is.null(special_character_search_pattern)){
-		pattern <- "/|:|\\?|\\*|\\+|[\\]"	
+		pattern <- "/|:|\\?|\\*|\\+|[\\]|\\(|\\)"	
 	} else {
 		pattern <- special_character_search_pattern
 	}
@@ -381,14 +381,14 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
 		cell_type <- do.call(paste0, list(celltype, collapse = "|"))
 	}
 
-	cell_type_tmp <- unlist(strsplit(cell_type, '*'))
-	if (any(grepl(pattern, cell_type_tmp))){
-		idxz <- grep(pattern, cell_type_tmp)
-		cell_type_tmp[idxz] <- paste0("\\", cell_type_tmp[idxz])
-		cell_type <- do.call(paste, c(as.list(cell_type_tmp), sep = ""))
-	} else {
-		cell_type <- cell_type
-	}
+	# cell_type_tmp <- unlist(strsplit(cell_type, '*'))
+	# if (any(grepl(pattern, cell_type_tmp))){
+	# 	idxz <- grep(pattern, cell_type_tmp)
+	# 	cell_type_tmp[idxz] <- paste0("\\", cell_type_tmp[idxz])
+	# 	cell_type <- do.call(paste, c(as.list(cell_type_tmp), sep = ""))
+	# } else {
+	# 	cell_type <- cell_type
+	# }
 
 	if(!is.null(gene.family) & is.null(genes)){
 		means_mat <- means_mat[query_group[[tolower(gene.family)]], grep(cell_type, colnames(means_mat), ...)]
