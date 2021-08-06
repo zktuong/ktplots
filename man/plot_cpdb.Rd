@@ -68,7 +68,7 @@ plot_cpdb(
 
 \item{separator}{separator to use to split between celltypes. Unless otherwise specified, the separator will be `>@<`. Make sure the idents and split.by doesn't overlap with this.}
 
-\item{special_character_search_pattern}{search pattern if the cell type names contains special character. NULL defaults to "/|:|\\?|\\*|\\+|[\\]".}
+\item{special_character_search_pattern}{search pattern if the cell type names contains special character. NULL defaults to "/|:|\\?|\\*|\\+|[\\]|\\(|\\)".}
 
 \item{...}{passes arguments to grep for cell_type1 and cell_type2.}
 
