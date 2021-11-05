@@ -57,6 +57,44 @@
 #' @docType data
 "sig_means"
 
+#' means2
+#'
+#' means2 - Dataframe of CellPhoneDB output means.txt file
+#' @rdname kidneyimmune
+#' @docType data
+#' @usage data(cpdb_output)
+#' @format Data frames containing outputs after CellPhoneDB analysis
+#' \describe{
+#'   \item{means2}{data frame containing mean expression values for each interacting pair}
+#'   \item{pvals2}{data frame containing p values for each interacting pair}
+#' }
+#' @examples
+#' data(cpdb_output)
+"means2"
+
+#' pvals2
+#'
+#' pvals2 - Dataframe of CellPhoneDB output pvalues.txt file
+#' @rdname kidneyimmune
+#' @docType data
+"pvals2"
+
+
+#' decon2
+#'
+#' decon2 - Dataframe of CellPhoneDB output deconvoluted.txt file
+#' @rdname kidneyimmune
+#' @docType data
+"decon2"
+
+
+#' sig_means2
+#'
+#' sig_means2 - Dataframe of CellPhoneDB output significant_means.txt file
+#' @rdname kidneyimmune
+#' @docType data
+"sig_means2"
+
 
 #' interaction_annotation
 #'
