@@ -61,7 +61,9 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
 		if (length(which(names(dictionary) == '')) > 0){
 			dictionary <- dictionary[-which(names(dictionary) == '')]
 		}
-	}
+	} else {
+        dictionary = NULL
+    }
 	
 	if (!is.null(interaction_grouping)){
 		if ((class(interaction_grouping) == 'data.frame')){
@@ -130,14 +132,15 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
 	sce_list2 <- do.call(cbind, sce_list2)
 	sce_list3 <- do.call(cbind, sce_list3)
 	
-	humanreadablename = c()
-	for (i in row.names(sce_list2)){
-		humanreadablename = c(humanreadablename, as.character(unlist(dictionary[i])))
-	}
-	
-	rownames(sce_list2) <- humanreadablename
-	rownames(sce_list3) <- humanreadablename
-	
+    if (!is.null(dictionary)){
+        humanreadablename = c()
+        for (i in row.names(sce_list2)){
+            humanreadablename = c(humanreadablename, as.character(unlist(dictionary[i])))
+        }
+        rownames(sce_list2) <- humanreadablename
+        rownames(sce_list3) <- humanreadablename
+    }
+
 	findComplex <- function(interaction){
 		idxa <- which(interaction$gene_a == '')
 		idxb <- which(interaction$gene_b == '')
