@@ -145,7 +145,7 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
 	
 		if (length(complexa) > 0){
 			if (length(complexb) > 0) {
-				res <- c(complexa, complex_b)
+				res <- c(complexa, complexb)
 			} else {
 				res <- complexa
 			}
