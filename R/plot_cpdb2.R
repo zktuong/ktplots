@@ -38,7 +38,7 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
 		sep = '>@<'
 	}	
 
-	cpdb_int = plot_cpdb(cell_type1 = cell_type1, cell_type2 = cell_type2, scdata = scdata, idents = idents, split.by = split.by, means = means, pvals = pvalues, keep_significant_only = keep_significant_only, standard_scale = standard_scale, ...)
+	cpdb_int = plot_cpdb(cell_type1 = cell_type1, cell_type2 = cell_type2, scdata = scdata, idents = idents, split.by = split.by, means = means, pvals = pvals, keep_significant_only = keep_significant_only, standard_scale = standard_scale, ...)
 
 	lr_interactions <- cpdb_int$data
 	subset_clusters <- unique(unlist(lapply(as.list(lr_interactions$group), strsplit, sep)))
@@ -424,3 +424,5 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
 		return(gl[[1]])	
 	}
 }
+
+
