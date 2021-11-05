@@ -1,0 +1,837 @@
+Interaction	Role
+ALOX5_ALOX5AP	Activating
+ANXA1_FPR1	Inhibitory
+BTLA_TNFRSF14	Inhibitory
+CCL5_CCR5	Chemotaxis
+CD2_CD58	Activating
+CD28_CD86	Activating
+CD47_SIRPG	Chemotaxis
+CD52_SIGLEC10	Inhibitory
+CD74_APP	Intracellular trafficking
+CD74_COPA	Intracellular trafficking
+CD74_MIF	Inhibitory
+CD99_PILRA	Inhibitory
+CTLA4_CD86	Inhibitory
+FLT3_FLT3LG	DC_development
+HLA-DPB1_TNFSF13B	Unknown
+HLA-F_LILRB1	Inhibitory
+HLA-F_LILRB2	Inhibitory
+ICAM1_SPN	Activating
+ICAM2_aLb2 complex	Inhibitory
+LGALS9_CD44	Inhibitory
+LGALS9_CD47	Unknown
+LGALS9_SORL1	Unknown
+LTBR_LTB	Activating
+MIF_TNFRSF14	Activating
+NCR3_BAG6	Activating
+PLAUR_a4b1 complex	Activating
+PTPRC_MRC1	Inhibitory
+SELL_SELPLG	Inhibitory
+SIRPA_CD47	Inhibitory
+TNFRSF1B_GRN	Inhibitory
+TNFSF13_FAS	Inhibitory
+TNFSF13_TNFRSF14	Unknown
+PTPRC_CD22	Inhibitory
+ACE2_GHRL	Unknown
+ACKR1_CCL17	Unknown
+ACKR2_CCL14	Unknown
+ACKR2_CCL2	Unknown
+ACKR2_CCL27	Unknown
+ACKR2_CCL28	Unknown
+ACKR2_CCL3	Unknown
+ACKR2_CCL3L3	Unknown
+ACKR2_CCL4	Unknown
+ACKR2_CCL5	Unknown
+ACKR2_CCL8	Unknown
+ACKR3_CXCL12	Unknown
+ACVR1_BMPR2_BMP6	Unknown
+ACVR1_BMPR2_BMP7	Unknown
+ACVR_1A2A receptor_BMP6	Unknown
+ACVR_1A2A receptor_BMP7	Unknown
+ACVR_1A2A receptor_INHBA	Unknown
+ACVR_1A2B receptor_BMP6	Unknown
+ACVR_1A2B receptor_BMP7	Unknown
+ACVR_1A2B receptor_INHBA	Unknown
+ACVR_1B2A receptor_BMP3	Unknown
+ACVR_1B2A receptor_GDF11	Unknown
+ACVR_1B2A receptor_INHBA	Unknown
+ACVR_1B2B receptor_GDF11	Unknown
+ACVR_1B2B receptor_INHBA	Unknown
+ACVR_1C2A receptor_INHBA	Unknown
+ACVR_1C2B receptor_INHBA	Unknown
+ADCYAP1_DPP4	Unknown
+ADCYAP1_SCTR	Unknown
+ADCYAP1_VIPR1	Unknown
+ADCYAP1_VIPR2	Unknown
+ADGRG5_FAM3C	Unknown
+ADGRL1_NRG1	Unknown
+ADORA1_ENTPD1	Unknown
+ADORA2B_ENTPD1	Unknown
+ADORA3_ENTPD1	Unknown
+ADRB2_VEGFB	Unknown
+ANGPT2_TEK	Unknown
+ANXA1_FPR2	Unknown
+ANXA1_FPR3	Unknown
+APELA_APLNR	Unknown
+APLNR_APLN	Unknown
+APP_FPR2	Unknown
+AVP_AVPR1A	Unknown
+AXL_GAS6	Unknown
+AXL_IL15RA	Unknown
+BDNF_F11R	Unknown
+BDNF_NTRK2	Unknown
+BDNF_SORT1	Unknown
+BMP2_SMO	Unknown
+BMP7_PTPRK	Unknown
+BMP7_SLAMF1	Unknown
+BMP8B_PLAUR	Unknown
+BMPR1A_BMPR2_BMP2	Unknown
+BMPR1A_BMPR2_BMP4	Unknown
+BMPR1A_BMPR2_BMP6	Unknown
+BMPR1A_BMPR2_BMP7	Unknown
+BMPR1A_BMPR2_GDF5	Unknown
+BMPR1A_BMPR2_GDF7	Unknown
+BMPR1B_BMPR2_BMP2	Unknown
+BMPR1B_BMPR2_BMP4	Unknown
+BMPR1B_BMPR2_BMP6	Unknown
+BMPR1B_BMPR2_BMP7	Unknown
+BMPR1B_BMPR2_BMPR1A	Unknown
+BMPR1B_BMPR2_GDF5	Unknown
+BMPR1B_BMPR2_GDF7	Unknown
+BMR1A_ACR2A_BMP2	Unknown
+BMR1A_ACR2A_BMP4	Unknown
+BMR1A_ACR2A_BMP6	Unknown
+BMR1A_ACR2A_BMP7	Unknown
+BMR1A_ACR2A_GDF5	Unknown
+BMR1A_ACR2A_GDF7	Unknown
+BMR1A_AVR2B_BMP2	Unknown
+BMR1A_AVR2B_BMP4	Unknown
+BMR1A_AVR2B_BMP6	Unknown
+BMR1A_AVR2B_BMP7	Unknown
+BMR1A_AVR2B_GDF5	Unknown
+BMR1A_AVR2B_GDF7	Unknown
+BMR1B_AVR2A_BMP2	Unknown
+BMR1B_AVR2A_BMP4	Unknown
+BMR1B_AVR2A_BMP6	Unknown
+BMR1B_AVR2A_BMP7	Unknown
+BMR1B_AVR2A_GDF5	Unknown
+BMR1B_AVR2A_GDF7	Unknown
+BMR1B_AVR2B_BMP2	Unknown
+BMR1B_AVR2B_BMP4	Unknown
+BMR1B_AVR2B_BMP6	Unknown
+BMR1B_AVR2B_BMP7	Unknown
+BMR1B_AVR2B_GDF5	Unknown
+BMR1B_AVR2B_GDF7	Unknown
+C3_aMb2 complex	Unknown
+C3_C3AR1	Unknown
+C5_C5AR1	Unknown
+C5_C5AR2	Unknown
+C5AR1_RPS19	Unknown
+CADM1_CADM1	Unknown
+CALCA_CALCR	Unknown
+CALCB_CALCR	Unknown
+CALCR_ADM	Unknown
+CALCR_ADM2	Unknown
+CCL22_CCR4	Chemotaxis
+CCL22_DPP4	Unknown
+CCL2_ACKR1	Unknown
+CCL2_CCR10	Chemotaxis
+CCL2_CCR2	Chemotaxis
+CCL3_CCR1	Chemotaxis
+CCL3_CCR3	Chemotaxis
+CCL3_CCR5	Chemotaxis
+CCL3_IDE	Unknown
+CCL3L3_CCR1	Chemotaxis
+CCL3L3_CCR3	Chemotaxis
+CCL3L3_DPP4	Unknown
+CCL4_CCR5	Chemotaxis
+CCL4_CNR2	Unknown
+CCL4_GPRC5D	Unknown
+CCL4_SLC7A1	Unknown
+CCL5_ACKR1	Unknown
+CCL5_CCR1	Chemotaxis
+CCL5_CCR3	Chemotaxis
+CCL5_CCR4	Chemotaxis
+CCL8_ACKR1	Unknown
+CCR10_CCL27	Chemotaxis
+CCR10_CCL28	Chemotaxis
+CCR1_CCL14	Chemotaxis
+CCR1_CCL15	Chemotaxis
+CCR1_CCL18	Chemotaxis
+CCR1_CCL23	Chemotaxis
+CCR1_CCL8	Chemotaxis
+CCR2_CCL8	Chemotaxis
+CCR3_CCL14	Chemotaxis
+CCR3_CCL15	Chemotaxis
+CCR3_CCL28	Chemotaxis
+CCR3_CCL8	Chemotaxis
+CCR4_CCL17	Chemotaxis
+CCR5_CCL8	Chemotaxis
+CCR6_CCL20	Chemotaxis
+CCR7_CCL19	Chemotaxis
+CCRL2_CCL19	Chemotaxis
+CD160_TNFRSF14	Unknown
+CD1D_LILRB2	Unknown
+CD200_CD200R1	Unknown
+CD27_CD70	Unknown
+CD28_CD80	Activating
+CD40_CD40LG	Activating
+CD40_INSL3	Unknown
+CD40_TNFSF13B	Unknown
+CD40LG_a5b1 complex	Unknown
+CD44_FGFR2	Unknown
+CD44_HBEGF	Unknown
+CD44_SELE	Unknown
+CD46_JAG1	Unknown
+CD47_SIRB1 complex	Unknown
+CD48_CD244	Unknown
+CD55_ADGRE5	Unknown
+CD6_ALCAM	Unknown
+CD70_GPRC5B	Unknown
+CD70_TNFRSF17	Unknown
+CD72_SEMA4D	Unknown
+CD8 receptor_LCK	Unknown
+CD80_CD274	Inhibitory
+CD8A_CEACAM5	Unknown
+CD94:NKG2A_HLA-E	Unknown
+CD94:NKG2C_HLA-E	Unknown
+CD94:NKG2E_HLA-E	Unknown
+CDH1_a2b1 complex	Unknown
+CDH1_aEb7 complex	Unknown
+CDH1_KLRG1	Unknown
+CEACAM1_CD209	Unknown
+CEACAM1_CEACAM8	Unknown
+CEACAM1_SELE	Unknown
+CEACAM5_CD1D	Unknown
+CEACAM5_CEACAM1	Unknown
+CLEC2B_KLRF1	Unknown
+CMKLR1_RARRES2	Unknown
+COL12A1_a10b1 complex	Unknown
+COL12A1_a11b1 complex	Unknown
+COL12A1_a1b1 complex	Unknown
+COL12A1_a2b1 complex	Unknown
+COL13A1_a10b1 complex	Unknown
+COL13A1_a11b1 complex	Unknown
+COL13A1_a1b1 complex	Unknown
+COL13A1_a2b1 complex	Unknown
+COL15A1_a10b1 complex	Unknown
+COL15A1_a11b1 complex	Unknown
+COL15A1_a1b1 complex	Unknown
+COL15A1_a2b1 complex	Unknown
+COL16A1_a10b1 complex	Unknown
+COL16A1_a11b1 complex	Unknown
+COL16A1_a1b1 complex	Unknown
+COL16A1_a2b1 complex	Unknown
+COL18A1_a10b1 complex	Unknown
+COL18A1_a11b1 complex	Unknown
+COL18A1_a1b1 complex	Unknown
+COL18A1_a2b1 complex	Unknown
+COL19A1_a10b1 complex	Unknown
+COL19A1_a11b1 complex	Unknown
+COL19A1_a1b1 complex	Unknown
+COL19A1_a2b1 complex	Unknown
+COL1A1_a10b1 complex	Unknown
+COL1A1_a11b1 complex	Unknown
+COL1A1_a1b1 complex	Unknown
+COL1A1_a2b1 complex	Unknown
+COL24A1_a10b1 complex	Unknown
+COL24A1_a11b1 complex	Unknown
+COL24A1_a1b1 complex	Unknown
+COL24A1_a2b1 complex	Unknown
+COL26A1_a10b1 complex	Unknown
+COL26A1_a11b1 complex	Unknown
+COL26A1_a1b1 complex	Unknown
+COL26A1_a2b1 complex	Unknown
+COL27A1_a10b1 complex	Unknown
+COL27A1_a11b1 complex	Unknown
+COL27A1_a1b1 complex	Unknown
+COL27A1_a2b1 complex	Unknown
+COL28A1_a10b1 complex	Unknown
+COL28A1_a11b1 complex	Unknown
+COL28A1_a1b1 complex	Unknown
+COL28A1_a2b1 complex	Unknown
+COL3A1_a10b1 complex	Unknown
+COL3A1_a11b1 complex	Unknown
+COL3A1_a1b1 complex	Unknown
+COL3A1_a2b1 complex	Unknown
+COL4A1_a10b1 complex	Unknown
+COL4A1_a11b1 complex	Unknown
+COL4A1_a1b1 complex	Unknown
+COL4A1_a2b1 complex	Unknown
+COL4A2_a10b1 complex	Unknown
+COL4A2_a11b1 complex	Unknown
+COL4A2_a1b1 complex	Unknown
+COL4A2_a2b1 complex	Unknown
+COL4A3_a10b1 complex	Unknown
+COL4A3_a11b1 complex	Unknown
+COL4A3_a1b1 complex	Unknown
+COL4A3_a2b1 complex	Unknown
+COL4A4_a10b1 complex	Unknown
+COL4A4_a11b1 complex	Unknown
+COL4A4_a1b1 complex	Unknown
+COL4A4_a2b1 complex	Unknown
+COL4A5_a10b1 complex	Unknown
+COL4A5_a11b1 complex	Unknown
+COL4A5_a1b1 complex	Unknown
+COL4A5_a2b1 complex	Unknown
+COL4A6_a10b1 complex	Unknown
+COL4A6_a11b1 complex	Unknown
+COL4A6_a1b1 complex	Unknown
+COL4A6_a2b1 complex	Unknown
+COL5A1_a10b1 complex	Unknown
+COL5A1_a11b1 complex	Unknown
+COL5A1_a1b1 complex	Unknown
+COL5A1_a2b1 complex	Unknown
+COL5A2_a10b1 complex	Unknown
+COL5A2_a11b1 complex	Unknown
+COL5A2_a1b1 complex	Unknown
+COL5A2_a2b1 complex	Unknown
+COL5A3_a10b1 complex	Unknown
+COL5A3_a11b1 complex	Unknown
+COL5A3_a1b1 complex	Unknown
+COL5A3_a2b1 complex	Unknown
+COL6A1_a10b1 complex	Unknown
+COL6A1_a11b1 complex	Unknown
+COL6A1_a1b1 complex	Unknown
+COL6A1_a2b1 complex	Unknown
+COL6A2_a10b1 complex	Unknown
+COL6A2_a11b1 complex	Unknown
+COL6A2_a1b1 complex	Unknown
+COL6A2_a2b1 complex	Unknown
+COL6A3_a10b1 complex	Unknown
+COL6A3_a11b1 complex	Unknown
+COL6A3_a1b1 complex	Unknown
+COL6A3_a2b1 complex	Unknown
+COL7A1_a10b1 complex	Unknown
+COL7A1_a11b1 complex	Unknown
+COL7A1_a1b1 complex	Unknown
+COL7A1_a2b1 complex	Unknown
+COL8A1_a10b1 complex	Unknown
+COL8A1_a11b1 complex	Unknown
+COL8A1_a1b1 complex	Unknown
+COL8A1_a2b1 complex	Unknown
+COL8A2_a10b1 complex	Unknown
+COL8A2_a11b1 complex	Unknown
+COL8A2_a1b1 complex	Unknown
+COL8A2_a2b1 complex	Unknown
+COL9A1_a10b1 complex	Unknown
+COL9A1_a11b1 complex	Unknown
+COL9A1_a1b1 complex	Unknown
+COL9A1_a2b1 complex	Unknown
+COL9A2_a10b1 complex	Unknown
+COL9A2_a11b1 complex	Unknown
+COL9A2_a1b1 complex	Unknown
+COL9A2_a2b1 complex	Unknown
+COL9A3_a10b1 complex	Unknown
+COL9A3_a11b1 complex	Unknown
+COL9A3_a1b1 complex	Unknown
+COL9A3_a2b1 complex	Unknown
+COPA_P2RY6	Unknown
+COPA_SORT1	Unknown
+CRLF2_TSLPR	Unknown
+CRTAM_CADM1	Unknown
+CSF1_SIRPA	Unknown
+CSF1_SLC7A1	Unknown
+CSF1R_CSF1	Macrophage
+CSF2_CSF1R	Unknown
+CSPG4_a3b1 complex	Unknown
+CTLA4_CD80	Inhibitory
+CX3CR1_CX3CL1	Chemotaxis
+CXADR_FAM3C	Unknown
+CXCL10_CXCR3	Chemotaxis
+CXCL10_DPP4	Unknown
+CXCL11_ACKR3	Unknown
+CXCL11_CXCR3	Unknown
+CXCL11_DPP4	Unknown
+CXCL12_CXCR3	Chemotaxis
+CXCL12_CXCR4	Chemotaxis
+CXCL13_CXCR5	Chemotaxis
+CXCL17_GPR35	Unknown
+CXCL1_ACKR1	Unknown
+CXCL1_CXCR1	Chemotaxis
+CXCL1_CXCR2	Chemotaxis
+CXCL2_CXCR1	Chemotaxis
+CXCL2_CXCR2	Chemotaxis
+CXCL2_DPP4	Unknown
+CXCL3_CXCR1	Chemotaxis
+CXCL3_CXCR2	Chemotaxis
+CXCL5_ACKR1	Unknown
+CXCL8_ACKR1	Unknown
+CXCL8_CXCR1	Chemotaxis
+CXCL8_CXCR2	Chemotaxis
+CXCR1_CXCL5	Chemotaxis
+CXCR1_YARS	Unknown
+CXCR2_CXCL5	Chemotaxis
+CXCR3_CCL19	Chemotaxis
+CXCR3_CCL20	Chemotaxis
+CXCR3_CXCL9	Chemotaxis
+CXCR6_CXCL16	Chemotaxis
+DLL1_NOTCH1	Unknown
+DLL1_NOTCH2	Unknown
+DLL1_NOTCH3	Unknown
+DLL1_NOTCH4	Unknown
+DLL3_NOTCH3	Unknown
+DLL4_NOTCH3	Unknown
+DPP4_CXCL12	Unknown
+DPP4_CXCL9	Unknown
+DSC2_DSG2	Unknown
+EDA_EDA2R	Unknown
+EDA_EDAR	Unknown
+EFNA1_EPHA1	Unknown
+EFNA1_EPHA2	Unknown
+EFNA1_EPHA4	Unknown
+EFNA1_EPHA7	Unknown
+EFNA3_EPHA4	Unknown
+EFNA3_EPHA7	Unknown
+EFNA4_EPHA4	Unknown
+EFNA4_EPHA7	Unknown
+EFNA5_EPHA4	Unknown
+EFNA5_EPHA7	Unknown
+EFNB2_EPHA4	Unknown
+EFNB2_EPHB1	Unknown
+EFNB2_EPHB3	Unknown
+EFNB2_EPHB4	Unknown
+EGF_NRG1	Unknown
+EGFR_AREG	Unknown
+EGFR_COPA	Unknown
+EGFR_EGF	Unknown
+EGFR_GRN	Unknown
+EGFR_HBEGF	Unknown
+EGFR_MIF	Unknown
+EGFR_NRG1	Unknown
+EGFR_TGFA	Unknown
+EGFR_TGFB1	Unknown
+EPHA1_EFNA3	Unknown
+EPHA1_EFNA4	Unknown
+EPHA1_EFNA5	Unknown
+EPHA2_EFNA3	Unknown
+EPHA2_EFNA4	Unknown
+EPHA2_EFNA5	Unknown
+EPHA4_EFNB1	Unknown
+EPHA4_EFNB3	Unknown
+EPHB1_EFNB1	Unknown
+EPHB1_EFNB3	Unknown
+EPHB2_EFNA5	Unknown
+EPHB2_EFNB1	Unknown
+EPHB2_EFNB2	Unknown
+EPHB2_EFNB3	Unknown
+EPHB3_EFNB1	Unknown
+EPHB3_EFNB3	Unknown
+EPHB4_EFNB1	Unknown
+EPHB4_EFNB3	Unknown
+EPHB6_EFNB1	Unknown
+EPHB6_EFNB2	Unknown
+EPHB6_EFNB3	Unknown
+EPOR_KITLG	Unknown
+ERBB3_NRG1	Unknown
+ERBB4_HBEGF	Unknown
+ERBB4_NRG4	Unknown
+EREG_EGFR	Unknown
+EREG_ERBB4	Unknown
+ESAM_ESAM	Unknown
+F10_aMb2 complex	Unknown
+F11R_aLb2 complex	Unknown
+FAM3C_CLEC2D	Unknown
+FAS_FASLG	Unknown
+FBN1_a5b1 complex	Unknown
+FCER2_aMb2 complex	Unknown
+FCER2_aXb2 complex	Unknown
+FCGR2A_CXCL9	Unknown
+FcRn complex_ALB	Unknown
+FFAR2_CCL4L2	Unknown
+FFAR2_FAM3C	Unknown
+FFAR2_TNF	Unknown
+FGF18_FGFR1	Unknown
+FGF18_FGFR2	Unknown
+FGF18_FGFR3	Unknown
+FGF18_FGFR4	Unknown
+FGF1_FGFR1	Unknown
+FGF1_FGFR2	Unknown
+FGF1_FGFR3	Unknown
+FGF1_FGFR4	Unknown
+FGF1_TGFBR3	Unknown
+FGF2_CD44	Unknown
+FGF2_FGFR1	Unknown
+FGF2_FGFR2	Unknown
+FGF2_FGFR3	Unknown
+FGF2_FGFR4	Unknown
+FGF2_FGFRL1	Unknown
+FGF7_FGFR2	Unknown
+FGF7_FGFR3	Unknown
+FGF7_FGFR4	Unknown
+FGFR1_FGF7	Unknown
+FGFR1_FGF9	Unknown
+FGFR1_FGFR2	Unknown
+FGFR1_KL	Unknown
+FGFR1_NCAM1	Unknown
+FGFR2_CD83	Unknown
+FGFR2_EPHA4	Unknown
+FGFR2_FGF9	Unknown
+FGFR2_FGFR3	Unknown
+FGFR2_PTPRR	Unknown
+FGFR2_XPR1	Unknown
+FGFR3_EPHA4	Unknown
+FGFR3_FGF9	Unknown
+FGFR4_EPHA4	Unknown
+FGFR4_FGF9	Unknown
+FGFR4_PTPRR	Unknown
+FGFR4_SCGB3A1	Unknown
+FLT1 complex_PGF	Unknown
+FLT1 complex_VEGFA	Unknown
+FLT1 complex_VEGFB	Unknown
+FLT1_PGF	Unknown
+FLT1_VEGFB	Unknown
+FLT4_PDGFC	Unknown
+FN1_a10b1 complex	Unknown
+FN1_a11b1 complex	Unknown
+FN1_a2b1 complex	Unknown
+FN1_a3b1 complex	Unknown
+FN1_a4b1 complex	Unknown
+FN1_a4b7 complex	Unknown
+FN1_a5b1 complex	Unknown
+FN1_a8b1 complex	Unknown
+FN1_aVb1 complex	Unknown
+FN1_aVb5 complex	Unknown
+FPR3_HEBP1	Unknown
+FZD6_WNT5A	Unknown
+GDF11_ANTXR1	Unknown
+GDF11_TGFR_AVR2A	Unknown
+GDF11_TGFR_AVR2B	Unknown
+GDF9_TGFR_BMPR2	Unknown
+GH1_GHR	Unknown
+GH1_PRLR	Unknown
+GMCSFR_CSF2	Unknown
+GP1BA_aMb2 complex	Unknown
+GPR19_ENHO	Unknown
+GPR1_RARRES2	Unknown
+GPR25_RETN	Unknown
+GPR42_CCL4L2	Unknown
+GPR42_FAM3C	Unknown
+GRIN2D_IL16	Unknown
+GRN_CLEC4M	Unknown
+GRN_SORT1	Unknown
+HGF_CD44	Unknown
+HLA-A_KIR3DL1	Unknown
+HLA-B_KIR3DL2	Unknown
+HLA-C_FAM3C	Unknown
+HLA-C_KIR2DL1	Unknown
+HLA-C_KIR2DL3	Unknown
+HLA-DPA1_TNFSF9	Unknown
+HLA-DPB1_NRG1	Unknown
+HLA-DQB2_PRL	Unknown
+HLA-DRB1_OGN	Unknown
+HLA-E_KLRC1	Unknown
+HLA-E_KLRC2	Unknown
+HLA-E_KLRK1	Unknown
+HLA-F_KIR3DL1	Unknown
+HLA-F_KIR3DL2	Unknown
+HLA-G_LILRB1	Unknown
+HLA-G_LILRB2	Unknown
+IAPP_CALCR	Unknown
+IAPP_IDE	Unknown
+ICAM1_aLb2 complex	Unknown
+ICAM1_aMb2 complex	Unknown
+ICAM1_AREG	Unknown
+ICAM1_aXb2 complex	Unknown
+ICAM1_ITGAL	Unknown
+ICAM3_aDb2 complex	Unknown
+ICAM3_aLb2 complex	Unknown
+ICAM3_CD209	Unknown
+ICAM3_CLEC4M	Unknown
+ICAM4_aLb2 complex	Unknown
+ICOSLG_ICOS	Activating
+IDE_CCL23	Unknown
+IFNG_Type II IFNR	Unknown
+IFNL1_Type III IFNR	Unknown
+IGF1_a6b4 complex	Unknown
+IGF1_IGF1R	Unknown
+IGF2_IDE	Unknown
+IGF2_IGF1R	Unknown
+IGF2_IGF2R	Unknown
+IL1 receptor inhibitor_IL1A	
+IL1 receptor inhibitor_IL1B	
+IL1 receptor inhibitor_IL1RN	
+IL1 receptor_IL1A	Unknown
+IL1 receptor_IL1B	Unknown
+IL1 receptor_IL1RN	Unknown
+IL10 receptor_IL10	Inhibitory
+IL11 receptor_IL11	Unknown
+IL13 receptor_IL13	Th2
+IL13 receptor_IL4	Unknown
+IL13_IL13RA2	Unknown
+IL13_TMEM219	Unknown
+IL15 receptor_IL15	Unknown
+IL15_IL15RA	Unknown
+IL16_GRIN2C	Unknown
+IL17 AF_IL17 receptor AC	Unknown
+IL17 receptor AC_IL17A	Unknown
+IL17 receptor AC_IL17F	Unknown
+IL18 receptor_IL18	Activating
+IL1B_ADRB2	Unknown
+IL2 receptor_HA_IL2	Unknown
+IL2 receptor_I_IL2	Unknown
+IL20 receptor Type I_IL19	Unknown
+IL20 receptor Type I_IL24	Unknown
+IL26 receptor_IL26	Unknown
+IL27_IL27 receptor	Unknown
+IL33 receptor_IL33	Alarmin
+IL4 receptor_IL4	Th2
+IL4_IL13RA2	Unknown
+IL6 receptor_IL6	Activating
+IL6_HRH1	Unknown
+IL7 receptor_IL7	Unknown
+INSL3_RXFP1	Unknown
+JAG1_NOTCH2	Unknown
+JAG1_NOTCH3	Unknown
+JAG1_NOTCH4	Unknown
+JAM2_a4b1 complex	Unknown
+JAM2_JAM3	Unknown
+JAM3_aMb2 complex	Unknown
+JAM3_JAM3	Unknown
+KIR2DL3_CXCL9	Unknown
+KIR2DL3_FAM3C	Unknown
+KIT_KITLG	Unknown
+KLRB1_CLEC2D	Unknown
+KLRG2_TNFSF9	Unknown
+KLRG2_WNT11	Unknown
+KLRG2_WNT5B	Unknown
+L1CAM_a5b1 complex	Unknown
+L1CAM_L1CAM	Unknown
+LAIR1_LILRB4	Unknown
+LAMA3_a3b1 complex	Unknown
+LAMC1_a2b1 complex	Unknown
+LAMC1_a6b1 complex	Unknown
+LAMC1_a7b1 complex	Unknown
+LAMP1_FAM3C	Unknown
+LAMP1_VSTM1	Unknown
+LEFTY1_TDGF1	Unknown
+LGALS9_COLEC12	Unknown
+LGALS9_DAG1	Unknown
+LGALS9_HAVCR2	Unknown
+LGALS9_LRP1	Unknown
+LGALS9_MET	Unknown
+LGALS9_MRC2	Unknown
+LGALS9_PTPRK	Unknown
+LGALS9_SLC1A5	Unknown
+LIFR_LIF	Unknown
+LIFR_OSM	Unknown
+LILRA4_BST2	Unknown
+LRP5_FAM3B	Unknown
+LRP6_CKLF	Unknown
+LTA_LTBR	Unknown
+LTA_RIPK1	Unknown
+LTA_TNFRSF14	Unknown
+LTA_TNFRSF1A	Unknown
+LTA_TNFRSF1B	Unknown
+MADCAM1_a4b7 complex	Unknown
+MDK_LRP1	Unknown
+MDK_SORL1	Unknown
+MERTK_GAS6	Unknown
+MET_HGF	Unknown
+MIF_TNFRSF10D	Unknown
+NAMPT_IL13RA2	Unknown
+NAMPT_P2RY6	Unknown
+NCAM1_BDNF	Unknown
+NCAM1_GDNF	Unknown
+NCR3_NCR3LG1	Unknown
+NGFR_BDNF	Unknown
+NGFR_IL2	Unknown
+NGFR_NTF4	Unknown
+NKG2D II receptor_MICA	Unknown
+NKG2D II receptor_MICB	Unknown
+NKG2D II receptor_RAET1E	Unknown
+NKG2D II receptor_RAET1L	Unknown
+NKG2D II receptor_ULBP1	Unknown
+NKG2D II receptor_ULBP2	Unknown
+NMU_NMUR1	Unknown
+NOTCH1_DLL3	Unknown
+NOTCH1_DLL4	Unknown
+NOTCH1_JAG1	Unknown
+NOTCH1_JAG2	Unknown
+NOTCH1_NOV	Unknown
+NOTCH2_DLL3	Unknown
+NOTCH2_DLL4	Unknown
+NOTCH2_IL24	Unknown
+NOTCH2_JAG2	Unknown
+NOTCH3_JAG2	Unknown
+NOTCH4_DLL3	Unknown
+NOTCH4_DLL4	Unknown
+NOTCH4_JAG2	Unknown
+NPR1_NPPC	Unknown
+NPR2_NPPC	Unknown
+NPR3_NPPC	Unknown
+NRG1_a6b4 complex	Unknown
+NRG1_ERBB4	Unknown
+NRG1_LGR4	Unknown
+NRG1_LSR	Unknown
+NRG1_MS4A4A	Unknown
+NRG1_NETO2	Unknown
+NRG2_ERBB3	Unknown
+NRG2_ERBB4	Unknown
+NRP1_PGF	Unknown
+NRP1_SEMA3A	Unknown
+NRP1_VEGFA	Unknown
+NRP1_VEGFB	Unknown
+NRP2_PGF	Unknown
+NRP2_SEMA3C	Unknown
+NRP2_SEMA3F	Unknown
+NRP2_VEGFA	Unknown
+NTF4_NTRK2	Unknown
+NTRK1_AIMP1	Unknown
+NTRK1_COPA	Unknown
+NTRK1_GPI	Unknown
+NTRK1_GRN	Unknown
+NTRK1_NAMPT	Unknown
+OSMR_OSM	Unknown
+PDCD1_CD274	Unknown
+PDCD1_FAM3C	Unknown
+PDCD1_PDCD1LG2	Unknown
+PDGFB_ADGRV1	Unknown
+PDGFB_LRP1	Unknown
+PDGFB_PDGFRB	Unknown
+PDGFRB_PDGFD	Unknown
+PECAM1_CD177	Unknown
+PECAM1_CD38	Unknown
+PGRMC2_CCL4L2	Unknown
+PLD2_ARF1	Unknown
+PlexinA1_complex1_SEMA6D	Unknown
+PlexinA1_complex2_SEMA6D	Unknown
+PlexinA1_complex3_SEMA3A	Unknown
+PlexinA2_complex1_SEMA3A	Unknown
+PlexinA3_complex1_SEMA3A	Unknown
+PlexinA4_complex1_SEMA3A	Unknown
+PLXNB1_SEMA4D	Unknown
+PLXNB2_PTN	Unknown
+PLXNB2_SEMA4C	Unknown
+PLXNB2_SEMA4D	Unknown
+PLXNB2_SEMA4G	Unknown
+PLXNC1_SEMA7A	Unknown
+PODXL_SELL	Unknown
+POMC_MC1R	Unknown
+PPBP_CXCR1	Unknown
+PPBP_CXCR2	Unknown
+PRL_PRLR	Unknown
+PROS1_AXL	Unknown
+PROS1_TYRO3	Unknown
+PTGER3_GHRL	Unknown
+PTGIR_GHRL	Unknown
+PTN_PTPRS	Unknown
+PVR_CD226	Unknown
+PVR_CD96	Unknown
+PVR_TIGIT	Unknown
+PVR_TNFSF9	Unknown
+RLN1_RXFP1	Unknown
+RLN2_RXFP1	Unknown
+SAA1_FPR2	Unknown
+SCGB3A1_MARCO	Unknown
+SCGB3A1_NOTCH3	Unknown
+SCT_SCTR	Unknown
+SCT_VIPR1	Unknown
+SELE_GLG1	Unknown
+SELE_SELPLG	Unknown
+SELL_CD34	Unknown
+SELP_CD24	Unknown
+SELP_CD34	Unknown
+SELP_SELPLG	Unknown
+SEMA3E_PLXND1	Unknown
+SEMA4A_PLXND1	Unknown
+SEMA7A_a1b1 complex	Unknown
+SPN_SIGLEC1	Unknown
+SPP1_a4b1 complex	Unknown
+SPP1_a9b1 complex	Unknown
+SPP1_CD44	Unknown
+SPP1_PTGER4	Unknown
+TBXA2R_GHRL	Unknown
+TEK_ANGPT1	Unknown
+TFRC_TNFSF13B	Unknown
+TG_ASGR1	Unknown
+TGFB1_aVb6 complex	Unknown
+TGFB1_TGFbeta receptor1	Inhibitory
+TGFB1_TGFbeta receptor2	Inhibitory
+TGFB1_TGFBR3	Inhibitory
+TGFB2_TGFbeta receptor1	Inhibitory
+TGFB2_TGFbeta receptor2	Inhibitory
+TGFB2_TGFBR3	Inhibitory
+TGFB3_TGFbeta receptor1	Inhibitory
+TGFB3_TGFbeta receptor2	Inhibitory
+TGFB3_TGFBR3	Inhibitory
+THBS1_a3b1 complex	Unknown
+THY1_aMb2 complex	Unknown
+THY1_aXb2 complex	Unknown
+TIMP1_FGFR2	Unknown
+TNC_a4b1 complex	Unknown
+TNC_a8b1 complex	Unknown
+TNC_a9b1 complex	Unknown
+TNC_aVb6 complex	Unknown
+TNF_CELSR2	Unknown
+TNF_DAG1	Unknown
+TNF_FAS	Unknown
+TNF_FLT4	Unknown
+TNF_ICOS	Unknown
+TNF_NOTCH1	Unknown
+TNF_PTPRS	Unknown
+TNF_RIPK1	Unknown
+TNF_SEMA4C	Unknown
+TNF_TNFRSF1A	Unknown
+TNF_TNFRSF1B	Unknown
+TNFRSF10A_FGFR4	Unknown
+TNFRSF10A_TNFSF10	Unknown
+TNFRSF10B_FASLG	Unknown
+TNFRSF10B_TNFSF10	Unknown
+TNFRSF10C_TNFSF10	Unknown
+TNFRSF11B_TNFSF10	Unknown
+TNFRSF11B_TNFSF11	Unknown
+TNFRSF13B_CD70	Unknown
+TNFRSF13B_TNFSF13	Unknown
+TNFRSF13B_TNFSF13B	Unknown
+TNFRSF13C_TNFSF13B	Unknown
+TNFRSF17_TNFSF13B	Unknown
+TNFRSF1A_FASLG	Unknown
+TNFRSF1A_GRN	Unknown
+TNFRSF8_TNFSF8	Unknown
+TNFSF10_RIPK1	Unknown
+TNFSF10_TNFRSF10D	Unknown
+TNFSF11_TNFRSF11A	Unknown
+TNFSF12_TNFRSF12A	Unknown
+TNFSF12_TNFRSF25	Unknown
+TNFSF13_TNFRSF17	Unknown
+TNFSF13_TNFRSF1A	Unknown
+TNFSF14_LTBR	Unknown
+TNFSF14_TNFRSF14	Unknown
+TNFSF15_TNFRSF25	Unknown
+TNFSF18_TNFRSF18	Unknown
+TNFSF4_TNFRSF4	Unknown
+TNFSF9_ADGRG5	Unknown
+TNFSF9_IL13RA2	Unknown
+TNFSF9_TNFRSF9	Unknown
+TSLP_TSLPR	Unknown
+TTR_AGER	Unknown
+TTR_DDR1	Unknown
+TTR_NGFR	Unknown
+TYRO3_GAS6	Unknown
+VCAM1_a4b1 complex	Unknown
+VCAM1_a4b7 complex	Unknown
+VCAM1_a9b1 complex	Unknown
+VCAM1_aDb2 complex	Unknown
+VEGFA_EPHB2	Unknown
+VEGFA_FLT1	Unknown
+VEGFA_KDR	Unknown
+VSTM1_ADGRG3	Unknown
+VTN_aVb1 complex	Unknown
+WNT2B_FZD4	Unknown
+WNT5A_ANTXR1	Unknown
+WNT5A_EPHA7	Unknown
+WNT5A_FZD1	Unknown
+WNT5A_FZD2	Unknown
+WNT5A_FZD3	Unknown
+WNT5A_FZD5	Unknown
+WNT5A_PTPRK	Unknown
+WNT5A_ROR1	Unknown
+WNT5A_ROR2	Unknown
+WNT7A_FZD5	Unknown
+WNT7A_LDLR	Unknown
+WNT7B_FZD1	Unknown
+WNT7B_FZD4	Unknown
+XCL1_ADGRV1	Unknown
+XCR1_XCL1	Chemotaxis
+XCR1_XCL2	Chemotaxis
