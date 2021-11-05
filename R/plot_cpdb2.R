@@ -39,10 +39,11 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
 	}	
 
 	cpdb_int = plot_cpdb(cell_type1 = cell_type1, cell_type2 = cell_type2, scdata = scdata, idents = idents, split.by = split.by, means = means, pvals = pvals, keep_significant_only = keep_significant_only, standard_scale = standard_scale, ...)
-
+	requireNamespace('SummarizedExperiment')
+	requireNamespace('SingleCellExperiment')
 	lr_interactions <- cpdb_int$data
 	subset_clusters <- unique(unlist(lapply(as.list(lr_interactions$group), strsplit, sep)))
-	sce_subset <- scdata[, colData(scdata)[,idents] %in% subset_clusters]
+	sce_subset <- scdata[, SummarizedExperiment::colData(scdata)[,idents] %in% subset_clusters]
 	interactions <- means[,c('interacting_pair', 'gene_a', 'gene_b', 'partner_a', 'partner_b')]
 	interactions$converted <- gsub('-', ' ', interactions$interacting_pair)
 	interactions$converted <- gsub('_', '-', interactions$converted)
@@ -80,7 +81,7 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
 	if (class(scdata) %in% c("SingleCellExperiment", "SummarizedExperiment")) {		
 		requireNamespace('SummarizedExperiment')
 		requireNamespace('SingleCellExperiment')
-		meta <- as.data.frame(colData(sce_subset_tmp))
+		meta <- as.data.frame(SummarizedExperiment::colData(sce_subset_tmp))
 	} else if (class(scdata) == "Seurat") {
 		stop("sorry not supported yet")
 	}

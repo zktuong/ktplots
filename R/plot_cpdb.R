@@ -41,8 +41,8 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
 		cat("extracting expression matrix", sep = "\n")
 		requireNamespace('SummarizedExperiment')
 		requireNamespace('SingleCellExperiment')
-		exp_mat <- assay(scdata)
-		metadata <- colData(scdata)
+		exp_mat <- SummarizedExperiment::assay(scdata)
+		metadata <- SummarizedExperiment::colData(scdata)
 	} else if (class(scdata) == "Seurat") {
 		requireNamespace('Seurat')
 		cat("data provided is a Seurat object", sep = "\n")
