@@ -101,12 +101,12 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
 	}
 	
 	cellTypeMeans <- function(x){
-		cm <- Matrix::rowMeans(counts(x))
+		cm <- Matrix::rowMeans(SummarizedExperiment::counts(x))
 		return(cm)
 	}
 	
 	cellTypeFraction <- function(x){
-		cm <- Matrix::rowMeans(counts(x) > 0)
+		cm <- Matrix::rowMeans(SummarizedExperiment::counts(x) > 0)
 		return(cm)
 	}
 	
@@ -178,7 +178,7 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
 				}
 			})
 		
-			cm <- mean(Matrix::rowMeans(counts(scex) > 0))
+			cm <- mean(Matrix::rowMeans(SummarizedExperiment::counts(scex) > 0))
 			return(cm)
 		}
 		
