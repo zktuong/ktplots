@@ -40,3 +40,29 @@
 #' @rdname kidneyimmune
 #' @docType data
 "pvals"
+
+
+#' decon
+#'
+#' decon - Dataframe of CellPhoneDB output deconvoluted.txt file
+#' @rdname kidneyimmune
+#' @docType data
+"decon"
+
+
+#' sig_means
+#'
+#' sig_means - Dataframe of CellPhoneDB output significant_means.txt file
+#' @rdname kidneyimmune
+#' @docType data
+"sig_means"
+
+
+#' interaction_annotation
+#'
+#' interaction_annotation - Example dataframe to use for interaction_grouping option in plot_cpdb2
+#' @rdname kidneyimmune
+#' @docType data
+"interaction_annotation"
+
+
