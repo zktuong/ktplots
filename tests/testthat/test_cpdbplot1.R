@@ -1,5 +1,7 @@
 data(kidneyimmune)
 data(cpdb_output)
+data(cpdb_output2)
+
 test_that("plot_cpdb works 1",{
     p <- plot_cpdb("B cell", "CD4T cell", kidneyimmune, 'celltype', means, pvals, split.by = "Experiment", genes = c("CXCL13", "CD274", "CXCR5"))
     expect_true(is.ggplot(p))
@@ -48,21 +50,17 @@ test_that("werid characters are ok", {
     expect_true(is.ggplot(p))
 })
 
-test_that("plot_cpdb2 works",{
+test_that("plot_cpdb2 works 1",{
     sce <- Seurat::as.SingleCellExperiment(kidneyimmune)
-    p <- plot_cpdb2(cell_type1 = 'B cell', cell_type2 = 'CD4T cell|MNP', 
+    p <- plot_cpdb2(cell_type1 = 'B cell', cell_type2 = 'CD4T cell', 
         scdata = kidneyimmune,
         idents = 'celltype', # column name where the cell ids are located in the metadata
-        split.by = 'Experiment', # column name where the grouping column is. Optional.
-        means = means, 
-        pvals = pvals,
-        deconvoluted = deconvoluted, # new options from here on specific to plot_cpdb2
+        means = means2, 
+        pvals = pvals2,
+        deconvoluted = decon2, # new options from here on specific to plot_cpdb2
         desiredInteractions = list(
             c('CD4T cell', 'B cell'), 
-            c('B cell', 'MNPa(mono)'), 
-            c('B cell', 'MNPb(mono)'), 
-            c('B cell', 'MNPd(Mac)'), 
-            c('CD4T cell', 'MNPc(DC)')),
+            c('B cell', 'CD4T cell')),
         interaction_grouping = interaction_annotation,
         edge_group_colors = c(
             "Activating" = "#e15759", 
@@ -74,11 +72,40 @@ test_that("plot_cpdb2 works",{
             ),
         node_group_colors = c(
             "CD4T cell" = "#86bc86", 
-            "B cell" = "#79706e", 
-            "MNPa(mono)" = "#ff7f0e", 
-            "MNPb(mono)" = "#bcbd22", 
-            "MNPc(DC)" = "#17becf",
-            "MNPd(Mac)" = "#E7E7E7"),
+            "B cell" = "#79706e"),
+        keep_significant_only = TRUE,
+        standard_scale = TRUE,
+        remove_self = TRUE
+        )
+
+    expect_true(is.ggplot(p))
+})
+
+
+test_that("plot_cpdb2 works 2",{
+    sce <- Seurat::as.SingleCellExperiment(kidneyimmune)
+    p <- plot_cpdb2(cell_type1 = 'B cell', cell_type2 = 'CD4T cell', 
+        scdata = kidneyimmune,
+        idents = 'celltype', # column name where the cell ids are located in the metadata
+        split.by = 'Experiment', # column name where the grouping column is. Optional.
+        means = means, 
+        pvals = pvals,
+        deconvoluted = decon, # new options from here on specific to plot_cpdb2
+        desiredInteractions = list(
+            c('CD4T cell', 'B cell'), 
+            c('B cell', 'CD4T cell')),
+        interaction_grouping = interaction_annotation,
+        edge_group_colors = c(
+            "Activating" = "#e15759", 
+            "Chemotaxis" = "#59a14f", 
+            "Inhibitory" = "#4e79a7", 
+            "Intracellular trafficking" = "#9c755f",
+            "DC_development" = "#B07aa1",
+            "Unknown" = NA
+            ),
+        node_group_colors = c(
+            "CD4T cell" = "#86bc86", 
+            "B cell" = "#79706e"),
         keep_significant_only = TRUE,
         standard_scale = TRUE,
         remove_self = TRUE
