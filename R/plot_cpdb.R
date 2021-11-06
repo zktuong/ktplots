@@ -352,7 +352,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
 			}
 			labels <- factor(labels)
 			labels <- levels(labels)
-
+			labels_ <- labels
 			c_type1 = as.list(grep(cell_type1, labels, value = TRUE, ...))
 			c_type2 = as.list(grep(cell_type2, labels, value = TRUE, ...))
 
@@ -370,7 +370,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
 		}
 		labels <- factor(labels)
 		labels <- levels(labels)
-
+		labels_ <- labels
 		c_type1 = as.list(grep(cell_type1, labels, value = TRUE))
 		c_type2 = as.list(grep(cell_type2, labels, value = TRUE))
 
@@ -529,6 +529,16 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
 	if(!is.null(split.by)){
 		if(length(groups) > 0){
 			grp <- as.list(groups)
+			grp2 <- lapply(grp, function(i){
+				x <- paste0(i,'_')
+				return(x)
+			})
+			searchterm <- do.call(paste, list(grp2, collapse = "|"))
+			df$group <- gsub(searchterm, "", df$Var2)
+		} 
+	} else {
+		if (length(labels_) > 0 ){
+			grp <- as.list(labels_)
 			grp2 <- lapply(grp, function(i){
 				x <- paste0(i,'_')
 				return(x)
