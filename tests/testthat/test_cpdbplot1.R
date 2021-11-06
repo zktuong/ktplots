@@ -53,7 +53,7 @@ test_that("werid characters are ok", {
 test_that("plot_cpdb2 works 1",{
     sce <- Seurat::as.SingleCellExperiment(kidneyimmune)
     p <- plot_cpdb2(cell_type1 = 'B cell', cell_type2 = 'CD4T cell', 
-        scdata = kidneyimmune,
+        scdata = sce,
         idents = 'celltype', # column name where the cell ids are located in the metadata
         means = means2, 
         pvals = pvals2,
@@ -85,7 +85,7 @@ test_that("plot_cpdb2 works 1",{
 test_that("plot_cpdb2 works 2",{
     sce <- Seurat::as.SingleCellExperiment(kidneyimmune)
     p <- plot_cpdb2(cell_type1 = 'B cell', cell_type2 = 'CD4T cell', 
-        scdata = kidneyimmune,
+        scdata = sce,
         idents = 'celltype', # column name where the cell ids are located in the metadata
         split.by = 'Experiment', # column name where the grouping column is. Optional.
         means = means, 
