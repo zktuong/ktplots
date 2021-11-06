@@ -459,25 +459,22 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
             "fraction" = el$receiver_fraction)
         expression <- rbind(ligand_expr, recep_expr)
 
-        V(gr)$expression = NA
-        V(gr)$expression[match(expression$cell_mol, V(gr)$name)] <- as.numeric(expression$expression)
-
-        V(gr)$fraction = 0
-        V(gr)$fraction[match(expression$cell_mol, V(gr)$name)] <- as.numeric(expression$fraction)
-
-        # celltype
-        V(gr)$celltype <- NA
+        df <- igraph::as_data_frame(gr, 'both')
+        df$vertices$expression <- 0
+        df$vertices$fraction <- 0
+        df$vertices$expression <- as.numeric(expression$expression)[match(df$vertices$name, expression$cell_mol)]
+        df$vertices$fraction <- as.numeric(expression$fraction)[match(df$vertices$name, expression$cell_mol)]
+        df$vertices$celltype <- ''
         for(x in cells_test){
-            idx <- grepl(x, V(gr)$name)
-            V(gr)$celltype[idx] <- x
+            idx <- grepl(x, df$vertices$name)
+            df$vertices$celltype[idx] <- x
         }
-
-        # V(gr)$name[V(gr)$fraction < frac] = NA
-        V(gr)$name[!V(gr)$name %in% c(el0$from, el0$to)] <- NA
-        # final adjustments to the name
+        df$vertices$label <- df$vertices$name
+        df$vertices$label[!df$vertices$name %in% c(el0$from, el0$to)] <- ''
+        gr <- graph_from_data_frame(df$edges, directed = TRUE, vertices = df$vertices)
 
         for(x in unique_id){
-            V(gr)$name <- gsub(paste0(x, '_'), '', V(gr)$name)
+            V(gr)$label <- gsub(paste0(x, '_'), '', V(gr)$label)
         }
 
         library(ggraph)
@@ -499,15 +496,15 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
         pl <- ggraph(gr, layout = 'dendrogram', circular = TRUE) +
             geom_conn_bundle(data = get_con(from = from, to = to, group = group, `-log10(sig)` = pval, interaction_score = interaction_score),
                 aes(colour = group, alpha = interaction_score, width = `-log10(sig)`), tension = 0.5) +
-            # scale_edge_width(range = c(, 3)) +
-            scale_edge_alpha(limits = c(0, 1)) +
+            # scale_edge_width(range = c(1, 3)) +
+            # scale_edge_alpha(limits = c(0, 1)) +
             scale_edge_color_manual(values = edge_group_colors)+
             geom_node_point(pch =19, aes(size = fraction, filter = leaf, color = celltype, alpha = type)) +
             theme_void() + coord_fixed() +
             scale_size_continuous(limits= c(0, 1)) +
             scale_shape_manual(values = c("ligand" = 19, "receptor" = 15)) +
             scale_color_manual(values =  node_group_colors) +
-            geom_text_repel(aes(x=x, y=y, label = name), segment.square = TRUE, segment.inflect = TRUE, segment.size = 0.2, force=0.5, size = 2, force_pull = 0) +
+            geom_text_repel(aes(x=x, y=y, label = label), segment.square = TRUE, segment.inflect = TRUE, segment.size = 0.2, force=0.5, size = 2, force_pull = 0) +
             # geom_node_text(aes(x = x*1.15, y=y*1.15, filter = leaf, label=name, size =0.1))  +
             scale_alpha_manual(values = c("ligand" = 0.5, "receptor" = 1)) +
             small_legend(keysize = 0.5)
