@@ -228,7 +228,7 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
         # although multiple rows are returned, really it's the same value for the same complex
         decon_subset <- split(decon_subset, decon_subset$complex_name)
         decon_subset_expr <- lapply(decon_subset, function(x) {
-            x <- x[,colnames(sce_list2)]
+            x <- x[,colnames(x) %in% colnames(sce_list2)]
             x <- colMeans(x)
             return(x)
         })
@@ -263,8 +263,12 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
         decon_subset_fraction <- do.call(rbind, decon_subset_fraction)
         row.names(decon_subset_fraction) <- row.names(decon_subset_expr)
         
-        expr_df <- rbind(sce_list2, decon_subset_expr)
-        fraction_df <- rbind(sce_list3, decon_subset_fraction)
+        requireNamespace('plyr')
+        expr_df <- plyr::rbind.fill.matrix(sce_list2, decon_subset_expr)
+        row.names(expr_df) <- c(row.names(sce_list2), row.names(decon_subset_expr))
+        fraction_df <- plyr::rbind.fill.matrix(sce_list3, decon_subset_fraction)
+        row.names(fraction_df) <- c(row.names(sce_list3), row.names(decon_subset_fraction))
+
     } else {
         expr_df <- sce_list2
         fraction_df <- sce_list3
@@ -444,74 +448,100 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
             from = match(el0$from, V(gr)$name)
             to = match(el0$to, V(gr)$name)
             dat = data.frame(from = el0$from, to = el0$to)
-            dat$barcode = paste0(dat$from, sep, dat$to)
-            interaction_score = E(gr)$interaction_score[match(dat$barcode, gr_el$barcode_3)]
-            pval = E(gr)$pvals[match(dat$barcode, gr_el$barcode_3)]
-            pval[is.na(pval)] <- 1
-            pval <- range01(-log10(pval))
-    
-            if (edge_group){
-                group = E(gr)$group[match(dat$barcode, gr_el$barcode_3)]
-            }
-    
-            ligand_expr <- data.frame("cell_mol" = el$from,
-                "expression" = el$producer_expression,
-                "fraction" = el$producer_fraction)
-            recep_expr <- data.frame("cell_mol" = el$to,
-                "expression" = el$receiver_expression,
-                "fraction" = el$receiver_fraction)
-            expression <- rbind(ligand_expr, recep_expr)
-    
-            df <- igraph::as_data_frame(gr, 'both')
-            df$vertices$expression <- 0
-            df$vertices$fraction <- 0
-            df$vertices$expression <- as.numeric(expression$expression)[match(df$vertices$name, expression$cell_mol)]
-            df$vertices$fraction <- as.numeric(expression$fraction)[match(df$vertices$name, expression$cell_mol)]
-            df$vertices$celltype <- ''
-            for(x in cells_test){
-                idx <- grepl(x, df$vertices$name)
-                df$vertices$celltype[idx] <- x
-            }
-            df$vertices$label <- df$vertices$name
-            df$vertices$label[!df$vertices$name %in% c(el0$from, el0$to)] <- ''
-            gr <- graph_from_data_frame(df$edges, directed = TRUE, vertices = df$vertices)
-    
-            for(x in unique_id){
-                V(gr)$label <- gsub(paste0(x, '_'), '', V(gr)$label)
-            }
-    
-            library(ggraph)
-            library(ggrepel)
-    
-            if (!is.null(edge_group_colors)){
-                edge_group_colors = edge_group_colors
+            if (nrow(dat) > 0) {
+                dat$barcode = paste0(dat$from, sep, dat$to)
+                interaction_score = E(gr)$interaction_score[match(dat$barcode, gr_el$barcode_3)]
+                pval = E(gr)$pvals[match(dat$barcode, gr_el$barcode_3)]
+                if (any(is.na(pval))){
+                    pval[is.na(pval)] <- 1    
+                }
+                if (!all(is.na(range01(-log10(pval))))){
+                    pval <- range01(-log10(pval))
+                }
+        
+                if (edge_group){
+                    group = E(gr)$group[match(dat$barcode, gr_el$barcode_3)]
+                }
+        
+                ligand_expr <- data.frame("cell_mol" = el$from,
+                    "expression" = el$producer_expression,
+                    "fraction" = el$producer_fraction)
+                recep_expr <- data.frame("cell_mol" = el$to,
+                    "expression" = el$receiver_expression,
+                    "fraction" = el$receiver_fraction)
+                expression <- rbind(ligand_expr, recep_expr)
+        
+                df <- igraph::as_data_frame(gr, 'both')
+                df$vertices$expression <- 0
+                df$vertices$fraction <- 0
+                df$vertices$expression <- as.numeric(expression$expression)[match(df$vertices$name, expression$cell_mol)]
+                df$vertices$fraction <- as.numeric(expression$fraction)[match(df$vertices$name, expression$cell_mol)]
+                df$vertices$celltype <- ''
+                for(x in cells_test){
+                    idx <- grepl(x, df$vertices$name)
+                    df$vertices$celltype[idx] <- x
+                }
+                df$vertices$label <- df$vertices$name
+                df$vertices$label[!df$vertices$name %in% c(el0$from, el0$to)] <- ''
+                gr <- graph_from_data_frame(df$edges, directed = TRUE, vertices = df$vertices)
+        
+                for(x in unique_id){
+                    V(gr)$label <- gsub(paste0(x, '_'), '', V(gr)$label)
+                }
+                
+                require(ggraph)
+                require(ggrepel)
+        
+                if (!is.null(edge_group_colors)){
+                    edge_group_colors = edge_group_colors
+                } else {
+                    nn = length(unique(E(gr)$group))
+                    edge_group_colors = kelvinny::gg_color_hue(nn)
+                }
+                if (!is.null(node_group_colors)){
+                    node_group_colors = node_group_colors
+                } else {
+                    nn = length(unique(meta[,idents]))
+                    node_group_colors = kelvinny::gg_color_hue(nn)
+                }
+                # plot the graph
+                if (edge_group){
+                    pl <- ggraph(gr, layout = 'dendrogram', circular = TRUE) +
+                        geom_conn_bundle(data = get_con(from = from, to = to, group = group, `-log10(sig)` = pval, interaction_score = interaction_score),
+                            aes(colour = group, alpha = interaction_score, width = `-log10(sig)`), tension = 0.5) +
+                        # scale_edge_width(range = c(1, 3)) +
+                        # scale_edge_alpha(limits = c(0, 1)) +
+                        scale_edge_color_manual(values = edge_group_colors)+
+                        geom_node_point(pch =19, aes(size = fraction, filter = leaf, color = celltype, alpha = type)) +
+                        theme_void() + coord_fixed() +
+                        scale_size_continuous(limits= c(0, 1)) +
+                        scale_shape_manual(values = c("ligand" = 19, "receptor" = 15)) +
+                        scale_color_manual(values =  node_group_colors) +
+                        geom_text_repel(aes(x=x, y=y, label = label), segment.square = TRUE, segment.inflect = TRUE, segment.size = 0.2, force=0.5, size = 2, force_pull = 0) +
+                        # geom_node_text(aes(x = x*1.15, y=y*1.15, filter = leaf, label=name, size =0.1))  +
+                        scale_alpha_manual(values = c("ligand" = 0.5, "receptor" = 1)) +
+                        small_legend(keysize = 0.5)
+                } else {
+                    pl <- ggraph(gr, layout = 'dendrogram', circular = TRUE) +
+                        geom_conn_bundle(data = get_con(from = from, to = to, `-log10(sig)` = pval, interaction_score = interaction_score),
+                            aes(alpha = interaction_score, width = `-log10(sig)`), tension = 0.5) +
+                        # scale_edge_width(range = c(1, 3)) +
+                        # scale_edge_alpha(limits = c(0, 1)) +
+                        scale_edge_color_manual(values = edge_group_colors)+
+                        geom_node_point(pch =19, aes(size = fraction, filter = leaf, color = celltype, alpha = type)) +
+                        theme_void() + coord_fixed() +
+                        scale_size_continuous(limits= c(0, 1)) +
+                        scale_shape_manual(values = c("ligand" = 19, "receptor" = 15)) +
+                        scale_color_manual(values =  node_group_colors) +
+                        geom_text_repel(aes(x=x, y=y, label = label), segment.square = TRUE, segment.inflect = TRUE, segment.size = 0.2, force=0.5, size = 2, force_pull = 0) +
+                        # geom_node_text(aes(x = x*1.15, y=y*1.15, filter = leaf, label=name, size =0.1))  +
+                        scale_alpha_manual(values = c("ligand" = 0.5, "receptor" = 1)) +
+                        small_legend(keysize = 0.5)
+                }
+                return(pl)
             } else {
-                nn = length(unique(E(gr)$group))
-                edge_group_colors = kelvinny::gg_color_hue(nn)
+                return(NULL)
             }
-            if (!is.null(node_group_colors)){
-                node_group_colors = node_group_colors
-            } else {
-                nn = length(unique(meta[,idents]))
-                node_group_colors = kelvinny::gg_color_hue(nn)
-            }
-            # plot the graph
-            pl <- ggraph(gr, layout = 'dendrogram', circular = TRUE) +
-                geom_conn_bundle(data = get_con(from = from, to = to, group = group, `-log10(sig)` = pval, interaction_score = interaction_score),
-                    aes(colour = group, alpha = interaction_score, width = `-log10(sig)`), tension = 0.5) +
-                # scale_edge_width(range = c(1, 3)) +
-                # scale_edge_alpha(limits = c(0, 1)) +
-                scale_edge_color_manual(values = edge_group_colors)+
-                geom_node_point(pch =19, aes(size = fraction, filter = leaf, color = celltype, alpha = type)) +
-                theme_void() + coord_fixed() +
-                scale_size_continuous(limits= c(0, 1)) +
-                scale_shape_manual(values = c("ligand" = 19, "receptor" = 15)) +
-                scale_color_manual(values =  node_group_colors) +
-                geom_text_repel(aes(x=x, y=y, label = label), segment.square = TRUE, segment.inflect = TRUE, segment.size = 0.2, force=0.5, size = 2, force_pull = 0) +
-                # geom_node_text(aes(x = x*1.15, y=y*1.15, filter = leaf, label=name, size =0.1))  +
-                scale_alpha_manual(values = c("ligand" = 0.5, "receptor" = 1)) +
-                small_legend(keysize = 0.5)
-            return(pl)
         }
     
         gl <- list()
