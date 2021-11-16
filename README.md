@@ -125,6 +125,43 @@ Please help contribute to the interaction grouping list [here](https://docs.goog
 
 Credits to Ben Stewart for coming up with the base code!
 
+#### Simple usage with example data
+```R
+library(ktplots)
+data(kidneyimmune)
+data(cpdb_output2)
+
+sce <- Seurat::as.SingleCellExperiment(kidneyimmune)
+p <- plot_cpdb2(cell_type1 = 'B cell', cell_type2 = 'CD4T cell',
+    scdata = sce,
+    idents = 'celltype', # column name where the cell ids are located in the metadata
+    means = means2,
+    pvals = pvals2,
+    deconvoluted = decon2, # new options from here on specific to plot_cpdb2
+    desiredInteractions = list(
+        c('CD4T cell', 'B cell'),
+        c('B cell', 'CD4T cell')),
+    interaction_grouping = interaction_annotation,
+    edge_group_colors = c(
+        "Activating" = "#e15759",
+        "Chemotaxis" = "#59a14f",
+        "Inhibitory" = "#4e79a7",
+        "Intracellular trafficking" = "#9c755f",
+        "DC_development" = "#B07aa1",
+        "Unknown" = "#e7e7e7"
+        ),
+    node_group_colors = c(
+        "CD4T cell" = "red",
+        "B cell" = "blue"),
+    keep_significant_only = TRUE,
+    standard_scale = TRUE,
+    remove_self = TRUE
+    )
+p
+```
+![plot_cpd2](exampleImages/plot_cpdb2_example.png)
+
+#### Formatting data from anndata formatted file
 ```R
 # code example but not using the example datasets 
 library(SingleCellExperiment)
@@ -172,6 +209,7 @@ test <- plot_cpdb2(cell_type1 = "CD4_Tem|CD4_Tcm|CD4_Treg", # same usage style a
 
 ### correlationSpot
 Ever wanted to ask if your gene(s) and/or prediction(s) of interests correlate spatially in vissium data? Now you can!
+**disclaimer** not sure if this works...
 ```R
 library(ggplot2)
 scRNAseq <- Seurat::SCTransform(scRNAseq, verbose = FALSE) %>% Seurat::RunPCA(., verbose = FALSE) %>% Seurat::RunUMAP(., dims = 1:30, verbose = FALSE)
