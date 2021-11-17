@@ -24,6 +24,7 @@ plot_cpdb2(
   interaction_grouping = NULL,
   edge_group_colors = NULL,
   node_group_colors = NULL,
+  return_df = FALSE,
   ...
 )
 }

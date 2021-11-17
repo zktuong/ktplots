@@ -5,6 +5,13 @@
 \alias{kidneyimmune}
 \alias{means}
 \alias{pvals}
+\alias{decon}
+\alias{sig_means}
+\alias{means2}
+\alias{pvals2}
+\alias{decon2}
+\alias{sig_means2}
+\alias{interaction_annotation}
 \title{kidneyimmune}
 \format{
 A Seurat object with the following slots filled
@@ -25,7 +32,25 @@ Data frames containing outputs after CellPhoneDB analysis
   \item{pvals}{data frame containing p values for each interacting pair}
 }
 
-An object of class \code{data.frame} with 765 rows and 11892 columns.
+An object of class \code{data.frame} with 837 rows and 11892 columns.
+
+An object of class \code{data.frame} with 1965 rows and 115 columns.
+
+An object of class \code{data.frame} with 837 rows and 11893 columns.
+
+Data frames containing outputs after CellPhoneDB analysis
+\describe{
+  \item{means2}{data frame containing mean expression values for each interacting pair}
+  \item{pvals2}{data frame containing p values for each interacting pair}
+}
+
+An object of class \code{data.frame} with 837 rows and 155 columns.
+
+An object of class \code{data.frame} with 1965 rows and 18 columns.
+
+An object of class \code{data.frame} with 837 rows and 156 columns.
+
+An object of class \code{data.frame} with 836 rows and 2 columns.
 }
 \source{
 \url{https://www.kidneycellatlas.org/}
@@ -36,6 +61,20 @@ data(kidneyimmune)
 data(cpdb_output)
 
 pvals
+
+decon
+
+sig_means
+
+data(cpdb_output)
+
+pvals2
+
+decon2
+
+sig_means2
+
+interaction_annotation
 }
 \description{
 kidneyimmune - A small set of demo data from Stewart et al. 2019 Science. See \url{https://www.kidneycellatlas.org/}
@@ -43,9 +82,24 @@ kidneyimmune - A small set of demo data from Stewart et al. 2019 Science. See \u
 means - Dataframe of CellPhoneDB output means.txt file
 
 pvals - Dataframe of CellPhoneDB output pvalues.txt file
+
+decon - Dataframe of CellPhoneDB output deconvoluted.txt file
+
+sig_means - Dataframe of CellPhoneDB output significant_means.txt file
+
+means2 - Dataframe of CellPhoneDB output means.txt file
+
+pvals2 - Dataframe of CellPhoneDB output pvalues.txt file
+
+decon2 - Dataframe of CellPhoneDB output deconvoluted.txt file
+
+sig_means2 - Dataframe of CellPhoneDB output significant_means.txt file
+
+interaction_annotation - Example dataframe to use for interaction_grouping option in plot_cpdb2
 }
 \examples{
 data(kidneyimmune)
+data(cpdb_output)
 data(cpdb_output)
 }
 \keyword{datasets}
