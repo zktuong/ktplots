@@ -491,18 +491,23 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
                 
                 require(ggraph)
                 require(ggrepel)
-        
+                
+                gg_color_hue <- function(n) {
+                    hues = seq(15, 375, length = n + 1)
+                    hcl(h = hues, l = 65, c = 100)[1:n]
+                }
+                
                 if (!is.null(edge_group_colors)){
                     edge_group_colors = edge_group_colors
                 } else {
                     nn = length(unique(E(gr)$group))
-                    edge_group_colors = kelvinny::gg_color_hue(nn)
+                    edge_group_colors = gg_color_hue(nn)
                 }
                 if (!is.null(node_group_colors)){
                     node_group_colors = node_group_colors
                 } else {
                     nn = length(unique(meta[,idents]))
-                    node_group_colors = kelvinny::gg_color_hue(nn)
+                    node_group_colors = gg_color_hue(nn)
                 }
                 # plot the graph
                 if (edge_group){
