@@ -44,7 +44,7 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
     requireNamespace('SummarizedExperiment')
     requireNamespace('SingleCellExperiment')
     lr_interactions <- cpdb_int$data
-    if (any(lr_interactions[,3])){
+    if (any(lr_interactions[,3] > 0)){
         if (any(is.na(lr_interactions[,3]))){
             lr_interactions <- lr_interactions[lr_interactions[,3] > 0 & !is.na(lr_interactions[,3]), ]
         } else {
@@ -566,7 +566,12 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
         }
     
         for (i in 1:length(dfx)){
-            gl[[i]] <- constructGraph(dfx[[i]], df0[[i]], cells_test, interactions_subset, lr_interactions, edge_group, edge_group_colors, node_group_colors)
+            if (nrow(dfx[[i]]) > 0 & nrow(df0[[i]]) > 0){
+                gl[[i]] <- constructGraph(dfx[[i]], df0[[i]], cells_test, interactions_subset, lr_interactions, edge_group, edge_group_colors, node_group_colors)
+            } else {
+                gl[[i]] <- NULL
+            }
+            
         }
     
         if (length(gl) > 1){    
