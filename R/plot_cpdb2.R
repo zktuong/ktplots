@@ -14,9 +14,9 @@
 #' @param standard_scale logical. scale the expression to range from 0 to 1. Default is TRUE
 #' @param separator default = NULL. separator to use to split between celltypes. Unless otherwise specified, the separator will be `>@<`. Make sure the idents and split.by doesn't overlap with this.
 #' @param gene_symbol_mapping default = NULL.column name for rowData in sce holding the actual gene symbols if row names aren't gene symbols
-#' @param frac default = 0.2. Does nothing at the moment.
-#' @param remove_self default = TRUE. Remove self-self arcs. might not be working.
-#' @param desiredInteractions default = NULL. Specific list of celltype comparisons e.g. list(c('CD4_Tcm', 'cDC1'), c('CD4_Tcm', 'cDC2')). Also accepts a dataframe where first column is celltype 1 and 2nd column is celltype 2
+#' @param frac default = 0.1. Minimum fraction of celtypes expressing a gene in order to keep the interaction. Gene must be expressesd >= `frac` in either of the pair of celltypes in order to keep.
+#' @param remove_self default = TRUE. Remove self-self arcs.
+#' @param desiredInteractions default = NULL. Specific list of celltype comparisons e.g. list(c('CD4_Tcm', 'cDC1'), c('CD4_Tcm', 'cDC2')). Also accepts a dataframe where first column is celltype 1 and 2nd column is celltype 2.
 #' @param interaction_grouping default = NULL. dataframe specifying groupings of cellphonedb interactions. First column must be cellphonedb's interacting_pair column. second column is whatever grouping you want.
 #' @param edge_group_colors default = NULL. vector for colour mapping for edge groups. only used if split.by is specified.
 #' @param node_group_colors default = NULL. vector for colour mapping for node labels.
@@ -30,7 +30,7 @@
 #' @import ggrepel
 #' @export
 
-plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, deconvoluted, p.adjust.method = NULL, keep_significant_only = TRUE, split.by = NULL, standard_scale = TRUE, separator = NULL, gene_symbol_mapping = NULL, frac = 0.2, remove_self = TRUE, desiredInteractions = NULL, interaction_grouping = NULL, edge_group_colors = NULL, node_group_colors = NULL, return_df = FALSE, ...){
+plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, deconvoluted, p.adjust.method = NULL, keep_significant_only = TRUE, split.by = NULL, standard_scale = TRUE, separator = NULL, gene_symbol_mapping = NULL, frac = 0.1, remove_self = TRUE, desiredInteractions = NULL, interaction_grouping = NULL, edge_group_colors = NULL, node_group_colors = NULL, return_df = FALSE, ...){
     if (class(scdata) == "Seurat") {
         stop("Sorry not supported yet. Please use a SingleCellExperiment object.")
     }
@@ -44,6 +44,13 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
     requireNamespace('SummarizedExperiment')
     requireNamespace('SingleCellExperiment')
     lr_interactions <- cpdb_int$data
+    if (any(lr_interactions[,3])){
+        if (any(is.na(lr_interactions[,3]))){
+            lr_interactions <- lr_interactions[lr_interactions[,3] > 0 & !is.na(lr_interactions[,3]), ]
+        } else {
+            lr_interactions <- lr_interactions[lr_interactions[,3] > 0, ]
+        }
+    }
     subset_clusters <- unique(unlist(lapply(as.list(lr_interactions$group), strsplit, sep)))
     sce_subset <- scdata[, SummarizedExperiment::colData(scdata)[,idents] %in% subset_clusters]
     interactions <- means[,c('interacting_pair', 'gene_a', 'gene_b', 'partner_a', 'partner_b')]
@@ -383,21 +390,23 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
         }
 
     return(df_)}
-
+    barcodes = paste0(lr_interactions$Var2, sep, lr_interactions$Var1)
     dfx <- list()
     if (!is.null(split.by)){
         for (i in unique(meta[,split.by])){
-            dfx[[i]] = generateDf(ligand, receptor, pair, converted_pair, producers, receivers, expr_df, fraction_df, i)
+            dfx[[i]] <- generateDf(ligand, receptor, pair, converted_pair, producers, receivers, expr_df, fraction_df, i)
+            dfx[[i]] <- dfx[[i]][dfx[[i]]$barcode %in% barcodes,]
         }
     } else {
         dfx[[1]] = generateDf(ligand, receptor, pair, converted_pair, producers, receivers, expr_df, fraction_df)
+        dfx[[1]] <- dfx[[1]][dfx[[1]]$barcode %in% barcodes,]
     }
 
     if (return_df){
         return(dfx)
     } else {
         # set the bundled connections
-        df0 <- lapply(dfx, function(x) x[x$producer_fraction > frac & x$receiver_fraction > frac, ]) #save this for later
+        df0 <- lapply(dfx, function(x) x[x$producer_fraction >= frac | x$receiver_fraction >= frac, ]) #save this for later
     
         # now construct the hierachy
         constructGraph <- function(el, el0, unique_id, interactions_df, plot_cpdb_out, edge_group = FALSE, edge_group_colors = NULL,  node_group_colors = NULL){

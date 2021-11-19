@@ -18,7 +18,7 @@ plot_cpdb2(
   standard_scale = TRUE,
   separator = NULL,
   gene_symbol_mapping = NULL,
-  frac = 0.2,
+  frac = 0.1,
   remove_self = TRUE,
   desiredInteractions = NULL,
   interaction_grouping = NULL,
@@ -55,11 +55,11 @@ plot_cpdb2(
 
 \item{gene_symbol_mapping}{default = NULL.column name for rowData in sce holding the actual gene symbols if row names aren't gene symbols}
 
-\item{frac}{default = 0.2. Does nothing at the moment.}
+\item{frac}{default = 0.1. Minimum fraction of celtypes expressing a gene in order to keep the interaction. Gene must be expressesd >= `frac` in either of the pair of celltypes in order to keep.}
 
-\item{remove_self}{default = TRUE. Remove self-self arcs. might not be working.}
+\item{remove_self}{default = TRUE. Remove self-self arcs.}
 
-\item{desiredInteractions}{default = NULL. Specific list of celltype comparisons e.g. list(c('CD4_Tcm', 'cDC1'), c('CD4_Tcm', 'cDC2')). Also accepts a dataframe where first column is celltype 1 and 2nd column is celltype 2}
+\item{desiredInteractions}{default = NULL. Specific list of celltype comparisons e.g. list(c('CD4_Tcm', 'cDC1'), c('CD4_Tcm', 'cDC2')). Also accepts a dataframe where first column is celltype 1 and 2nd column is celltype 2.}
 
 \item{interaction_grouping}{default = NULL. dataframe specifying groupings of cellphonedb interactions. First column must be cellphonedb's interacting_pair column. second column is whatever grouping you want.}
 

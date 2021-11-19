@@ -12,19 +12,19 @@ init_ktplots <- function() {
 	requireNamespace('devtools')
 	devtools::document()
 	setwd('..')
-	devtools::install('ktplots')
+	devtools::install('ktplots', dependencies = FALSE)
 	setwd('ktplots')
 }
 
 #' @export
 
-init <- function(package)
+init <- function(package, dependencies = FALSE)
 {   
     setwd(paste0("~/Documents/GitHub/", package))
     requireNamespace('roxygen2')
     requireNamespace('devtools')
     devtools::document()
     setwd('..')
-    devtools::install(package)
+    devtools::install(package, dependencies = dependencies)
     setwd(package)
 }
