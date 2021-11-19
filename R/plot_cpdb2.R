@@ -294,7 +294,7 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
         }
         cells_test = unique(unlist(desiredInteractions))
     } else {
-        cells_test <- unique(droplevels(meta[,idents]))
+        cells_test <- tryCatch(unique(droplevels(meta[,idents])), error = function(e) unique(meta[,idents]))
         cell_type_grid <- expand.grid(cells_test, cells_test)
     }
     
