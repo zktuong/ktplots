@@ -44,14 +44,16 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
     requireNamespace('SummarizedExperiment')
     requireNamespace('SingleCellExperiment')
     lr_interactions <- cpdb_int$data
-    if (any(lr_interactions[,3] > 0)){
-        if (any(is.na(lr_interactions[,3]))){
-            lr_interactions <- lr_interactions[lr_interactions[,3] > 0 & !is.na(lr_interactions[,3]), ]
-        } else {
-            lr_interactions <- lr_interactions[lr_interactions[,3] > 0, ]
+    if (is.null(split.by)){
+        if (any(lr_interactions[,3] > 0)){
+            if (any(is.na(lr_interactions[,3]))){
+                lr_interactions <- lr_interactions[lr_interactions[,3] > 0 & !is.na(lr_interactions[,3]), ]
+            } else {
+                lr_interactions <- lr_interactions[lr_interactions[,3] > 0, ]
+            }
         }
     }
-    subset_clusters <- unique(unlist(lapply(as.list(lr_interactions$group), strsplit, sep)))
+    subset_clusters <- unique(unlist(lapply(as.character(lr_interactions$group), strsplit, sep)))
     sce_subset <- scdata[, SummarizedExperiment::colData(scdata)[,idents] %in% subset_clusters]
     interactions <- means[,c('interacting_pair', 'gene_a', 'gene_b', 'partner_a', 'partner_b')]
     interactions$converted <- gsub('-', ' ', interactions$interacting_pair)
@@ -292,7 +294,7 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
         }
         cells_test = unique(unlist(desiredInteractions))
     } else {
-        cells_test <- unique(droplevels(meta[,idents]))
+        cells_test <- tryCatch(unique(droplevels(meta[,idents])), error = function(e) unique(meta[,idents]))
         cell_type_grid <- expand.grid(cells_test, cells_test)
     }
     
@@ -310,7 +312,7 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
     producers <- as.character(cell_type_grid[, 1])
     receivers <- as.character(cell_type_grid[, 2])
 
-    generateDf <- function(ligand, receptor, pair, converted_pair, producers, receivers, cell_type_means, cell_type_fractions, splitted = NULL){
+    generateDf <- function(ligand, sep, receptor, pair, converted_pair, producers, receivers, cell_type_means, cell_type_fractions, splitted = NULL){
         if (!is.null(splitted)){
             pp <- paste0(splitted, '_', producers)
             rc <- paste0(splitted, '_', receivers)
@@ -375,8 +377,8 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
         row.names(df_) <- 1:nrow(df_)
         colnames(df_) <- c('ligand', 'receptor', 'pair', 'producer', 'receiver', 'producer_expression', 'producer_fraction', 'receiver_expression', 'receiver_fraction')
         df_ <- as.data.frame(df_)
-        df_$from = paste0(df_$producer, "_", df_$ligand)
-        df_$to = paste0(df_$receiver, "_", df_$receptor)
+        df_$from = paste0(df_$producer, sep, df_$ligand)
+        df_$to = paste0(df_$receiver, sep, df_$receptor)
         if (!is.null(splitted)){        
             df_$producer_ = df_$producer
             df_$receiver_ = df_$receiver
@@ -394,11 +396,11 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
     dfx <- list()
     if (!is.null(split.by)){
         for (i in unique(meta[,split.by])){
-            dfx[[i]] <- generateDf(ligand, receptor, pair, converted_pair, producers, receivers, expr_df, fraction_df, i)
+            dfx[[i]] <- generateDf(ligand, sep, receptor, pair, converted_pair, producers, receivers, expr_df, fraction_df, i)
             dfx[[i]] <- dfx[[i]][dfx[[i]]$barcode %in% barcodes,]
         }
     } else {
-        dfx[[1]] = generateDf(ligand, receptor, pair, converted_pair, producers, receivers, expr_df, fraction_df)
+        dfx[[1]] = generateDf(ligand, sep, receptor, pair, converted_pair, producers, receivers, expr_df, fraction_df)
         dfx[[1]] <- dfx[[1]][dfx[[1]]$barcode %in% barcodes,]
     }
 
@@ -409,26 +411,26 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
         df0 <- lapply(dfx, function(x) x[x$producer_fraction >= frac | x$receiver_fraction >= frac, ]) #save this for later
     
         # now construct the hierachy
-        constructGraph <- function(el, el0, unique_id, interactions_df, plot_cpdb_out, edge_group = FALSE, edge_group_colors = NULL,  node_group_colors = NULL){
+        constructGraph <- function(input_group, sep, el, el0, unique_id, interactions_df, plot_cpdb_out, edge_group = FALSE, edge_group_colors = NULL,  node_group_colors = NULL){
             require(igraph)
             celltypes <- unique(c(as.character(el$producer), as.character(el$receiver)))
             el1 <- data.frame(from = "root", to = celltypes, barcode_1 = NA, barcode_2 = NA, barcode_3 = NA)
-            el2 <- data.frame(from = celltypes, to = paste0(celltypes, "_", "ligand"), barcode_1 = NA, barcode_2 = NA, barcode_3 = NA)
-            el3 <- data.frame(from = celltypes, to = paste0(celltypes, "_", "receptor"), barcode_1 = NA, barcode_2 = NA, barcode_3 = NA)
+            el2 <- data.frame(from = celltypes, to = paste0(celltypes, sep, "ligand"), barcode_1 = NA, barcode_2 = NA, barcode_3 = NA)
+            el3 <- data.frame(from = celltypes, to = paste0(celltypes, sep, "receptor"), barcode_1 = NA, barcode_2 = NA, barcode_3 = NA)
             el4 <- do.call(rbind, lapply(celltypes, function(x){
                 cell_ligands <- grep(x, el$from, value = TRUE)
                 cell_ligands_idx <- grep(x, el$from)
                 if(length(cell_ligands) >0){
-                    df <-   data.frame(from = paste0(x, "_", "ligand"), to = cell_ligands, barcode_1 = el$barcode[cell_ligands_idx], barcode_2 = el$pair[cell_ligands_idx], barcode_3 = paste0(el$from[cell_ligands_idx], sep, el$to[cell_ligands_idx]))
+                    df <-   data.frame(from = paste0(x, sep, "ligand"), to = cell_ligands, barcode_1 = el$barcode[cell_ligands_idx], barcode_2 = el$pair[cell_ligands_idx], barcode_3 = paste0(el$from[cell_ligands_idx], sep, el$to[cell_ligands_idx]))
                 } else { df = NULL}}))
             el5 <- do.call(rbind, lapply(celltypes, function(x){
                 cell_ligands <- grep(x, el$to, value = TRUE)
                 cell_ligands_idx <- grep(x, el$to)
                 if(length(cell_ligands) >0){
-                    df <-   data.frame(from = paste0(x, "_", "receptor"), to = cell_ligands, barcode_1 = el$barcode[cell_ligands_idx], barcode_2 = el$pair[cell_ligands_idx], barcode_3 = paste0(el$from[cell_ligands_idx], sep, el$to[cell_ligands_idx]))
+                    df <-   data.frame(from = paste0(x, sep, "receptor"), to = cell_ligands, barcode_1 = el$barcode[cell_ligands_idx], barcode_2 = el$pair[cell_ligands_idx], barcode_3 = paste0(el$from[cell_ligands_idx], sep, el$to[cell_ligands_idx]))
                 }   else{df = NULL}
             }))
-    
+
             gr_el <- do.call(rbind, list(el1, el2, el3, el4, el5))
             plot_cpdb_out$barcode <- paste0(plot_cpdb_out$Var2, sep, plot_cpdb_out$Var1)
             mean_col <- grep('means$', colnames(plot_cpdb_out), value = TRUE)
@@ -487,7 +489,7 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
                 df$vertices$fraction <- as.numeric(expression$fraction)[match(df$vertices$name, expression$cell_mol)]
                 df$vertices$celltype <- ''
                 for(x in cells_test){
-                    idx <- grepl(x, df$vertices$name)
+                    idx <- grepl(paste0(x, sep), df$vertices$name)
                     df$vertices$celltype[idx] <- x
                 }
                 df$vertices$label <- df$vertices$name
@@ -495,7 +497,7 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
                 gr <- graph_from_data_frame(df$edges, directed = TRUE, vertices = df$vertices)
         
                 for(x in unique_id){
-                    V(gr)$label <- gsub(paste0(x, '_'), '', V(gr)$label)
+                    V(gr)$label <- gsub(paste0(x, sep), '', V(gr)$label)
                 }
                 
                 require(ggraph)
@@ -534,7 +536,8 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
                         geom_text_repel(aes(x=x, y=y, label = label), segment.square = TRUE, segment.inflect = TRUE, segment.size = 0.2, force=0.5, size = 2, force_pull = 0) +
                         # geom_node_text(aes(x = x*1.15, y=y*1.15, filter = leaf, label=name, size =0.1))  +
                         scale_alpha_manual(values = c("ligand" = 0.5, "receptor" = 1)) +
-                        small_legend(keysize = 0.5)
+                        small_legend(keysize = 0.5) +
+                        ggtitle(input_group)
                 } else {
                     pl <- ggraph(gr, layout = 'dendrogram', circular = TRUE) +
                         geom_conn_bundle(data = get_con(from = from, to = to, `-log10(sig)` = pval, interaction_score = interaction_score),
@@ -548,13 +551,14 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
                         scale_shape_manual(values = c("ligand" = 19, "receptor" = 15)) +
                         scale_color_manual(values =  node_group_colors) +
                         geom_text_repel(aes(x=x, y=y, label = label), segment.square = TRUE, segment.inflect = TRUE, segment.size = 0.2, force=0.5, size = 2, force_pull = 0) +
-                        # geom_node_text(aes(x = x*1.15, y=y*1.15, filter = leaf, label=name, size =0.1))  +
+                        # geom_node_text(aes(x = x*1.15, y=y*1.15, filter = leaf, label=label, size =0.01))  +
                         scale_alpha_manual(values = c("ligand" = 0.5, "receptor" = 1)) +
-                        small_legend(keysize = 0.5)
+                        small_legend(keysize = 0.5) +
+                        ggtitle(input_group)
                 }
                 return(pl)
             } else {
-                return(NULL)
+                return(NA)
             }
         }
     
@@ -564,16 +568,33 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
         } else {
             edge_group = FALSE
         }
-    
+        cantplot <- c()
+        noplot <- FALSE
         for (i in 1:length(dfx)){
-            if (nrow(dfx[[i]]) > 0 & nrow(df0[[i]]) > 0){
-                gl[[i]] <- constructGraph(dfx[[i]], df0[[i]], cells_test, interactions_subset, lr_interactions, edge_group, edge_group_colors, node_group_colors)
+            if (!is.null(split.by)){
+                if (nrow(dfx[[i]]) > 0 & nrow(df0[[i]]) > 0){
+                    gl[[i]] <- constructGraph(names(dfx)[i], sep, dfx[[i]], df0[[i]], cells_test, interactions_subset, lr_interactions, edge_group, edge_group_colors, node_group_colors)
+                } else {
+                    gl[[i]] <- NA
+                    cantplot <- c(cantplot, names(dfx)[i])
+                }
             } else {
-                gl[[i]] <- NULL
+                if (nrow(dfx[[i]]) > 0 & nrow(df0[[i]]) > 0){
+                    gl[[i]] <- constructGraph(NULL, sep, dfx[[i]], df0[[i]], cells_test, interactions_subset, lr_interactions, edge_group, edge_group_colors, node_group_colors)
+                } else {
+                    gl[[i]] <- NA
+                    noplot <- TRUE
+                }
             }
             
         }
-    
+        if (length(cantplot) > 0){
+            cat("The following groups in split.by cannot be plotted due to missing/no significant interactions/celltypes", sep = "\n")
+            cat(cantplot, sep = "\n")
+        }
+        if (noplot) {
+            cat("Please check that plot_cpdb works first!", sep = '\n')
+        }
         if (length(gl) > 1){    
             return(gl)
         } else {

@@ -261,8 +261,8 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
         ct1 = list()
         ct2 = list()
         for (i in 1:length(ctype2)){
-            ct1[i] = paste0(ctype1, sep, ctype2[i])
-            ct2[i] = paste0(ctype2[i], sep, ctype1)
+            ct1[i] = paste0('^', ctype1, sep, ctype2[i], '$')
+            ct2[i] = paste0('^', ctype2[i], sep, ctype1, '$')
         }
         ct_1 = do.call(paste0, list(ct1, collapse = '|'))
         ct_2 = do.call(paste0, list(ct2, collapse = '|'))
@@ -352,7 +352,6 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
             }
             labels <- factor(labels)
             labels <- levels(labels)
-            labels_ <- labels
             c_type1 = as.list(grep(cell_type1, labels, value = TRUE, ...))
             c_type2 = as.list(grep(cell_type2, labels, value = TRUE, ...))
 
@@ -370,7 +369,6 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
         }
         labels <- factor(labels)
         labels <- levels(labels)
-        labels_ <- labels
         c_type1 = as.list(grep(cell_type1, labels, value = TRUE))
         c_type2 = as.list(grep(cell_type2, labels, value = TRUE))
 
@@ -537,15 +535,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
             df$group <- gsub(searchterm, "", df$Var2)
         } 
     } else {
-        if (length(labels_) > 0 ){
-            grp <- as.list(labels_)
-            grp2 <- lapply(grp, function(i){
-                x <- paste0(i,'_')
-                return(x)
-            })
-            searchterm <- do.call(paste, list(grp2, collapse = "|"))
-            df$group <- gsub(searchterm, "", df$Var2)
-        }
+        df$group <- df$Var2
     }
 
     if (keep_significant_only){
