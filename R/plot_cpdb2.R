@@ -573,14 +573,14 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
         for (i in 1:length(dfx)){
             if (!is.null(split.by)){
                 if (nrow(dfx[[i]]) > 0 & nrow(df0[[i]]) > 0){
-                    gl[[i]] <- constructGraph(names(dfx)[i], dfx[[i]], df0[[i]], cells_test, interactions_subset, lr_interactions, edge_group, edge_group_colors, node_group_colors)
+                    gl[[i]] <- constructGraph(names(dfx)[i], sep, dfx[[i]], df0[[i]], cells_test, interactions_subset, lr_interactions, edge_group, edge_group_colors, node_group_colors)
                 } else {
                     gl[[i]] <- NA
                     cantplot <- c(cantplot, names(dfx)[i])
                 }
             } else {
                 if (nrow(dfx[[i]]) > 0 & nrow(df0[[i]]) > 0){
-                    gl[[i]] <- constructGraph(NULL, dfx[[i]], df0[[i]], cells_test, interactions_subset, lr_interactions, edge_group, edge_group_colors, node_group_colors)
+                    gl[[i]] <- constructGraph(NULL, sep, dfx[[i]], df0[[i]], cells_test, interactions_subset, lr_interactions, edge_group, edge_group_colors, node_group_colors)
                 } else {
                     gl[[i]] <- NA
                     noplot <- TRUE
