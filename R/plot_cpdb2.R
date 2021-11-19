@@ -396,11 +396,11 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
     dfx <- list()
     if (!is.null(split.by)){
         for (i in unique(meta[,split.by])){
-            dfx[[i]] <- generateDf(ligand, receptor, pair, converted_pair, producers, receivers, expr_df, fraction_df, i)
+            dfx[[i]] <- generateDf(ligand, sep, receptor, pair, converted_pair, producers, receivers, expr_df, fraction_df, i)
             dfx[[i]] <- dfx[[i]][dfx[[i]]$barcode %in% barcodes,]
         }
     } else {
-        dfx[[1]] = generateDf(ligand, receptor, pair, converted_pair, producers, receivers, expr_df, fraction_df)
+        dfx[[1]] = generateDf(ligand, sep, receptor, pair, converted_pair, producers, receivers, expr_df, fraction_df)
         dfx[[1]] <- dfx[[1]][dfx[[1]]$barcode %in% barcodes,]
     }
 
