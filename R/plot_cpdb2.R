@@ -44,11 +44,13 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
     requireNamespace('SummarizedExperiment')
     requireNamespace('SingleCellExperiment')
     lr_interactions <- cpdb_int$data
-    if (any(lr_interactions[,3] > 0)){
-        if (any(is.na(lr_interactions[,3]))){
-            lr_interactions <- lr_interactions[lr_interactions[,3] > 0 & !is.na(lr_interactions[,3]), ]
-        } else {
-            lr_interactions <- lr_interactions[lr_interactions[,3] > 0, ]
+    if (is.null(split.by)){
+        if (any(lr_interactions[,3] > 0)){
+            if (any(is.na(lr_interactions[,3]))){
+                lr_interactions <- lr_interactions[lr_interactions[,3] > 0 & !is.na(lr_interactions[,3]), ]
+            } else {
+                lr_interactions <- lr_interactions[lr_interactions[,3] > 0, ]
+            }
         }
     }
     subset_clusters <- unique(unlist(lapply(as.list(lr_interactions$group), strsplit, sep)))
@@ -409,7 +411,7 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
         df0 <- lapply(dfx, function(x) x[x$producer_fraction >= frac | x$receiver_fraction >= frac, ]) #save this for later
     
         # now construct the hierachy
-        constructGraph <- function(el, el0, unique_id, interactions_df, plot_cpdb_out, edge_group = FALSE, edge_group_colors = NULL,  node_group_colors = NULL){
+        constructGraph <- function(input_group, el, el0, unique_id, interactions_df, plot_cpdb_out, edge_group = FALSE, edge_group_colors = NULL,  node_group_colors = NULL){
             require(igraph)
             celltypes <- unique(c(as.character(el$producer), as.character(el$receiver)))
             el1 <- data.frame(from = "root", to = celltypes, barcode_1 = NA, barcode_2 = NA, barcode_3 = NA)
@@ -428,7 +430,7 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
                     df <-   data.frame(from = paste0(x, "_", "receptor"), to = cell_ligands, barcode_1 = el$barcode[cell_ligands_idx], barcode_2 = el$pair[cell_ligands_idx], barcode_3 = paste0(el$from[cell_ligands_idx], sep, el$to[cell_ligands_idx]))
                 }   else{df = NULL}
             }))
-    
+
             gr_el <- do.call(rbind, list(el1, el2, el3, el4, el5))
             plot_cpdb_out$barcode <- paste0(plot_cpdb_out$Var2, sep, plot_cpdb_out$Var1)
             mean_col <- grep('means$', colnames(plot_cpdb_out), value = TRUE)
@@ -534,7 +536,8 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
                         geom_text_repel(aes(x=x, y=y, label = label), segment.square = TRUE, segment.inflect = TRUE, segment.size = 0.2, force=0.5, size = 2, force_pull = 0) +
                         # geom_node_text(aes(x = x*1.15, y=y*1.15, filter = leaf, label=name, size =0.1))  +
                         scale_alpha_manual(values = c("ligand" = 0.5, "receptor" = 1)) +
-                        small_legend(keysize = 0.5)
+                        small_legend(keysize = 0.5) +
+                        ggtitle(input_group)
                 } else {
                     pl <- ggraph(gr, layout = 'dendrogram', circular = TRUE) +
                         geom_conn_bundle(data = get_con(from = from, to = to, `-log10(sig)` = pval, interaction_score = interaction_score),
@@ -550,11 +553,12 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
                         geom_text_repel(aes(x=x, y=y, label = label), segment.square = TRUE, segment.inflect = TRUE, segment.size = 0.2, force=0.5, size = 2, force_pull = 0) +
                         # geom_node_text(aes(x = x*1.15, y=y*1.15, filter = leaf, label=name, size =0.1))  +
                         scale_alpha_manual(values = c("ligand" = 0.5, "receptor" = 1)) +
-                        small_legend(keysize = 0.5)
+                        small_legend(keysize = 0.5) +
+                        ggtitle(input_group)
                 }
                 return(pl)
             } else {
-                return(NULL)
+                return(NA)
             }
         }
     
@@ -564,16 +568,33 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
         } else {
             edge_group = FALSE
         }
-    
+        cantplot <- c()
+        noplot <- FALSE
         for (i in 1:length(dfx)){
-            if (nrow(dfx[[i]]) > 0 & nrow(df0[[i]]) > 0){
-                gl[[i]] <- constructGraph(dfx[[i]], df0[[i]], cells_test, interactions_subset, lr_interactions, edge_group, edge_group_colors, node_group_colors)
+            if (!is.null(split.by)){
+                if (nrow(dfx[[i]]) > 0 & nrow(df0[[i]]) > 0){
+                    gl[[i]] <- constructGraph(names(dfx)[i], dfx[[i]], df0[[i]], cells_test, interactions_subset, lr_interactions, edge_group, edge_group_colors, node_group_colors)
+                } else {
+                    gl[[i]] <- NA
+                    cantplot <- c(cantplot, names(dfx)[i])
+                }
             } else {
-                gl[[i]] <- NULL
+                if (nrow(dfx[[i]]) > 0 & nrow(df0[[i]]) > 0){
+                    gl[[i]] <- constructGraph(NULL, dfx[[i]], df0[[i]], cells_test, interactions_subset, lr_interactions, edge_group, edge_group_colors, node_group_colors)
+                } else {
+                    gl[[i]] <- NA
+                    noplot <- TRUE
+                }
             }
             
         }
-    
+        if (length(cantplot) > 0){
+            cat("The following groups in split.by cannot be plotted due to missing/no significant interactions/celltypes", sep = "\n")
+            cat(cantplot, sep = "\n")
+        }
+        if (noplot) {
+            cat("Please check that plot_cpdb works first!", sep = '\n')
+        }
         if (length(gl) > 1){    
             return(gl)
         } else {
