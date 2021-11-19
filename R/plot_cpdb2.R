@@ -53,7 +53,7 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
             }
         }
     }
-    subset_clusters <- unique(unlist(lapply(as.list(lr_interactions$group), strsplit, sep)))
+    subset_clusters <- unique(unlist(lapply(as.character(lr_interactions$group), strsplit, sep)))
     sce_subset <- scdata[, SummarizedExperiment::colData(scdata)[,idents] %in% subset_clusters]
     interactions <- means[,c('interacting_pair', 'gene_a', 'gene_b', 'partner_a', 'partner_b')]
     interactions$converted <- gsub('-', ' ', interactions$interacting_pair)
