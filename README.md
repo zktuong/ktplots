@@ -1,6 +1,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![codecov](https://codecov.io/gh/zktuong/ktplots/branch/master/graph/badge.svg)](https://codecov.io/gh/zktuong/ktplots)
 [![R](https://github.com/zktuong/ktplots/actions/workflows/r.yml/badge.svg)](https://github.com/zktuong/ktplots/actions/workflows/r.yml)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5717923.svg)](https://doi.org/10.5281/zenodo.5717923)
 
 # ktplots
 R plotting functions to plot gene expression data of single-cell data.
@@ -259,3 +260,13 @@ library(patchwork)
 g + g1
 ```
 ![gghelperfunctions](exampleImages/gghelperfunctions_example.png)
+
+
+### Citation
+If you find these functions useful, please consider leaving a star, citing this repository, and/or citing the following [DOI](https://doi.org/10.5281/zenodo.5717923):
+
+```
+Zewen Kelvin Tuong. (2021). zktuong/ktplots: 1.1.16 (v1.1.16). Zenodo. https://doi.org/10.5281/zenodo.5717923
+```
+
+Thank you!
