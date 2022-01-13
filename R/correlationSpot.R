@@ -63,7 +63,7 @@ correlationSpot <- function(st,
         rna_exp <- NULL
         if (!is.null(geneset)){
             genes <- geneset
-            rna_exp <- st1@meta.data[, genes]
+            rna_exp <- t(st1@meta.data[, genes])
         } else {
             rna_exp <- NULL
         }
