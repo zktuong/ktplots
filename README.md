@@ -210,8 +210,7 @@ test <- plot_cpdb2(cell_type1 = "CD4_Tem|CD4_Tcm|CD4_Treg", # same usage style a
 
 ### correlationSpot
 Ever wanted to ask if your gene(s) and/or prediction(s) of interests correlate spatially in vissium data? Now you can!
-**disclaimer** not sure if this works...
-![plot_cpdb](exampleImages/correlationSpot_example.png)
+**disclaimer** It might be buggy.
 ```R
 library(ggplot2)
 scRNAseq <- Seurat::SCTransform(scRNAseq, verbose = FALSE) %>% Seurat::RunPCA(., verbose = FALSE) %>% Seurat::RunUMAP(., dims = 1:30, verbose = FALSE)
@@ -228,8 +227,8 @@ p1 <- correlationSpot(spatial, genes = c('Tnfsf13b', 'Cd79a'), celltypes = 'Grou
 p2 <- correlationSpot(spatial, genes = c('Tnfsf13b', 'Cd79a'), celltypes = 'Group1-3', pt.size.factor = 1.6, ncol = 2, crop = TRUE, average_by_cluster = TRUE) + scale_fill_gradientn(colors = rev(RColorBrewer::brewer.pal(12, 'Spectral')),limits = c(-1, 1)) + ggtitle('correlation averaged across clusters')
 
 cowplot::plot_grid(pa, pb, p1, p2, ncol = 2)
-
 ```
+![plot_cpdb](exampleImages/correlationSpot_example.png)
 
 ### StackedVlnPlot
 Generates a stacked violinplot like in scanpy's ```sc.pl.stacked_violin```. 
