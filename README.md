@@ -211,6 +211,7 @@ test <- plot_cpdb2(cell_type1 = "CD4_Tem|CD4_Tcm|CD4_Treg", # same usage style a
 ### correlationSpot
 Ever wanted to ask if your gene(s) and/or prediction(s) of interests correlate spatially in vissium data? Now you can!
 **disclaimer** not sure if this works...
+![plot_cpdb](exampleImages/correlationSpot_example.png)
 ```R
 library(ggplot2)
 scRNAseq <- Seurat::SCTransform(scRNAseq, verbose = FALSE) %>% Seurat::RunPCA(., verbose = FALSE) %>% Seurat::RunUMAP(., dims = 1:30, verbose = FALSE)
