@@ -3,12 +3,12 @@ data(cpdb_output)
 data(cpdb_output2)
 
 test_that("plot_cpdb works 1",{
-    p <- plot_cpdb("B cell", "CD4T cell", kidneyimmune, 'celltype', means, pvals, split.by = "Experiment", genes = c("CXCL13", "CD274", "CXCR5"))
+    p <- plot_cpdb("B cell", "CD4T cell", kidneyimmune, 'celltype', means, pvals, split.by = "Experiment", genes = c("CXCL13", "CD274", "CXCR5"), verbose = TRUE)
     expect_true(is.ggplot(p))
 })
 
 test_that("plot_cpdb works 2",{
-    p <- plot_cpdb("B cell", "CD4T cell", kidneyimmune, 'celltype', means, pvals, split.by = "Experiment", gene.family = 'chemokines')
+    p <- plot_cpdb("B cell", "CD4T cell", kidneyimmune, 'celltype', means, pvals, split.by = "Experiment", gene.family = 'chemokines', verbose = TRUE)
     expect_true(is.ggplot(p))
 })
 
@@ -46,7 +46,7 @@ test_that("werid characters are ok", {
     p <- plot_cpdb(cell_type1 = 'TRC+', cell_type2 = 'LTi-Like ILC3', scdata = kidneyimmune,
         idents = "celltype", # column name where the cell ids are located in the metadata
         means = newmeans, pvals = newpvals,
-        genes = c("LTB", "LTBR", "KITL", "KIT", "CCR6"))
+        genes = c("LTB", "LTBR", "KITL", "KIT", "CCR6"), verbose = TRUE)
     expect_true(is.ggplot(p))
 })
 

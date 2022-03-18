@@ -21,6 +21,7 @@
 #' @param highlight_size stroke size for highlight if p < 0.05. if NULL, scales to -log10(pval).
 #' @param separator separator to use to split between celltypes. Unless otherwise specified, the separator will be `>@<`. Make sure the idents and split.by doesn't overlap with this.
 #' @param special_character_search_pattern search pattern if the cell type names contains special character. NULL defaults to "/|:|\\?|\\*|\\+|[\\]|\\(|\\)".
+#' @param verbose prints cat/print statements if TRUE.
 #' @param ... passes arguments to grep for cell_type1 and cell_type2.
 #' @return ggplot dot plot object of cellphone db output
 #' @examples
@@ -35,18 +36,22 @@
 #' @import reshape2
 #' @export
 
-plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_size = 8, p.adjust.method = NULL, keep_significant_only = FALSE, split.by = NULL, gene.family = NULL, genes = NULL, scale = NULL, standard_scale = NULL, col_option = viridis::viridis(50), default_style = TRUE, noir = FALSE, highlight = "red", highlight_size = NULL, separator = NULL, special_character_search_pattern = NULL, ...) {
+plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_size = 8, p.adjust.method = NULL, keep_significant_only = FALSE, split.by = NULL, gene.family = NULL, genes = NULL, scale = NULL, standard_scale = NULL, col_option = viridis::viridis(50), default_style = TRUE, noir = FALSE, highlight = "red", highlight_size = NULL, separator = NULL, special_character_search_pattern = NULL, verbose = FALSE, ...) {
     if (class(scdata) %in% c("SingleCellExperiment", "SummarizedExperiment")) {
-        cat("data provided is a SingleCellExperiment/SummarizedExperiment object", sep = "\n")
-        cat("extracting expression matrix", sep = "\n")
+        if (verbose){
+            cat("data provided is a SingleCellExperiment/SummarizedExperiment object", sep = "\n")
+            cat("extracting expression matrix", sep = "\n")
+        }
         requireNamespace('SummarizedExperiment')
         requireNamespace('SingleCellExperiment')
         exp_mat <- SummarizedExperiment::assay(scdata)
         metadata <- SummarizedExperiment::colData(scdata)
     } else if (class(scdata) == "Seurat") {
         requireNamespace('Seurat')
-        cat("data provided is a Seurat object", sep = "\n")
-        cat("extracting expression matrix", sep = "\n")
+        if (verbose){
+            cat("data provided is a Seurat object", sep = "\n")
+            cat("extracting expression matrix", sep = "\n")
+        }
         exp_mat <- tryCatch(scdata@data, error = function(e) {
             tryCatch(Seurat::GetAssayData(object = scdata), error = function(e) {
                 stop(paste0("are you sure that your data is normalized?"))
@@ -225,22 +230,31 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
     }
 
     if(checklabels1 & checklabels2){
-        cat('Found cell types in the input data provided. Proceeding with plotting.', sep = "\n")
+        if (verbose) {
+            cat('Found cell types in the input data provided. Proceeding with plotting.', sep = "\n")
+        }
     }
 
     if (is.null(gene.family) & is.null(genes)){
-        cat("options genes or gene.family are not specified.\nusing entire cpdb output.\n")
+        if (verbose){
+            cat("options genes or gene.family are not specified.\nusing entire cpdb output.\n")
+        }
         query <- grep('', means_mat$interacting_pair)
-        cat("for future reference, genes or gene.family can be specified, not both.\ngene.family can be one of the following:", sep = "\n")
-        print(c("chemokines", "Th1", "Th2", "Th17", "Treg", "costimulatory", "coinhibitory", "niche"))
-        cat("otherwise, please provide gene(s) as a vector in the genes option", sep = "\n")
+        if (verbose){
+            cat("for future reference, genes or gene.family can be specified, not both.\ngene.family can be one of the following:", sep = "\n")
+            print(c("chemokines", "Th1", "Th2", "Th17", "Treg", "costimulatory", "coinhibitory", "niche"))
+            cat("otherwise, please provide gene(s) as a vector in the genes option", sep = "\n")
+        }
+        
     }
 
     if (!is.null(gene.family) & !is.null(genes)){
         stop("Please specify either genes or gene.family, not both")
-        cat("gene.family can be one of the following:", sep = "\n")
-        print(c("chemokines", "Th1", "Th2", "Th17", "Treg", "costimulatory", "coinhibitory", "niche"))
-        cat("otherwise, please provide gene(s) as a vector in the genes option", sep = "\n")
+        if (verbose){
+            cat("gene.family can be one of the following:", sep = "\n")
+            print(c("chemokines", "Th1", "Th2", "Th17", "Treg", "costimulatory", "coinhibitory", "niche"))
+            cat("otherwise, please provide gene(s) as a vector in the genes option", sep = "\n")
+        }
     }
 
     if(!is.null(gene.family) & is.null(genes)){
