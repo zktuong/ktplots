@@ -106,6 +106,9 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
     }
     sce_subset_tmp <- sce_subset[row.names(sce_subset) %in% geneid, ]
     
+    if (dim(sce_subset_tmp)[1] == 0){
+        stop("Gene ids not found. Are you sure your single-cell object contains human gene symbols?")
+    }
     # split to list and calculate celltype mean for each treatment group
     meta <- as.data.frame(SummarizedExperiment::colData(sce_subset_tmp))
     
