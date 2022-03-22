@@ -26,6 +26,8 @@ plot_cpdb(
   highlight_size = NULL,
   separator = NULL,
   special_character_search_pattern = NULL,
+  verbose = FALSE,
+  return_table = FALSE,
   ...
 )
 }
@@ -44,13 +46,13 @@ plot_cpdb(
 
 \item{max_size}{max size of points.}
 
-\item{p.adjust.method}{correction method. p.adjust.methods of one of these options: c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none")}
+\item{p.adjust.method}{correction method. p.adjust.methods of one of these options: c('holm', 'hochberg', 'hommel', 'bonferroni', 'BH', 'BY', 'fdr', 'none')}
 
 \item{keep_significant_only}{logical. Default is FALSE. Switch to TRUE if you only want to plot the significant hits from cpdb.}
 
 \item{split.by}{column name in the metadata/coldata table to split the spots by. Can only take columns with binary options. If specified, name to split by MUST be specified in the meta file provided to cpdb prior to analysis.}
 
-\item{gene.family}{default = NULL. some predefined group of genes. can take one of these options: "chemokines", "Th1", "Th2", "Th17", "Treg", "costimulatory", "coinhibitory", "niche"}
+\item{gene.family}{default = NULL. some predefined group of genes. can take one of these options: 'chemokines', 'Th1', 'Th2', 'Th17', 'Treg', 'costimulatory', 'coinhibitory', 'niche'}
 
 \item{genes}{default = NULL. can specify custom list of genes if gene.family is NULL}
 
@@ -68,7 +70,11 @@ plot_cpdb(
 
 \item{separator}{separator to use to split between celltypes. Unless otherwise specified, the separator will be `>@<`. Make sure the idents and split.by doesn't overlap with this.}
 
-\item{special_character_search_pattern}{search pattern if the cell type names contains special character. NULL defaults to "/|:|\\?|\\*|\\+|[\\]|\\(|\\)".}
+\item{special_character_search_pattern}{search pattern if the cell type names contains special character. NULL defaults to '/|:|\\?|\\*|\\+|[\\]|\\(|\\)'.}
+
+\item{verbose}{prints cat/print statements if TRUE.}
+
+\item{return_table}{whether or not to return as a table rather than to plot.}
 
 \item{...}{passes arguments to grep for cell_type1 and cell_type2.}
 
@@ -84,7 +90,7 @@ Plotting cellphonedb results
 \donttest{
 data(kidneyimmune)
 data(cpdb_output)
-plot_cpdb("B cell", "CD4T cell", kidneyimmune, 'celltype', means, pvals, split.by = "Experiment", genes = c("CXCL13", "CD274", "CXCR5"))
-plot_cpdb("B cell", "CD4T cell", kidneyimmune, 'celltype', means, pvals, split.by = "Experiment", gene.family = 'chemokines')
+plot_cpdb('B cell', 'CD4T cell', kidneyimmune, 'celltype', means, pvals, split.by = 'Experiment', genes = c('CXCL13', 'CD274', 'CXCR5'))
+plot_cpdb('B cell', 'CD4T cell', kidneyimmune, 'celltype', means, pvals, split.by = 'Experiment', gene.family = 'chemokines')
 }
 }
