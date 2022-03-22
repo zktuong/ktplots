@@ -12,6 +12,22 @@ test_that("plot_cpdb works 2",{
     expect_true(is.ggplot(p))
 })
 
+test_that("plot_cpdb works 3",{
+    p <- plot_cpdb("B cell", "CD4T cell", kidneyimmune, 'celltype', means, pvals, split.by = "Experiment", gene.family = 'chemokines', verbose = FALSE, default_style = FALSE)
+    expect_true(is.ggplot(p))
+})
+
+test_that("plot_cpdb works 4",{
+    p <- plot_cpdb("B cell", "B cell", kidneyimmune, 'celltype', means, pvals, split.by = "Experiment", gene.family = 'chemokines', verbose = FALSE)
+    expect_true(is.ggplot(p))
+})
+
+test_that("plot_cpdb works 5",{
+    p <- plot_cpdb("B cell", "cell", kidneyimmune, 'celltype', means, pvals, split.by = "Experiment", gene.family = 'chemokines', verbose = FALSE, default_style = FALSE, p.adjust.method = 'BH')
+    expect_true(is.ggplot(p))
+})
+
+
 test_that("werid characters are ok", {
     # edit the example objects to simulate Rachel's objects
     # rename B cells to TRC+
