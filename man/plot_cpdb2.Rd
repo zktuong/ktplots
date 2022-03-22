@@ -43,7 +43,7 @@ plot_cpdb2(
 
 \item{deconvoluted}{object holding deconvoluted.txt from cpdb output}
 
-\item{p.adjust.method}{correction method. p.adjust.methods of one of these options: c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none")}
+\item{p.adjust.method}{correction method. p.adjust.methods of one of these options: c('holm', 'hochberg', 'hommel', 'bonferroni', 'BH', 'BY', 'fdr', 'none')}
 
 \item{keep_significant_only}{logical. Default is FALSE. Switch to TRUE if you only want to plot the significant hits from cpdb.}
 
