@@ -1,12 +1,14 @@
 name: R
 
 on:
-  push:
-    branches:
-      - "master"
   pull_request:
     branches:
       - "*"
+  push:
+    branches:
+      - "master"
+      - "*"
+  
 
 env:
   cache-version: 'cache-v1'
