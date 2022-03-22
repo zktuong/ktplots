@@ -403,11 +403,11 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
 
 
     if(!is.null(gene.family) & is.null(genes)){
-        means_mat <- means_mat[query_group[[tolower(gene.family)]], grep(cell_type, colnames(means_mat), ...)]
-        pvals_mat <- pvals_mat[query_group[[tolower(gene.family)]], grep(cell_type, colnames(pvals_mat), ...)]
+        means_mat <- means_mat[query_group[[tolower(gene.family)]], grep(cell_type, colnames(means_mat), ...), drop = FALSE]
+        pvals_mat <- pvals_mat[query_group[[tolower(gene.family)]], grep(cell_type, colnames(pvals_mat), ...), drop = FALSE]
     } else if (is.null(gene.family) & !is.null(genes) | is.null(gene.family) & is.null(genes)){
-        means_mat <- means_mat[query, grep(cell_type, colnames(means_mat), ...)]
-        pvals_mat <- pvals_mat[query, grep(cell_type, colnames(pvals_mat), ...)]
+        means_mat <- means_mat[query, grep(cell_type, colnames(means_mat), ...), drop = FALSE]
+        pvals_mat <- pvals_mat[query, grep(cell_type, colnames(pvals_mat), ...), drop = FALSE]
     }
 
     if (length(means_mat) == 0){
@@ -423,9 +423,9 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
                 return(gx)
             })
             group_id <- do.call(rbind, group_i)
-            means_mat <- means_mat[,as.vector(group_id)]
+            means_mat <- means_mat[,as.vector(group_id), drop = FALSE]
             if (dim(pvals_mat)[2] > 0){
-                pvals_mat <- pvals_mat[,as.vector(group_id)]
+                pvals_mat <- pvals_mat[,as.vector(group_id), drop = FALSE]
             } else {
                 stop('No significant hits.')
             }
@@ -441,8 +441,8 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
     if(nrow(means_mat) > 2){
         d <- dist(as.data.frame(means_mat))
         h <- hclust(d)
-        means_mat <- means_mat[h$order, ]
-        pvals_mat <- pvals_mat[h$order, ]
+        means_mat <- means_mat[h$order, , drop = FALSE]
+        pvals_mat <- pvals_mat[h$order, , drop = FALSE]
     }
 
     # scaling
@@ -454,31 +454,36 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
             means_mat_ <- means_mat
         }
     }
-
-    if(length(scale) < 1){
-        if(length(standard_scale) > 0){
-            if (standard_scale){
-                means_mat2 <- means_mat_
-            } else {
-                means_mat2 <- means_mat
-            }
-        } else {
-            means_mat2 <- t(scale(t(means_mat)))
-        }
-    } else {
-        if (scale){
+    if (ncol(means_mat) > 1){
+        if(length(scale) < 1){
             if(length(standard_scale) > 0){
                 if (standard_scale){
                     means_mat2 <- means_mat_
                 } else {
-                    means_mat2 <- t(scale(t(means_mat)))
+                    means_mat2 <- means_mat
                 }
             } else {
                 means_mat2 <- t(scale(t(means_mat)))
             }
         } else {
-            means_mat2 <- means_mat
+            if (scale){
+                if(length(standard_scale) > 0){
+                    if (standard_scale){
+                        means_mat2 <- means_mat_
+                    } else {
+                        means_mat2 <- t(scale(t(means_mat)))
+                    }
+                } else {
+                    means_mat2 <- t(scale(t(means_mat)))
+                }
+            } else {
+                means_mat2 <- means_mat
+            }
         }
+    } else {
+        standard_scale = FALSE
+        scale = FALSE
+        means_mat2 <- means_mat
     }
 
     pvals_mat2 <- as.matrix(pvals_mat)
