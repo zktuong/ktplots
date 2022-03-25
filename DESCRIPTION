@@ -18,7 +18,8 @@ Imports:
 	gtools,	
 	RColorBrewer,
 	purrr,
-	patchwork
+	patchwork,
+	BiocParallel
 Suggests:
 	SummarizedExperiment,
 	SingleCellExperiment,
