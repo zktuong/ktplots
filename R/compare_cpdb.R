@@ -316,7 +316,7 @@ compare_cpdb <- function(meta, celltypes, method = c('ttest', 'wilcox', 'lme'), 
                         return(x)}, BPPARAM = SerialParam(progressbar = verbose))
         } else {
             p_cols <- grep('_P_', colnames(res3), value = TRUE)
-            for (p in p_cols)){
+            for (p in p_cols){
                 res3[,gsub('_P_', '_Q_', i)] <- p.adjust(res3[,p], method = p.adjust.method)
             }
         }
