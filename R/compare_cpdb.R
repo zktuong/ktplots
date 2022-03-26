@@ -230,9 +230,17 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col, gr
                         if (!is.na(fit2)) {
                           y <- suppressWarnings(summary(fit2))
                           E <- y$coefficients[-1, 1]
-                          names(E) <- paste0("fit_estimates_", names(E))
+                          if (length(E) > 1) {
+                            names(E) <- paste0("fit_estimates_", names(E))
+                          } else {
+                            names(E) <- paste0("fit_estimates_", rownames(y$coefficients)[2])
+                          }
                           P <- y$coefficients[-1, 5]
-                          names(P) <- paste0("fit_P_", names(P))
+                          if (length(E) > 1) {
+                            names(P) <- paste0("fit_P_", names(P))
+                          } else {
+                            names(P) <- paste0("fit_P_", rownames(y$coefficients)[2])
+                          }
                           return(c(E, P))
                         } else {
                           return(NA)
@@ -296,6 +304,7 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col, gr
             }
         })
         res3 <- do.call(rbind, res3fitstats3)
+        res3 <- as.data.frame(res3)
     }
 
     if (p.adjust.method != 'none'){
@@ -311,10 +320,9 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col, gr
         } else {
             p_cols <- grep('_P_', colnames(res3), value = TRUE)
             for (p in p_cols){
-                res3[,gsub('_P_', '_Q_', i)] <- p.adjust(res3[,p], method = p.adjust.method)
+                res3[,gsub('_P_', '_Q_', p)] <- p.adjust(res3[,p], method = p.adjust.method)
             }
         }
-
     }
 
     return(res3)
