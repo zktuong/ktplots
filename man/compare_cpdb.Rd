@@ -14,8 +14,7 @@ compare_cpdb(
   method = c("t.test", "wilcox", "lme"),
   p.adjust.method = "fdr",
   BPPARAM = SerialParam(),
-  verbose = TRUE,
-  ...
+  verbose = TRUE
 )
 }
 \arguments{
@@ -38,8 +37,6 @@ compare_cpdb(
 \item{BPPARAM}{BiocParallelParam class.}
 
 \item{verbose}{Whether or not to print messages.}
-
-\item{...}{passes arguments to lmerTest::lmer.}
 }
 \value{
 results for plotting
