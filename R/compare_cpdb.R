@@ -10,13 +10,14 @@
 #' @param p.adjust.method defaults to p.adjust methods
 #' @param BPPARAM BiocParallelParam class.
 #' @param verbose Whether or not to print messages.
+#' @param ... passed to tests.
 #' @return results for plotting
 #' @examples
 #' \donttest{}
 #' @import BiocParallel
 #' @import dplyr
 #' @export
-compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col, groupby = NULL, formula = NULL, method = c('t.test', 'wilcox', 'lme'), p.adjust.method = 'fdr', BPPARAM = SerialParam(), verbose = TRUE) {
+compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col, groupby = NULL, formula = NULL, method = c('t.test', 'wilcox', 'lme'), p.adjust.method = 'fdr', BPPARAM = SerialParam(), verbose = TRUE, ...) {
     options(warn = -1)
     sample <- cpdb_meta[, 1]
     cpdb_out_folder <- cpdb_meta[, 2]
@@ -143,7 +144,7 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col, gr
     }, BPPARAM = SerialParam(progressbar = verbose))
 
     requireNamespace('reshape2')
-    test_fun <- function(int_score, data, col, method) {
+    test_fun <- function(int_score, data, col, method, ...) {
         # 'C'
         data$int_score <- int_score
         if (class(data[, col]) == "factor") {
@@ -154,9 +155,9 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col, gr
         }
 
         if (method == "wilcox") {
-            test <- pairwise.wilcox.test(data$int_score, data[, col], p.adjust.method = "none")
+            test <- pairwise.wilcox.test(data$int_score, data[, col], p.adjust.method = "none", ...)
         } else if (method == "t.test") {
-            test <- pairwise.t.test(data$int_score, data[, col], p.adjust.method = "none")
+            test <- pairwise.t.test(data$int_score, data[, col], p.adjust.method = "none", ...)
         }
 
         tmp <- reshape2::melt(test$p.value)
@@ -193,7 +194,7 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col, gr
         res3 <- bplapply(res2, function(x) {
             tmp <- bplapply(x, function(y) {
                 suppressMessages(suppressWarnings(tryCatch(test_fun(int_score = y,
-                    data = sample_metadata, col = groupby, method = method), error = function(e) return(NA))))
+                    data = sample_metadata, col = groupby, method = method, ...), error = function(e) return(NA))))
             }, BPPARAM = BPPARAM)
             tmp <- plyr::ldply(tmp, data.frame)
             return(tmp)
@@ -213,9 +214,11 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col, gr
             cat("Running lmer model", sep = "\n")
         }
         res3_ <- bplapply(res2, function(x) {
-            bplapply(x, function(int_score) {
-                suppressMessages(suppressWarnings(tryCatch(lmer(fullFormula, data = sample_metadata), 
-                                                           error = function(e) return(NA))))
+            bplapply(x, function(y) {
+                sample_metadata[, "int_score"] <- y
+                results <- suppressMessages(suppressWarnings(tryCatch(lmer(fullFormula,
+                    data = sample_metadata, ...), error = function(e) return(NA))))
+                return(results)
             }, BPPARAM = BPPARAM)
         }, BPPARAM = SerialParam(progressbar = verbose))
 
