@@ -32,5 +32,6 @@ test_that("compare_cpdb works 3", {
             "NK_56hi", "Plasmablast", "Platelets", "Treg", "gdT", "pDC"), celltype_col = "initial_clustering",
         groupby = "Status_on_day_collection_summary", formula = "~ Status_on_day_collection_summary + (1|individual)",
         method = "lme")
-    expect_true(length(out) > 0)
+    expect_true(nrow(out == 8339)
+    expect_true(ncol(out == 7)
 })
