@@ -10,14 +10,13 @@
 #' @param p.adjust.method defaults to p.adjust methods
 #' @param BPPARAM BiocParallelParam class.
 #' @param verbose Whether or not to print messages.
-#' @param ... passes arguments to lmerTest::lmer.
 #' @return results for plotting
 #' @examples
 #' \donttest{}
 #' @import BiocParallel
 #' @import dplyr
 #' @export
-compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col, groupby = NULL, formula = NULL, method = c('t.test', 'wilcox', 'lme'), p.adjust.method = 'fdr', BPPARAM = SerialParam(), verbose = TRUE, ...) {
+compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col, groupby = NULL, formula = NULL, method = c('t.test', 'wilcox', 'lme'), p.adjust.method = 'fdr', BPPARAM = SerialParam(), verbose = TRUE) {
     options(warn = -1)
     sample <- cpdb_meta[, 1]
     cpdb_out_folder <- cpdb_meta[, 2]
@@ -215,7 +214,7 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col, gr
         }
         res3_ <- bplapply(res2, function(x) {
             bplapply(x, function(int_score) {
-                suppressMessages(suppressWarnings(tryCatch(lmer(fullFormula, data = sample_metadata, ...), 
+                suppressMessages(suppressWarnings(tryCatch(lmer(fullFormula, data = sample_metadata), 
                                                            error = function(e) return(NA))))
             }, BPPARAM = BPPARAM)
         }, BPPARAM = SerialParam(progressbar = verbose))
