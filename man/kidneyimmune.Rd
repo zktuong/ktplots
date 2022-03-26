@@ -11,7 +11,8 @@
 \alias{pvals2}
 \alias{decon2}
 \alias{sig_means2}
-\alias{interaction_annotation}
+\alias{covid_cpdb_meta}
+\alias{covid_sample_metadata}
 \title{kidneyimmune}
 \format{
 A Seurat object with the following slots filled
@@ -50,7 +51,9 @@ An object of class \code{data.frame} with 1965 rows and 18 columns.
 
 An object of class \code{data.frame} with 837 rows and 156 columns.
 
-An object of class \code{data.frame} with 836 rows and 2 columns.
+An object of class \code{data.frame} with 12 rows and 3 columns.
+
+An object of class \code{data.frame} with 12 rows and 2 columns.
 }
 \source{
 \url{https://www.kidneycellatlas.org/}
@@ -74,7 +77,9 @@ decon2
 
 sig_means2
 
-interaction_annotation
+covid_cpdb_meta
+
+covid_sample_metadata
 }
 \description{
 kidneyimmune - A small set of demo data from Stewart et al. 2019 Science. See \url{https://www.kidneycellatlas.org/}
@@ -95,7 +100,9 @@ decon2 - Dataframe of CellPhoneDB output deconvoluted.txt file
 
 sig_means2 - Dataframe of CellPhoneDB output significant_means.txt file
 
-interaction_annotation - Example dataframe to use for interaction_grouping option in plot_cpdb2
+covid_cpdb_meta - Example dataframe to use for cpdb_meta option in compare_cpdb
+
+covid_sample_metadata - Example dataframe to use for sample_metadata option in compare_cpdb
 }
 \examples{
 data(kidneyimmune)
