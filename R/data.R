@@ -96,11 +96,17 @@
 "sig_means2"
 
 
-#' interaction_annotation
+#' covid_cpdb_meta
 #'
-#' interaction_annotation - Example dataframe to use for interaction_grouping option in plot_cpdb2
+#' covid_cpdb_meta - Example dataframe to use for cpdb_meta option in compare_cpdb
 #' @rdname kidneyimmune
 #' @docType data
-"interaction_annotation"
+"covid_cpdb_meta"
 
 
+#' covid_sample_metadata
+#'
+#' covid_sample_metadata - Example dataframe to use for sample_metadata option in compare_cpdb
+#' @rdname kidneyimmune
+#' @docType data
+"covid_sample_metadata"
