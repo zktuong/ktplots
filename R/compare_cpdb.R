@@ -183,13 +183,12 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col, gr
         return(outdf)
     }
 
-    if (verbose){
-        cat('Running significance testing', sep = "\n")
-    }
-
     if (method != 'lme'){
         if (is.null(groupby)) {
             stop("Please provide column name for contrasts to be extracted.")
+        }
+        if (verbose){
+            cat(paste0('Running pairwise ', method), sep = "\n")
         }
         res3 <- bplapply(res2, function(x) {
             tmp <- bplapply(x, function(y) {
