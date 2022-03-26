@@ -1,34 +1,38 @@
 #' Plotting cellphonedb results
 #'
-#' @param meta data.frame containing the sample name, cellphonedb 'out' folder path (containing means.txt and pvalues.txt), and single-cell object file path (.h5ad or .rds)
+#' @param cpdb_meta data.frame containing the sample name, cellphonedb 'out' folder path (containing means.txt and pvalues.txt), and single-cell object file path (.h5ad or .rds)
+#' @param sample_metadata data.frame containing the sample name, and groupings.
 #' @param celltypes subset celltypes for comparison
-#' @param method one of 'ttest', 'wilcox', 'lme'
-#' @param p.adjust.method defaults to p.adjust methods
+#' @param celltype_col column name in single cell object holding celtype annotation.
 #' @param groupby for significance testing. only if method is t.test or wilcoxon.
 #' @param formula for signfiicance testing. only if method is lme.
+#' @param method one of 't.test', 'wilcox', 'lme'
+#' @param p.adjust.method defaults to p.adjust methods
 #' @param BPPARAM BiocParallelParam class.
 #' @param verbose Whether or not to print messages.
-#' @param ... passes arguments to significance tests (pairwise.t.test, pairwise.wilcox.text, lmerTest::lmer)
+#' @param ... passes arguments to lmerTest::lmer.
 #' @return results for plotting
 #' @examples
 #' \donttest{}
 #' @import BiocParallel
 #' @import dplyr
 #' @export
-compare_cpdb <- function(meta, celltypes, method = c('ttest', 'wilcox', 'lme'), p.adjust.method = 'fdr', groupby = NULL, formula = NULL, BPPARAM = SerialParam(), verbose = TRUE) {
+compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col, groupby = NULL, formula = NULL, method = c('t.test', 'wilcox', 'lme'), p.adjust.method = 'fdr', BPPARAM = SerialParam(), verbose = TRUE, ...) {
     options(warn = -1)
-    sample <- meta[, 1]
-    cpdb_out_folder <- meta[, 2]
-    expression_file <- meta[, 3]
+    sample <- cpdb_meta[, 1]
+    cpdb_out_folder <- cpdb_meta[, 2]
+    expression_file <- cpdb_meta[, 3]
     names(cpdb_out_folder) <- sample
     names(expression_file) <- sample
-
+    if (length(method) == 3){
+        method = 't.test'
+    }
     if (verbose) {
         cat("Reading cellphonedb outputs", sep = "\n")
     }
-    means <- bplapply(cpdb_out_folder, function(x) read.delim(paste0(x, "means.txt"),
+    means <- bplapply(cpdb_out_folder, function(x) read.delim(paste0(x, "/means.txt"),
         check.names = FALSE), BPPARAM = SerialParam(progressbar = verbose))
-    pvals <- bplapply(cpdb_out_folder, function(x) read.delim(paste0(path, x, "pvalues.txt"),
+    pvals <- bplapply(cpdb_out_folder, function(x) read.delim(paste0(x, "/pvalues.txt"),
         check.names = FALSE), BPPARAM = SerialParam(progressbar = verbose))
 
     if (verbose) {
@@ -60,27 +64,24 @@ compare_cpdb <- function(meta, celltypes, method = c('ttest', 'wilcox', 'lme'), 
     # add in self-self interactions too
     combs <- rbind(combs, cbind(as.character(celltypes), as.character(celltypes)))
     comb_list <- apply(combs, 1, as.list)
-    if (verbose){
-        cat(paste0("Running for ", dim(combs)[1], " celltype combinations"), sep = "\n")
-    }
 
-    get_means <- function(x){
-    if (!is.na(x)){
-        out <- x$means
-        names(out) <- paste0(x$group, '>@<', x$Var1)
-        if (any(is.na(out))){
-            out <- out[!is.na(out)]
+    get_means <- function(x) {
+        if (!is.na(x)) {
+            out <- x$means
+            names(out) <- paste0(x$group, ">@<", x$Var1)
+            if (any(is.na(out))) {
+                out <- out[!is.na(out)]
+            }
+            return(out)
+        } else {
+            return(NA)
         }
-        return(out)
-    } else {
-        return(NA)
-    }
     }
 
     # extract interactions with plot_cpdb
-    if (verbose){
-        cat('Extracting cpdb results across combinations', sep = "\n")
-        start_time <- Sys.time()
+    if (verbose) {
+        cat(paste0("Extracting cpdb results across ", dim(combs)[1], " celltype pairwise combinations"),
+            sep = "\n")
     }
 
     ct_sigs <- bplapply(comb_list, function(x){
@@ -88,7 +89,7 @@ compare_cpdb <- function(meta, celltypes, method = c('ttest', 'wilcox', 'lme'), 
                 s <- tryCatch(plot_cpdb(cell_type1 = paste0(x[1], '$'),
                     cell_type2 = paste0(x[2], '$'),
                     scdata = sce,
-                    idents = idents, # column name where the cell ids are located in the metadata
+                    idents = celltype_col, # column name where the cell ids are located in the metadata
                     means = mean,
                     pvals = pval,
                     keep_significant_only = TRUE,
@@ -99,10 +100,6 @@ compare_cpdb <- function(meta, celltypes, method = c('ttest', 'wilcox', 'lme'), 
                 return(out)
             }, sces, means, pvals, BPPARAM = BPPARAM, SIMPLIFY = FALSE)
     }, BPPARAM = SerialParam(progressbar = verbose))
-    if (verbose){
-        end_time <- Sys.time()
-        end_time - start_time
-    }
 
     # collapse to matrix
     requireNamespace("plyr")
@@ -114,6 +111,9 @@ compare_cpdb <- function(meta, celltypes, method = c('ttest', 'wilcox', 'lme'), 
         return(z)
     }, BPPARAM = BPPARAM)
 
+    if (verbose) {
+        cat("Filtering interactions", sep = "\n")
+    }
     # remove interactions that are all empty
     meta2 <- bplapply(meta, function(y) {
         if (!is.logical(y)) {
@@ -127,9 +127,12 @@ compare_cpdb <- function(meta, celltypes, method = c('ttest', 'wilcox', 'lme'), 
     meta2 <- bplapply(meta2, function(x) {
         x[is.na(x)] <- 0
         return(x)
-    }, BPPARAM = SerialParam())
+    }, BPPARAM = SerialParam(progressbar = verbose))
 
-    # split each column of into a list
+    if (verbose) {
+        cat("Preparing data", sep = "\n")
+    }
+    # split each column into a list
     res2 <- bplapply(meta2, function(x) {
         tmp <- as.list(x)
         tmp <- bplapply(tmp, function(z) {
@@ -138,10 +141,10 @@ compare_cpdb <- function(meta, celltypes, method = c('ttest', 'wilcox', 'lme'), 
             return(z)
         }, BPPARAM = BPPARAM)
         return(tmp)
-    }, BPPARAM = SerialParam())
+    }, BPPARAM = SerialParam(progressbar = verbose))
 
     requireNamespace('reshape2')
-    test_fun <- function(int_score, data, col, method = c("t.test", "wilcox"), ...) {
+    test_fun <- function(int_score, data, col, method) {
         # 'C'
         data$int_score <- int_score
         if (class(data[, col]) == "factor") {
@@ -152,11 +155,9 @@ compare_cpdb <- function(meta, celltypes, method = c('ttest', 'wilcox', 'lme'), 
         }
 
         if (method == "wilcox") {
-            test <- pairwise.wilcox.test(data$int_score, data[, col], p.adjust.method = "none",
-                ...)
+            test <- pairwise.wilcox.test(data$int_score, data[, col], p.adjust.method = "none")
         } else if (method == "t.test") {
-            test <- pairwise.t.test(data$int_score, data[, col], p.adjust.method = "none",
-                ...)
+            test <- pairwise.t.test(data$int_score, data[, col], p.adjust.method = "none")
         }
 
         tmp <- reshape2::melt(test$p.value)
@@ -184,17 +185,16 @@ compare_cpdb <- function(meta, celltypes, method = c('ttest', 'wilcox', 'lme'), 
 
     if (verbose){
         cat('Running significance testing', sep = "\n")
-        start_time <- Sys.time()
     }
 
-    if (method %in% c('t.test', 'wilcox')){
+    if (method != 'lme'){
         if (is.null(groupby)) {
             stop("Please provide column name for contrasts to be extracted.")
         }
         res3 <- bplapply(res2, function(x) {
             tmp <- bplapply(x, function(y) {
                 suppressMessages(suppressWarnings(tryCatch(test_fun(int_score = y,
-                    data = metadata, col = groupby, method = method, ...), error = function(e) return(NA))))
+                    data = sample_metadata, col = groupby, method = method), error = function(e) return(NA))))
             }, BPPARAM = BPPARAM)
             tmp <- plyr::ldply(tmp, data.frame)
             return(tmp)
@@ -211,17 +211,17 @@ compare_cpdb <- function(meta, celltypes, method = c('ttest', 'wilcox', 'lme'), 
         }
 
         if (verbose) {
-            cat("running lmer model", sep = "\n")
+            cat("Running lmer model", sep = "\n")
         }
         res3_ <- bplapply(res2, function(x) {
             bplapply(x, function(int_score) {
-                suppressMessages(suppressWarnings(tryCatch(lmer(fullFormula, data = metadata,
-                    ...), error = function(e) return(NA))))
+                suppressMessages(suppressWarnings(tryCatch(lmer(fullFormula, data = sample_metadata, ...), 
+                                                           error = function(e) return(NA))))
             }, BPPARAM = BPPARAM)
         }, BPPARAM = SerialParam(progressbar = verbose))
 
         if (verbose) {
-            cat("extracting statistics", sep = "\n")
+            cat("Extracting statistics", sep = "\n")
         }
 
         res3fitstats <- bplapply(res3_, function(fit) {
@@ -296,19 +296,14 @@ compare_cpdb <- function(meta, celltypes, method = c('ttest', 'wilcox', 'lme'), 
                 }
             }
         })
-        res3 <- do.call(rbind, res3s2)
-
-    }
-    if (verbose){
-        end_time <- Sys.time()
-        end_time - start_time
+        res3 <- do.call(rbind, res3fitstats3)
     }
 
     if (p.adjust.method != 'none'){
         if (verbose){
-            cat('correcting P values', sep = '\n')
+            cat('Correcting P values', sep = '\n')
         }
-        if (method %in% c('t.test', 'wilcox')){
+        if (method != 'lme'){
             res3 <- bplapply(res3, function(x) {
                         x$padj <- p.adjust(x$pval, method = p.adjust.method)
                         row.names(x) <- x[,1]
