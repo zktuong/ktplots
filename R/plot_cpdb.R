@@ -51,7 +51,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
         }
         requireNamespace("SummarizedExperiment")
         requireNamespace("SingleCellExperiment")
-        exp_mat <- SummarizedExperiment::assay(scdata)
+        # exp_mat <- SummarizedExperiment::assay(scdata)
         metadata <- SummarizedExperiment::colData(scdata)
     } else if (class(scdata) == "Seurat") {
         requireNamespace("Seurat")
@@ -59,12 +59,12 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
             cat("data provided is a Seurat object", sep = "\n")
             cat("extracting expression matrix", sep = "\n")
         }
-        exp_mat <- tryCatch(scdata@data, error = function(e) {
-            tryCatch(Seurat::GetAssayData(object = scdata), error = function(e) {
-                stop(paste0("are you sure that your data is normalized?"))
-                return(NULL)
-            })
-        })
+        # exp_mat <- tryCatch(scdata@data, error = function(e) {
+            # tryCatch(Seurat::GetAssayData(object = scdata), error = function(e) {
+                # stop(paste0("are you sure that your data is normalized?"))
+                # return(NULL)
+            # })
+        # })
         metadata <- scdata@meta.data
     }
 
