@@ -39,7 +39,7 @@ compare_cpdb(
 
 \item{verbose}{Whether or not to print messages.}
 
-\item{...}{passes arguments to significance tests (pairwise.t.test, pairwise.wilcox.text, lmerTest::lmer)}
+\item{...}{passes arguments to lmerTest::lmer.}
 }
 \value{
 results for plotting
