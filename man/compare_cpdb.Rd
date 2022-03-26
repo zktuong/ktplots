@@ -5,28 +5,35 @@
 \title{Plotting cellphonedb results}
 \usage{
 compare_cpdb(
-  meta,
+  cpdb_meta,
+  sample_metadata,
   celltypes,
-  method = c("ttest", "wilcox", "lme"),
-  p.adjust.method = "fdr",
+  celltype_col,
   groupby = NULL,
   formula = NULL,
+  method = c("t.test", "wilcox", "lme"),
+  p.adjust.method = "fdr",
   BPPARAM = SerialParam(),
-  verbose = TRUE
+  verbose = TRUE,
+  ...
 )
 }
 \arguments{
-\item{meta}{data.frame containing the sample name, cellphonedb 'out' folder path (containing means.txt and pvalues.txt), and single-cell object file path (.h5ad or .rds)}
+\item{cpdb_meta}{data.frame containing the sample name, cellphonedb 'out' folder path (containing means.txt and pvalues.txt), and single-cell object file path (.h5ad or .rds)}
+
+\item{sample_metadata}{data.frame containing the sample name, and groupings.}
 
 \item{celltypes}{subset celltypes for comparison}
 
-\item{method}{one of 'ttest', 'wilcox', 'lme'}
-
-\item{p.adjust.method}{defaults to p.adjust methods}
+\item{celltype_col}{column name in single cell object holding celtype annotation.}
 
 \item{groupby}{for significance testing. only if method is t.test or wilcoxon.}
 
 \item{formula}{for signfiicance testing. only if method is lme.}
+
+\item{method}{one of 't.test', 'wilcox', 'lme'}
+
+\item{p.adjust.method}{defaults to p.adjust methods}
 
 \item{BPPARAM}{BiocParallelParam class.}
 
