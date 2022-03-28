@@ -271,7 +271,7 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col, gr
                           return(NA)
                         }
                     })
-                    wald <- lapply(fit, function(fit2) {
+                    anv <- lapply(fit, function(fit2) {
                         if (!is.na(fit2)) {
                           anva <- anova(fit2, ddf="Satterthwaite")
                           wp <- anva[, 6]
@@ -281,7 +281,7 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col, gr
                           return(NA)
                         }
                     })
-                    return(list(wald = wald, fit = out, Singular = Singular, Conv = Conv))
+                    return(list(anv = anv, fit = out, Singular = Singular, Conv = Conv))
                 } else {
                     return(NA)
                 }
@@ -292,9 +292,9 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col, gr
         res3fitstats2 <- bplapply(res3fitstats, function(x) {
             if (length(x) > 0) {
                 if (!is.na(x)) {
-                    output <- mapply(function(wald, out, Singular, Conv) {
-                        return(c(wald, out, Singular, Conv))
-                    }, x$wald, x$fit, x$Singular, x$Conv, SIMPLIFY = FALSE)
+                    output <- mapply(function(anv, out, Singular, Conv) {
+                        return(c(anv, out, Singular, Conv))
+                    }, x$anv, x$fit, x$Singular, x$Conv, SIMPLIFY = FALSE)
                     return(output)
                 } else {
                     return(NA)
