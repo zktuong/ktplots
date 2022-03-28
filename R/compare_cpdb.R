@@ -1,6 +1,6 @@
 #' Plotting cellphonedb results
 #'
-#' @param cpdb_meta data.frame containing the sample name, cellphonedb 'out' folder path (containing means.txt and pvalues.txt), and single-cell object file path (.h5ad or .rds)
+#' @param cpdb_meta data.frame containing the sample name, cellphonedb 'out' folder path (containing means.txt and pvalues.txt/relevant_interactions.txt if version 3), and single-cell object file path (.h5ad or .rds)
 #' @param sample_metadata data.frame containing the sample name, and groupings.
 #' @param celltypes subset celltypes for comparison
 #' @param celltype_col column name in single cell object holding celtype annotation.
@@ -9,6 +9,7 @@
 #' @param method one of 't.test', 'wilcox', 'lme'
 #' @param p.adjust.method defaults to p.adjust methods
 #' @param BPPARAM BiocParallelParam class.
+#' @param version3 boolean. if cellphonedb version 3
 #' @param verbose Whether or not to print messages.
 #' @param ... passed to tests.
 #' @return results for plotting
@@ -17,7 +18,7 @@
 #' @import BiocParallel
 #' @import dplyr
 #' @export
-compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col, groupby = NULL, formula = NULL, method = c('t.test', 'wilcox', 'lme'), p.adjust.method = 'fdr', BPPARAM = SerialParam(), verbose = TRUE, ...) {
+compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col, groupby = NULL, formula = NULL, method = c('t.test', 'wilcox', 'lme'), p.adjust.method = 'fdr', BPPARAM = SerialParam(), version3 = FALSE, verbose = TRUE, ...) {
     options(warn = -1)
     sample <- cpdb_meta[, 1]
     cpdb_out_folder <- cpdb_meta[, 2]
@@ -32,7 +33,12 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col, gr
     }
     means <- bplapply(cpdb_out_folder, function(x) read.delim(paste0(x, "/means.txt"),
         check.names = FALSE), BPPARAM = SerialParam(progressbar = verbose))
-    pvals <- bplapply(cpdb_out_folder, function(x) read.delim(paste0(x, "/pvalues.txt"),
+    if (version3){
+        pval_file <- '/relevant_interactions.txt'
+    } else {
+        pval_file <- '/pvalues.txt'
+    }
+    pvals <- bplapply(cpdb_out_folder, function(x) read.delim(paste0(x, pval_file),
         check.names = FALSE), BPPARAM = SerialParam(progressbar = verbose))
 
     if (verbose) {
