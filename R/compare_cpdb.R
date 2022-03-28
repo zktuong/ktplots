@@ -7,7 +7,6 @@
 #' @param groupby for significance testing. only if method is t.test or wilcoxon.
 #' @param formula for signfiicance testing. only if method is lme.
 #' @param method one of 't.test', 'wilcox', 'lme'
-#' @param p.adjust.method defaults to p.adjust methods
 #' @param BPPARAM BiocParallelParam class.
 #' @param version3 boolean. if cellphonedb version 3
 #' @param verbose Whether or not to print messages.
@@ -18,7 +17,7 @@
 #' @import BiocParallel
 #' @import dplyr
 #' @export
-compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col, groupby = NULL, formula = NULL, method = c('t.test', 'wilcox', 'lme'), p.adjust.method = 'fdr', BPPARAM = SerialParam(), version3 = FALSE, verbose = TRUE, ...) {
+compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col, groupby = NULL, formula = NULL, method = c('t.test', 'wilcox', 'lme'), BPPARAM = SerialParam(), version3 = FALSE, verbose = TRUE, ...) {
     options(warn = -1)
     sample <- cpdb_meta[, 1]
     cpdb_out_folder <- cpdb_meta[, 2]
@@ -274,9 +273,9 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col, gr
                     })
                     wald <- lapply(fit, function(fit2) {
                         if (!is.na(fit2)) {
-                          anova <- car::Anova(fit2)
-                          wp <- anova[, 3]
-                          names(wp) <- paste0("Wald_P_", row.names(anova))
+                          anva <- anova(fit2, ddf="Satterthwaite")
+                          wp <- anva[, 6]
+                          names(wp) <- paste0("anova_P_", row.names(anva))
                           return(wp)
                         } else {
                           return(NA)
@@ -315,23 +314,23 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col, gr
         res3 <- as.data.frame(res3)
     }
 
-    if (p.adjust.method != 'none'){
-        if (verbose){
-            cat('Correcting P values', sep = '\n')
-        }
-        if (method != 'lme'){
-            res3 <- bplapply(res3, function(x) {
-                        x$padj <- p.adjust(x$pval, method = p.adjust.method)
-                        row.names(x) <- x[,1]
-                        x <- x[,-1]
-                        return(x)}, BPPARAM = SerialParam(progressbar = verbose))
-        } else {
-            p_cols <- grep('_P_', colnames(res3), value = TRUE)
-            for (p in p_cols){
-                res3[,gsub('_P_', '_Q_', p)] <- p.adjust(res3[,p], method = p.adjust.method)
-            }
-        }
-    }
+    # if (p.adjust.method != 'none'){
+    #     if (verbose){
+    #         cat('Correcting P values', sep = '\n')
+    #     }
+    #     if (method != 'lme'){
+    #         res3 <- bplapply(res3, function(x) {
+    #                     x$padj <- p.adjust(x$pval, method = p.adjust.method)
+    #                     row.names(x) <- x[,1]
+    #                     x <- x[,-1]
+    #                     return(x)}, BPPARAM = SerialParam(progressbar = verbose))
+    #     } else {
+    #         p_cols <- grep('_P_', colnames(res3), value = TRUE)
+    #         for (p in p_cols){
+    #             res3[,gsub('_P_', '_Q_', p)] <- p.adjust(res3[,p], method = p.adjust.method)
+    #         }
+    #     }
+    # }
 
     return(res3)
 }
