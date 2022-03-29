@@ -33,5 +33,4 @@ test_that("compare_cpdb works 3", {
         groupby = "Status_on_day_collection_summary", formula = "~ Status_on_day_collection_summary + (1|individual)",
         method = "lme")
     expect_true(nrow(out) == 8339)
-    expect_true(ncol(out) == 7)
 })
