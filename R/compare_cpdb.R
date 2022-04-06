@@ -163,6 +163,7 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col, gr
         if (method == "wilcox") {
             test <- pairwise.wilcox.test(data$int_score, data[, col], p.adjust.method = "none", ...)
         } else if (method == "t.test") {
+            # force Welch's t-test
             test <- pairwise.t.test(data$int_score, data[, col], pool.sd = FALSE, p.adjust.method = "none", ...)
         }
 
