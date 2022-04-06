@@ -324,7 +324,7 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col,
         cat("Correcting P values", sep = "\n")
     }
     if (p.adjust.mode == "all") {
-        if (method != "lme") {
+        if (method != "lmer") {
             res3 <- bplapply(res3, function(x) {
                 x$padj <- p.adjust(x$pval, method = p.adjust.method)
                 row.names(x) <- x[, 1]
@@ -338,7 +338,7 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col,
             }
         }
     } else if (p.adjust.mode == "celltype") {
-        if (method != "lme") {
+        if (method != "lmer") {
             res3 <- bplapply(res3, function(x) {
                 tmp <- split(x, x$celltype)
                 tmp <- bplapply(tmp, function(y) {
