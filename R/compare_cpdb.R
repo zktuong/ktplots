@@ -297,7 +297,7 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col,
         }, BPPARAM = SerialParam(progressbar = verbose)))
         res3fitstats2 <- bplapply(res3fitstats, function(x) {
             if (length(x) > 0) {
-                if (supressMessages(suppressWarnings(!is.na(x)))) {
+                if (suppressMessages(suppressWarnings(!is.na(x)))) {
                     output <- mapply(function(anv, out, Singular, Conv) {
                         return(c(anv, out, Singular, Conv))
                     }, x$anv, x$fit, x$Singular, x$Conv, SIMPLIFY = FALSE)
@@ -311,7 +311,7 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col,
         }, BPPARAM = SerialParam(progressbar = verbose))
         res3fitstats3 <- lapply(res3fitstats2, function(x) {
             if (length(x) > 0) {
-                if (supressMessages(suppressWarnings(!is.na(x)))) {
+                if (suppressMessages(suppressWarnings(!is.na(x)))) {
                     y <- do.call(rbind, x)
                 }
             }
