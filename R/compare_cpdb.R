@@ -328,7 +328,7 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col,
         } else {
             p_cols <- grep("_P_", colnames(res3), value = TRUE)
             for (p in p_cols) {
-                res3[, gsub("_P_", "_Padj_", p)] <- p.adjust(res3[, p], method = p.adjust.method)
+                res3[, gsub("_P_", "_Padj_", p)] <- suppressWarnings(p.adjust(res3[, p], method = p.adjust.method))
             }
         }
     } else if (p.adjust.mode == "celltype") {
@@ -353,7 +353,7 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col,
             ctp <- bplapply(celltypes, function(x) {
                 p_cols <- grep("_P_", colnames(x), value = TRUE)
                 for (p in p_cols) {
-                    x[, gsub("_P_", "_Padj_", p)] <- p.adjust(x[, p], method = p.adjust.method)
+                    x[, gsub("_P_", "_Padj_", p)] <- suppressWarnings(p.adjust(x[, p], method = p.adjust.method))
                 }
                 return(x)
             }, BPPARAM = SerialParam())
