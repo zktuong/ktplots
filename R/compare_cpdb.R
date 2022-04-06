@@ -350,8 +350,11 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col,
                     y <- y[, -1, drop = FALSE]
                     return(y)
                 }, BPPARAM = SerialParam())
+                names(tmp) <- NULL
                 tmp <- do.call(rbind, tmp)
                 tmp <- as.data.frame(tmp)
+                # sort ffor most significant to be on top
+                tmp <- tmp[order(tmp$padj), ]
                 return(tmp)
             }, BPPARAM = SerialParam(progressbar = verbose))
         } else {
