@@ -17,7 +17,7 @@
 #' @import BiocParallel
 #' @import dplyr
 #' @export
-compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col, groupby = NULL, formula = NULL, method = c('t.test', 'wilcox', 'lme'), BPPARAM = SerialParam(), version3 = FALSE, verbose = TRUE, ...) {
+compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col, groupby = NULL, formula = NULL, method = c('t.test', 'wilcox', 'lme'), BPPARAM = SerialParam(), version3 = FALSE, verbose = TRUE, p.adjust.mode = c('celltype', 'all'), ...) {
     options(warn = -1)
     sample <- cpdb_meta[, 1]
     cpdb_out_folder <- cpdb_meta[, 2]
@@ -26,6 +26,9 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col, gr
     names(expression_file) <- sample
     if (length(method) == 3){
         method = 't.test'
+    }
+    if (length(p.adjust.mode) == 2){
+        method = 'celltype'
     }
     if (verbose) {
         cat("Reading cellphonedb outputs", sep = "\n")
@@ -314,23 +317,47 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col, gr
         res3 <- as.data.frame(res3)
     }
 
-    # if (p.adjust.method != 'none'){
-    #     if (verbose){
-    #         cat('Correcting P values', sep = '\n')
-    #     }
-    #     if (method != 'lme'){
-    #         res3 <- bplapply(res3, function(x) {
-    #                     x$padj <- p.adjust(x$pval, method = p.adjust.method)
-    #                     row.names(x) <- x[,1]
-    #                     x <- x[,-1]
-    #                     return(x)}, BPPARAM = SerialParam(progressbar = verbose))
-    #     } else {
-    #         p_cols <- grep('_P_', colnames(res3), value = TRUE)
-    #         for (p in p_cols){
-    #             res3[,gsub('_P_', '_Q_', p)] <- p.adjust(res3[,p], method = p.adjust.method)
-    #         }
-    #     }
-    # }
-
+    if (verbose) {
+        cat("Correcting P values", sep = "\n")
+    }
+    if (p.adjust.mode == "all") {
+        if (method != "lme") {
+            res3 <- bplapply(res3, function(x) {
+                x$padj <- p.adjust(x$pval, method = "fdr")
+                row.names(x) <- x[, 1]
+                x <- x[, -1, drop = FALSE]
+                return(x)
+            }, BPPARAM = SerialParam(progressbar = verbose))
+        } else {
+            p_cols <- grep("_P_", colnames(res3), value = TRUE)
+            for (p in p_cols) {
+                res3[, gsub("_P_", "_FDR_", p)] <- p.adjust(res3[, p], method = "fdr")
+            }
+        }
+    } else if (p.adjust.mode == 'celltype'){
+        if (method != "lme") {
+            res3 <- bplapply(res3, function(x) {
+                tmp <- split(x, x$celltype)
+                tmp <- bplapply(tmp, function(y){
+                    y$padj <- p.adjust(y$pval, method = "fdr")
+                    row.names(y) <- y[, 1]
+                    y <- y[, -1, drop = FALSE]
+                    return(y)
+                }, BPPARAM = SerialParam())
+                tmp <- do.call(rbind, tmp)
+                return(tmp)
+            }, BPPARAM = SerialParam(progressbar = verbose))
+        } else {
+            celltypes <- split(res3, res3$celltypes)
+            ctp <- bplapply(celltypes, function(x) {
+                p_cols <- grep("_P_", colnames(x), value = TRUE)
+                for (p in p_cols) {
+                   x[, gsub("_P_", "_FDR_", p)] <- p.adjust(x[, p], method = "fdr")
+                }
+                return(x)
+            }, BPPARAM = SerialParam())
+            res3 <- do.call(rbind, ctp)
+        }
+    }
     return(res3)
 }
