@@ -30,7 +30,7 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col, gr
         method = 't.test'
     }
     if (length(p.adjust.mode) == 2){
-        method = 'celltype'
+        p.adjust.mode = 'celltype'
     }
     if (verbose) {
         cat("Reading cellphonedb outputs", sep = "\n")
