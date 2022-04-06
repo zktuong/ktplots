@@ -10,6 +10,8 @@
 #' @param BPPARAM BiocParallelParam class.
 #' @param version3 boolean. if cellphonedb version 3
 #' @param verbose Whether or not to print messages.
+#' @param p.adjust.mode whether or not to correct all interactions, or to perform it on a celltype-celltype basis.
+#' @param p.adjust.method passed to `method`in `stats::p.adjust`.
 #' @param ... passed to tests.
 #' @return results for plotting
 #' @examples
@@ -17,7 +19,7 @@
 #' @import BiocParallel
 #' @import dplyr
 #' @export
-compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col, groupby = NULL, formula = NULL, method = c('t.test', 'wilcox', 'lme'), BPPARAM = SerialParam(), version3 = FALSE, verbose = TRUE, p.adjust.mode = c('celltype', 'all'), ...) {
+compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col, groupby = NULL, formula = NULL, method = c('t.test', 'wilcox', 'lme'), BPPARAM = SerialParam(), version3 = FALSE, verbose = TRUE, p.adjust.mode = c('celltype', 'all'), p.adjust.method = 'fdr', ...) {
     options(warn = -1)
     sample <- cpdb_meta[, 1]
     cpdb_out_folder <- cpdb_meta[, 2]
@@ -195,18 +197,19 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col, gr
         if (is.null(groupby)) {
             stop("Please provide column name for contrasts to be extracted.")
         }
-        if (verbose){
-            cat(paste0('Running pairwise ', method), sep = "\n")
+        if (verbose) {
+            cat(paste0("Running pairwise ", method), sep = "\n")
         }
         res3 <- bplapply(res2, function(x) {
-            tmp <- bplapply(x, function(y) {
-                suppressMessages(suppressWarnings(tryCatch(test_fun(int_score = y,
-                    data = sample_metadata, col = groupby, method = method, ...), error = function(e) return(NA))))
-            }, BPPARAM = BPPARAM)
+            tmp <- bplapply(x, function(y) test_fun(int_score = y, data = sample_metadata,
+                col = groupby, method = method, ...), BPPARAM = BPPARAM)
             tmp <- plyr::ldply(tmp, data.frame)
             return(tmp)
         }, BPPARAM = SerialParam(progressbar = verbose))
         res3 <- do.call(rbind, res3)
+        tmpct <- as.data.frame(do.call(rbind, strsplit(res3[,1], '>@<'))[,1:2])
+        tmpct[,3] <- paste0(tmpct[,1], '>@<', tmpct[,2])
+        res3$celltypes <- tmpct[,3]
         res3 <- split(res3, res3$contrast)
     } else if (method == 'lme'){
         require(lmerTest)
@@ -323,7 +326,7 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col, gr
     if (p.adjust.mode == "all") {
         if (method != "lme") {
             res3 <- bplapply(res3, function(x) {
-                x$padj <- p.adjust(x$pval, method = "fdr")
+                x$padj <- p.adjust(x$pval, method = p.adjust.method)
                 row.names(x) <- x[, 1]
                 x <- x[, -1, drop = FALSE]
                 return(x)
@@ -331,15 +334,15 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col, gr
         } else {
             p_cols <- grep("_P_", colnames(res3), value = TRUE)
             for (p in p_cols) {
-                res3[, gsub("_P_", "_FDR_", p)] <- p.adjust(res3[, p], method = "fdr")
+                res3[, gsub("_P_", "_Padj_", p)] <- p.adjust(res3[, p], method = p.adjust.method)
             }
         }
-    } else if (p.adjust.mode == 'celltype'){
+    } else if (p.adjust.mode == "celltype") {
         if (method != "lme") {
             res3 <- bplapply(res3, function(x) {
                 tmp <- split(x, x$celltype)
-                tmp <- bplapply(tmp, function(y){
-                    y$padj <- p.adjust(y$pval, method = "fdr")
+                tmp <- bplapply(tmp, function(y) {
+                    y$padj <- p.adjust(y$pval, method = p.adjust.method)
                     row.names(y) <- y[, 1]
                     y <- y[, -1, drop = FALSE]
                     return(y)
@@ -352,7 +355,7 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col, gr
             ctp <- bplapply(celltypes, function(x) {
                 p_cols <- grep("_P_", colnames(x), value = TRUE)
                 for (p in p_cols) {
-                   x[, gsub("_P_", "_FDR_", p)] <- p.adjust(x[, p], method = "fdr")
+                    x[, gsub("_P_", "_Padj_", p)] <- p.adjust(x[, p], method = p.adjust.method)
                 }
                 return(x)
             }, BPPARAM = SerialParam())

@@ -12,14 +12,16 @@ compare_cpdb(
   groupby = NULL,
   formula = NULL,
   method = c("t.test", "wilcox", "lme"),
-  p.adjust.method = "fdr",
   BPPARAM = SerialParam(),
+  version3 = FALSE,
   verbose = TRUE,
+  p.adjust.mode = c("celltype", "all"),
+  p.adjust.method = "fdr",
   ...
 )
 }
 \arguments{
-\item{cpdb_meta}{data.frame containing the sample name, cellphonedb 'out' folder path (containing means.txt and pvalues.txt), and single-cell object file path (.h5ad or .rds)}
+\item{cpdb_meta}{data.frame containing the sample name, cellphonedb 'out' folder path (containing means.txt and pvalues.txt/relevant_interactions.txt if version 3), and single-cell object file path (.h5ad or .rds)}
 
 \item{sample_metadata}{data.frame containing the sample name, and groupings.}
 
@@ -33,11 +35,15 @@ compare_cpdb(
 
 \item{method}{one of 't.test', 'wilcox', 'lme'}
 
-\item{p.adjust.method}{defaults to p.adjust methods}
-
 \item{BPPARAM}{BiocParallelParam class.}
 
+\item{version3}{boolean. if cellphonedb version 3}
+
 \item{verbose}{Whether or not to print messages.}
+
+\item{p.adjust.mode}{whether or not to correct all interactions, or to perform it on a celltype-celltype basis.}
+
+\item{p.adjust.method}{passed to `method`in `stats::p.adjust`.}
 
 \item{...}{passed to tests.}
 }
