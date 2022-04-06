@@ -26,12 +26,8 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col, gr
     expression_file <- cpdb_meta[, 3]
     names(cpdb_out_folder) <- sample
     names(expression_file) <- sample
-    if (length(method) == 3){
-        method = 't.test'
-    }
-    if (length(p.adjust.mode) == 2){
-        p.adjust.mode = 'celltype'
-    }
+    method =  match.arg(method)
+    p.adjust.mode = match.arg(p.adjust.mode)
     if (verbose) {
         cat("Reading cellphonedb outputs", sep = "\n")
     }
@@ -167,7 +163,7 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col, gr
         if (method == "wilcox") {
             test <- pairwise.wilcox.test(data$int_score, data[, col], p.adjust.method = "none", ...)
         } else if (method == "t.test") {
-            test <- pairwise.t.test(data$int_score, data[, col], p.adjust.method = "none", ...)
+            test <- pairwise.t.test(data$int_score, data[, col], pool.sd = FALSE, p.adjust.method = "none", ...)
         }
 
         tmp <- reshape2::melt(test$p.value)
