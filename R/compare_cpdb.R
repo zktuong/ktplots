@@ -306,8 +306,8 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col,
             }
         }, BPPARAM = SerialParam(progressbar = verbose))
         res3fitstats3 <- lapply(res3fitstats2, function(x) do.call(rbind, x))
-        
-        res3 <- do.call(rbind, res3fitstats3)
+
+        res3 <- suppressMessages(suppressWarnings(do.call(rbind, res3fitstats3)))
         res3 <- as.data.frame(res3)
         tmpct <- as.data.frame(do.call(rbind, strsplit(row.names(res3), '>@<'))[,1:2])
         tmpct[,3] <- paste0(tmpct[,1], '>@<', tmpct[,2])
@@ -342,7 +342,7 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col,
                     return(y)
                 }, BPPARAM = SerialParam())
                 names(tmp) <- NULL
-                tmp <- do.call(rbind, tmp)
+                tmp <- suppressMessages(suppressWarningsdo.call(rbind, tmp)))
                 tmp <- as.data.frame(tmp)
                 # sort ffor most significant to be on top
                 tmp <- tmp[order(tmp$padj), ]
@@ -358,7 +358,7 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col,
                 return(x)
             }, BPPARAM = SerialParam())
             names(ctp) <- NULL
-            res3 <- do.call(rbind, ctp)
+            res3 <- suppressMessages(suppressWarnings(do.call(rbind, ctp)))
             res3 <- as.data.frame(res3)
         }
     }
