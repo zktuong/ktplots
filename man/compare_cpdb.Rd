@@ -11,7 +11,7 @@ compare_cpdb(
   celltype_col,
   groupby = NULL,
   formula = NULL,
-  method = c("t.test", "wilcox", "lme"),
+  method = c("t.test", "wilcox.test", "lmer"),
   BPPARAM = SerialParam(),
   version3 = FALSE,
   verbose = TRUE,
@@ -33,7 +33,7 @@ compare_cpdb(
 
 \item{formula}{for signfiicance testing. only if method is lme.}
 
-\item{method}{one of 't.test', 'wilcox', 'lme'}
+\item{method}{one of 't.test', 'wilcox.test', 'lmer'}
 
 \item{BPPARAM}{BiocParallelParam class.}
 
