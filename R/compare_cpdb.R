@@ -318,6 +318,9 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col,
         })
         res3 <- do.call(rbind, res3fitstats3)
         res3 <- as.data.frame(res3)
+        tmpct <- as.data.frame(do.call(rbind, strsplit(row.names(res3), '>@<'))[,1:2])
+        tmpct[,3] <- paste0(tmpct[,1], '>@<', tmpct[,2])
+        res3$celltypes <- tmpct[,3]
     }
 
     if (verbose) {
@@ -340,7 +343,7 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col,
     } else if (p.adjust.mode == "celltype") {
         if (method != "lmer") {
             res3 <- bplapply(res3, function(x) {
-                tmp <- split(x, x$celltype)
+                tmp <- split(x, x$celltypes)
                 tmp <- bplapply(tmp, function(y) {
                     y$padj <- p.adjust(y$pval, method = p.adjust.method)
                     row.names(y) <- y[, 1]
@@ -348,6 +351,7 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col,
                     return(y)
                 }, BPPARAM = SerialParam())
                 tmp <- do.call(rbind, tmp)
+                tmp <- as.data.frame(tmp)
                 return(tmp)
             }, BPPARAM = SerialParam(progressbar = verbose))
         } else {
@@ -359,7 +363,9 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col,
                 }
                 return(x)
             }, BPPARAM = SerialParam())
+            names(ctp) <- NULL
             res3 <- do.call(rbind, ctp)
+            res3 <- as.data.frame(res3)
         }
     }
     return(res3)
