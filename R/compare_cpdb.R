@@ -297,25 +297,16 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col,
         }, BPPARAM = SerialParam(progressbar = verbose)))
         res3fitstats2 <- bplapply(res3fitstats, function(x) {
             if (length(x) > 0) {
-                if (suppressMessages(suppressWarnings(!is.na(x)))) {
-                    output <- mapply(function(anv, out, Singular, Conv) {
-                        return(c(anv, out, Singular, Conv))
-                    }, x$anv, x$fit, x$Singular, x$Conv, SIMPLIFY = FALSE)
-                    return(output)
-                } else {
-                    return(NA)
-                }
+                output <- mapply(function(anv, out, Singular, Conv) {
+                    return(c(anv, out, Singular, Conv))
+                }, x$anv, x$fit, x$Singular, x$Conv, SIMPLIFY = FALSE)
+                return(output)
             } else {
                 return(NA)
             }
         }, BPPARAM = SerialParam(progressbar = verbose))
-        res3fitstats3 <- lapply(res3fitstats2, function(x) {
-            if (length(x) > 0) {
-                if (suppressMessages(suppressWarnings(!is.na(x)))) {
-                    y <- do.call(rbind, x)
-                }
-            }
-        })
+        res3fitstats3 <- lapply(res3fitstats2, function(x) do.call(rbind, x))
+        
         res3 <- do.call(rbind, res3fitstats3)
         res3 <- as.data.frame(res3)
         tmpct <- as.data.frame(do.call(rbind, strsplit(row.names(res3), '>@<'))[,1:2])
