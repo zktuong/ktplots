@@ -6,7 +6,7 @@
 #' @param celltype_col column name in single cell object holding celtype annotation.
 #' @param groupby for significance testing. only if method is t.test or wilcoxon.
 #' @param formula for signfiicance testing. only if method is lme.
-#' @param method one of 't.test', 'wilcox', 'lme'
+#' @param method one of 't.test', 'wilcox.test', 'lmer'
 #' @param BPPARAM BiocParallelParam class.
 #' @param version3 boolean. if cellphonedb version 3
 #' @param verbose Whether or not to print messages.
@@ -19,7 +19,10 @@
 #' @import BiocParallel
 #' @import dplyr
 #' @export
-compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col, groupby = NULL, formula = NULL, method = c('t.test', 'wilcox', 'lme'), BPPARAM = SerialParam(), version3 = FALSE, verbose = TRUE, p.adjust.mode = c('celltype', 'all'), p.adjust.method = 'fdr', ...) {
+compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col, 
+                         groupby = NULL, formula = NULL, method = c('t.test', 'wilcox.test', 'lmer'), 
+                         BPPARAM = SerialParam(), version3 = FALSE, verbose = TRUE, 
+                         p.adjust.mode = c('celltype', 'all'), p.adjust.method = 'fdr', ...) {
     options(warn = -1)
     sample <- cpdb_meta[, 1]
     cpdb_out_folder <- cpdb_meta[, 2]
@@ -160,7 +163,7 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col, gr
             lvls <- levels(data[, col])
         }
 
-        if (method == "wilcox") {
+        if (method == "wilcox.test") {
             test <- pairwise.wilcox.test(data$int_score, data[, col], p.adjust.method = "none", ...)
         } else if (method == "t.test") {
             # force Welch's t-test
@@ -190,7 +193,7 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col, gr
         return(outdf)
     }
 
-    if (method != 'lme'){
+    if (method != 'lmer'){
         if (is.null(groupby)) {
             stop("Please provide column name for contrasts to be extracted.")
         }
@@ -208,7 +211,7 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col, gr
         tmpct[,3] <- paste0(tmpct[,1], '>@<', tmpct[,2])
         res3$celltypes <- tmpct[,3]
         res3 <- split(res3, res3$contrast)
-    } else if (method == 'lme'){
+    } else if (method == 'lmer'){
         require(lmerTest)
         if (!is.null(formula)) {
             fullFormula <- update.formula(formula, int_score ~ ., simplify = FALSE,
