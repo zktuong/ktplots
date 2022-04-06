@@ -342,7 +342,7 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col,
                     return(y)
                 }, BPPARAM = SerialParam())
                 names(tmp) <- NULL
-                tmp <- suppressMessages(suppressWarningsdo.call(rbind, tmp)))
+                tmp <- suppressMessages(suppressWarnings(do.call(rbind, tmp)))
                 tmp <- as.data.frame(tmp)
                 # sort ffor most significant to be on top
                 tmp <- tmp[order(tmp$padj), ]
