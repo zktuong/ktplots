@@ -233,7 +233,7 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col, gr
             cat("Extracting statistics", sep = "\n")
         }
 
-        res3fitstats <- bplapply(res3_, function(fit) {
+        res3fitstats <- suppressWarnings(bplapply(res3_, function(fit) {
             if (length(fit) > 0) {
                 if (!is.na(fit)) {
                     out <- lapply(fit, function(fit2) {
@@ -291,7 +291,7 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col, gr
             } else {
                 return(NA)
             }
-        }, BPPARAM = SerialParam(progressbar = verbose))
+        }, BPPARAM = SerialParam(progressbar = verbose)))
         res3fitstats2 <- bplapply(res3fitstats, function(x) {
             if (length(x) > 0) {
                 if (!is.na(x)) {
