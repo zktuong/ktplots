@@ -238,9 +238,9 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col,
 
         res3fitstats <- suppressWarnings(bplapply(res3_, function(fit) {
             if (length(fit) > 0) {
-                if (suppressWarnings(!is.na(fit))) {
+                if (suppressMessages(suppressWarnings(!is.na(fit)))) {
                     out <- lapply(fit, function(fit2) {
-                        if (suppressWarnings(!is.na(fit2))) {
+                        if (suppressMessages(suppressWarnings(!is.na(fit2)))) {
                           y <- suppressWarnings(summary(fit2))
                           E <- y$coefficients[-1, 1]
                           if (length(E) > 1) {
@@ -260,7 +260,7 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col,
                         }
                     })
                     Singular <- lapply(fit, function(fit2) {
-                        if (suppressWarnings(!is.na(fit2))) {
+                        if (suppressMessages(suppressWarnings(!is.na(fit2)))) {
                           out <- as.numeric(isSingular(fit2))
                           names(out) <- "Singular"
                           return(out)
@@ -269,7 +269,7 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col,
                         }
                     })
                     Conv <- lapply(fit, function(fit2) {
-                        if (suppressWarnings(!is.na(fit2))) {
+                        if (suppressMessages(suppressWarnings(!is.na(fit2)))) {
                           out <- length(slot(fit2, "optinfo")$conv$lme4$messages)
                           names(out) <- "Conv"
                           return(out)
@@ -278,7 +278,7 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col,
                         }
                     })
                     anv <- lapply(fit, function(fit2) {
-                        if (suppressWarnings(!is.na(fit2))) {
+                        if (suppressMessages(suppressWarnings(!is.na(fit2)))) {
                           anva <- anova(fit2, ddf="Satterthwaite")
                           wp <- anva[, 6]
                           names(wp) <- paste0("anova_P_", row.names(anva))
@@ -297,7 +297,7 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col,
         }, BPPARAM = SerialParam(progressbar = verbose)))
         res3fitstats2 <- bplapply(res3fitstats, function(x) {
             if (length(x) > 0) {
-                if (suppressWarnings(!is.na(x))) {
+                if (supressMessages(suppressWarnings(!is.na(x)))) {
                     output <- mapply(function(anv, out, Singular, Conv) {
                         return(c(anv, out, Singular, Conv))
                     }, x$anv, x$fit, x$Singular, x$Conv, SIMPLIFY = FALSE)
@@ -311,7 +311,7 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col,
         }, BPPARAM = SerialParam(progressbar = verbose))
         res3fitstats3 <- lapply(res3fitstats2, function(x) {
             if (length(x) > 0) {
-                if (suppressWarnings(!is.na(x))) {
+                if (supressMessages(suppressWarnings(!is.na(x)))) {
                     y <- do.call(rbind, x)
                 }
             }
