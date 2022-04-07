@@ -51,7 +51,7 @@ compare_cpdb(
 
 \item{contrast}{name of contrast to plot. only if method used was 'lmer'}
 
-\item{groups}{name of contrast to plot. only if method used was 'lmer'}
+\item{groups}{name of groups to facet.}
 
 \item{alpha}{adjusted pvalue cut off to keep in the plot.}
 
