@@ -304,8 +304,10 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col,
             } else {
                 return(NA)
             }
-        }, BPPARAM = SerialParam(progressbar = verbose))
-        res3fitstats3 <- lapply(res3fitstats2, function(x) do.call(rbind, x))
+        }, BPPARAM = BPPARAM)
+        
+        res3fitstats3 <- suppressWarnings(bplapply(res3fitstats2, function(x) do.call(rbind,
+            x), BPPARAM = BPPARAM))
 
         res3 <- suppressMessages(suppressWarnings(do.call(rbind, res3fitstats3)))
         res3 <- as.data.frame(res3)
@@ -328,7 +330,7 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col,
         } else {
             p_cols <- grep("_P_", colnames(res3), value = TRUE)
             for (p in p_cols) {
-                res3[, gsub("_P_", "_Padj_", p)] <- suppressWarnings(p.adjust(res3[, p], method = p.adjust.method))
+                res3[, gsub("_P_", "_Padj_", p)] <- p.adjust(res3[, p], method = p.adjust.method)
             }
         }
     } else if (p.adjust.mode == "celltype") {
@@ -342,7 +344,7 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col,
                     return(y)
                 }, BPPARAM = SerialParam())
                 names(tmp) <- NULL
-                tmp <- suppressMessages(suppressWarnings(do.call(rbind, tmp)))
+                tmp <- do.call(rbind, tmp)
                 tmp <- as.data.frame(tmp)
                 # sort ffor most significant to be on top
                 tmp <- tmp[order(tmp$padj), ]
@@ -353,12 +355,12 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col,
             ctp <- bplapply(celltypes, function(x) {
                 p_cols <- grep("_P_", colnames(x), value = TRUE)
                 for (p in p_cols) {
-                    x[, gsub("_P_", "_Padj_", p)] <- suppressWarnings(p.adjust(x[, p], method = p.adjust.method))
+                    x[, gsub("_P_", "_Padj_", p)] <- p.adjust(x[, p], method = p.adjust.method)
                 }
                 return(x)
             }, BPPARAM = SerialParam())
             names(ctp) <- NULL
-            res3 <- suppressMessages(suppressWarnings(do.call(rbind, ctp)))
+            res3 <- do.call(rbind, ctp)
             res3 <- as.data.frame(res3)
         }
     }
