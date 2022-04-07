@@ -13,7 +13,7 @@ test_that("compare_cpdb works 1", {
             "NK_56hi", "Plasmablast", "Platelets", "Treg", "gdT", "pDC"), celltype_col = "initial_clustering",
         groupby = "Status_on_day_collection_summary")
     p1 <- plot_compare_cpdb(out)
-    p2 <- plot_compare_cpdb(out, cluster = TRUE)
+    p2 <- plot_compare_cpdb(out, cluster = TRUE, group = 'test')
     expect_true(nrow(out[[1]]) == 8339)
     expect_true(ncol(out[[1]]) == 5)
     expect_true(length(which(out[[1]]$padj < 0.05)) == 289)
@@ -62,5 +62,4 @@ test_that("compare_cpdb works 5", {
             "NK_56hi", "Plasmablast", "Platelets", "Treg", "gdT", "pDC"), celltype_col = "initial_clustering",
         groupby = "Status_on_day_collection_summary")
     expect_error(plot_compare_cpdb(out))
-}
-
+})
