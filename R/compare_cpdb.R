@@ -505,8 +505,8 @@ plot_compare_cpdb <- function(result, contrast = NULL, groups = NULL, alpha = 0.
             out$celltypes <- factor(out$celltypes, levels = colnames(order3))
             out$interaction <- factor(out$interaction, levels = rownames(order3))
         }        
-        out$sig <- NA
-        out$sig[out$padj < alpha] <- "YES"
+        out$sig <- 'no'
+        out$sig[out$padj < alpha] <- "yes"
         return(out)
     }
 
