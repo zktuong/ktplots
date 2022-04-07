@@ -569,6 +569,9 @@ plot_compare_cpdb <- function(result, contrast = NULL, groups = NULL, alpha = 0.
     if (highlight_significant) {
         p <- p + scale_colour_manual(values = c(NA, "red"), na.value = NA, drop = TRUE,
             na.translate = FALSE)
+    } else {
+        p <- p + scale_colour_manual(values = c("#ffffff", "red"), na.value = NA, drop = TRUE,
+            na.translate = FALSE)
     }
     return(p)
 }
