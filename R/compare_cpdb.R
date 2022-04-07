@@ -364,5 +364,8 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col,
             res3 <- as.data.frame(res3)
         }
     }
+    if (verbose) {
+        cat("---- Done! ----|", sep = "\n")
+    }
     return(res3)
 }
