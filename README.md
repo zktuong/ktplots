@@ -33,22 +33,10 @@ The data is downsampled from the [kidney cell atlas](https://kidneycellatlas.org
 
 For more info, please see [Stewart et al. kidney single cell data set published in Science 2019](https://science.sciencemag.org/content/365/6460/1461).
 
-### geneDotPlot
-Plotting gene expression dot plots heatmaps.
-```R
-# Note, this conflicts with tidyr devel version
-geneDotPlot(scdata = kidneyimmune, # object
-	genes = c("CD68", "CD80", "CD86", "CD74", "CD2", "CD5"), # genes to plot
-	idents = "celltype", # column name in meta data that holds the cell-cluster ID/assignment
-	split.by = 'Project', # column name in the meta data that you want to split the plotting by. If not provided, it will just plot according to idents
-	standard_scale = TRUE) + # whether to scale expression values from 0 to 1. See ?geneDotPlot for other options
-theme(strip.text.x = element_text(angle=0, hjust = 0, size =7)) + small_guide() + small_legend()
-```
-Hopefully you end up with something like this:
-![geneDotPlot](exampleImages/geneDotPlot_example.png)
-
 ### plot_cpdb
-Generates a dot plot after CellPhoneDB analysis via specifying the query celltypes and genes.
+This function seems like it's the most popular so I moved it up! Please see below for alternative visualisation options.
+
+Generates a dot plot after CellPhoneDB analysis via specifying the query celltypes and genes. The difference compared to the original cellphonedb `plot` is that this is totally customizable!
 
 The plotting is largely determined by the format of the meta file provided to CellPhoneDB analysis.
 
@@ -259,8 +247,11 @@ MH8919179     MH8919179                          Healthy
 MH9179826     MH9179826                           Severe
 ```
 
-To actually run it, you would specify the function as follows:
+So if I want to compare between Severe vs Healthy, I would specify the function as follows:
 ```R
+## set up the levels
+covid_sample_metadata$Status_on_day_collection_summary <- factor(covid_sample_metadata$Status_on_day_collection_summary, levels = c('Healthy', 'Severe'))
+
 out <- compare_cpdb(cpdb_meta = covid_cpdb_meta,
     sample_metadata = covid_sample_metadata,
     celltypes = c("B_cell", "CD14", "CD16", "CD4", "CD8", "DCs", "MAIT", "NK_16hi", "NK_56hi", "Plasmablast", "Platelets", "Treg", "gdT", "pDC"), # the actual celltypes you want to test
@@ -272,7 +263,7 @@ This returns a list of dataframes (for each contrast found) with which you can u
 `plot_compare_cpdb` is a simple function to achieve that but you can always just make a custom plotting function based on what you want.
 
 ```R
-plot_compare_cpdb(out, alpha = 0.001) # the default alpha value is 0.05 (i.e. fdr < 0.05) but for the sake of generating this plot, i'm using a smaller value
+plot_compare_cpdb(out) # red is significantly increased in Severe compared to Healthy.
 ```
 ![plot_compare_cpdb](exampleImages/plot_compare_cpdb_example.png)
 
@@ -283,7 +274,7 @@ The default method uses a pairwise `wilcox.test`. Alternatives are pairwise Welc
 To run the linear mixed effect model, it expects that the input data is paired (i.e an individual with multiple samples corresponding to multiple timepoints):
 
 ```R
-# just as a dummy example, lets say the samples are matched where there two samples per individual
+# just as a dummy example, lets say the samples are matched where there are two samples per individual
 covid_sample_metadata$individual <- rep(c("A", "B", "C", "D", "E", "F"), 2)
 
 # actually run it
@@ -296,7 +287,7 @@ out <- compare_cpdb(cpdb_meta = covid_cpdb_meta,
     formula = "~ Status_on_day_collection_summary + (1|individual)", # formula passed to lmer
     method = "lmer")
 
-plot_compare_cpdb(out, contrast = 'Status_on_day_collection_summarySevere')
+plot_compare_cpdb(out, contrast = 'Status_on_day_collection_summarySevere') # use the colnames(out) to pick the right column.
 ```
 ![plot_compare_cpdb2](exampleImages/plot_compare_cpdb_example2.png)
 
@@ -305,6 +296,23 @@ Specifying `cluster = TRUE` will move the rows and columns to make it look a bit
 plot_compare_cpdb(out, contrast = 'Status_on_day_collection_summarySevere', cluster = TRUE)
 ```
 ![plot_compare_cpdb3](exampleImages/plot_compare_cpdb_example3.png)
+
+
+## Other useful functions
+
+### geneDotPlot
+Plotting gene expression dot plots heatmaps.
+```R
+# Note, this conflicts with tidyr devel version
+geneDotPlot(scdata = kidneyimmune, # object
+    genes = c("CD68", "CD80", "CD86", "CD74", "CD2", "CD5"), # genes to plot
+    idents = "celltype", # column name in meta data that holds the cell-cluster ID/assignment
+    split.by = 'Project', # column name in the meta data that you want to split the plotting by. If not provided, it will just plot according to idents
+    standard_scale = TRUE) + # whether to scale expression values from 0 to 1. See ?geneDotPlot for other options
+theme(strip.text.x = element_text(angle=0, hjust = 0, size =7)) + small_guide() + small_legend()
+```
+Hopefully you end up with something like this:
+![geneDotPlot](exampleImages/geneDotPlot_example.png)
 
 
 ### correlationSpot
