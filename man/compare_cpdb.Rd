@@ -2,7 +2,7 @@
 % Please edit documentation in R/compare_cpdb.R
 \name{compare_cpdb}
 \alias{compare_cpdb}
-\title{Plotting cellphonedb results}
+\title{Compare cellphonedb results performed on replicates}
 \usage{
 compare_cpdb(
   cpdb_meta,
@@ -11,7 +11,7 @@ compare_cpdb(
   celltype_col,
   groupby = NULL,
   formula = NULL,
-  method = c("t.test", "wilcox.test", "lmer"),
+  method = c("wilcox.test", "t.test", "lmer"),
   BPPARAM = SerialParam(),
   version3 = FALSE,
   verbose = TRUE,
@@ -33,7 +33,7 @@ compare_cpdb(
 
 \item{formula}{for signfiicance testing. only if method is lme.}
 
-\item{method}{one of 't.test', 'wilcox.test', 'lmer'}
+\item{method}{one of 'wilcox.test', 't.test', 'lmer'}
 
 \item{BPPARAM}{BiocParallelParam class.}
 
@@ -46,13 +46,41 @@ compare_cpdb(
 \item{p.adjust.method}{passed to `method`in `stats::p.adjust`.}
 
 \item{...}{passed to tests.}
+
+\item{result}{output from compare_cpdb}
+
+\item{contrast}{name of contrast to plot. only if method used was 'lmer'}
+
+\item{groups}{name of contrast to plot. only if method used was 'lmer'}
+
+\item{alpha}{adjusted pvalue cut off to keep in the plot.}
+
+\item{cluster}{whether or not to perform a simple clustering in the final plot}
+
+\item{color_limits}{upper and lower limits for plotting the results}
+
+\item{highlight_significant}{whether or not to keep only significant results in the final plot}
 }
 \value{
 results for plotting
 }
 \description{
-Plotting cellphonedb results
+Compare cellphonedb results performed on replicates
 }
 \examples{
-\donttest{}
+\donttest{
+data(covid_sample_metadata)
+data(covid_cpdb_meta)
+
+file <- system.file("extdata", "covid_cpdb.tar.gz", package = "ktplots")
+file.copy(file, ".")
+system("tar -xzf covid_cpdb.tar.gz")
+
+covid_sample_metadata$individual <- rep(c("A", "B"), 6)
+out <- compare_cpdb(cpdb_meta = covid_cpdb_meta, sample_metadata = covid_sample_metadata,
+        celltypes = c("B_cell", "CD14", "CD16", "CD4", "CD8", "DCs", "MAIT", "NK_16hi",
+            "NK_56hi", "Plasmablast", "Platelets", "Treg", "gdT", "pDC"), celltype_col = "initial_clustering",
+        groupby = "Status_on_day_collection_summary")
+plot_compare_cpdb(out)
+}
 }
