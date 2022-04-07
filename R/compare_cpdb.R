@@ -567,7 +567,7 @@ plot_compare_cpdb <- function(result, contrast = NULL, groups = NULL, alpha = 0.
         high = color_spectrum[3], na.value = NA, guide = "colourbar", aesthetics = "fill",
         limits = limits, oob = scales::squish, name = fcol)
     if (highlight_significant) {
-        p <- p + scale_colour_manual(values = "red", na.value = NA, drop = TRUE,
+        p <- p + scale_colour_manual(values = c(NA, "red"), na.value = NA, drop = TRUE,
             na.translate = FALSE)
     }
     return(p)
