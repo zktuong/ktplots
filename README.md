@@ -269,6 +269,18 @@ plot_compare_cpdb(out) # red is significantly increased in Severe compared to He
 
 If there are multiple contrasts and groups, you can facet the plot by specifying `groups = c('group1', 'group2')`.
 
+```R
+# let's mock up a new contrast like this
+covid_sample_metadata$Status_on_day_collection_summary <- c(rep('Severe', 3), rep('Healthy', 2), rep('notSevere', 2), rep('Healthy', 4), 'notSevere')
+out <- compare_cpdb(cpdb_meta = covid_cpdb_meta,
+    sample_metadata = covid_sample_metadata,
+    celltypes = c("B_cell", "CD14", "CD16", "CD4", "CD8", "DCs", "MAIT", "NK_16hi", "NK_56hi", "Plasmablast", "Platelets", "Treg", "gdT", "pDC"), # the actual celltypes you want to test
+    celltype_col = "initial_clustering", # the column that holds the cell type annotation in the sce object
+    groupby = "Status_on_day_collection_summary")
+plot_compare_cpdb(out, alpha = .1, groups = names(out)) # there's no significant hit at 0.05 in this dummy example
+```
+![plot_compare_cpdb4](exampleImages/plot_compare_cpdb_example4.png)
+
 The default method uses a pairwise `wilcox.test`. Alternatives are pairwise Welch's `t.test` or a linear mixed model with `lmer`.
 
 To run the linear mixed effect model, it expects that the input data is paired (i.e an individual with multiple samples corresponding to multiple timepoints):
