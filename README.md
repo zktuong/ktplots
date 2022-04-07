@@ -33,7 +33,7 @@ The data is downsampled from the [kidney cell atlas](https://kidneycellatlas.org
 
 For more info, please see [Stewart et al. kidney single cell data set published in Science 2019](https://science.sciencemag.org/content/365/6460/1461).
 
-### plot_cpdb
+## plot_cpdb
 This function seems like it's the most popular so I moved it up! Please see below for alternative visualisation options.
 
 Generates a dot plot after CellPhoneDB analysis via specifying the query celltypes and genes. The difference compared to the original cellphonedb `plot` is that this is totally customizable!
@@ -50,7 +50,7 @@ so to set up an example vector, it would be something like:
 annotation <- paste0(kidneyimmune$Experiment, '_', kidneyimmune$celltype)
 ```
 
-To run, you will need to load in the means.txt and pvals.txt from the analysis.
+To run, you will need to load in the means.txt and pvals.txt from the analysis. If you are using results from cellphonedb version 3, the `pvalues.txt` is `relevant_interactions.txt` and also add `version3 = TRUE` into all the functions below. 
 ```R
 # pvals <- read.delim("pvalues.txt", check.names = FALSE)
 # means <- read.delim("means.txt", check.names = FALSE)
