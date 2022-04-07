@@ -15,7 +15,7 @@
 #' @param cluster whether or not to cluster the output plot
 #' @param result output from compare_cpdb
 #' @param contrast name of contrast to plot. only if method used was 'lmer'
-#' @param groups name of contrast to plot. only if method used was 'lmer'
+#' @param groups name of groups to facet.
 #' @param alpha adjusted pvalue cut off to keep in the plot.
 #' @param cluster whether or not to perform a simple clustering in the final plot
 #' @param max_size maximum size of circles
@@ -398,8 +398,8 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col,
 
 #' @export
 plot_compare_cpdb <- function(result, contrast = NULL, groups = NULL, alpha = 0.05,
-    color_spectrum = c("#2C7BB6", "#f7f7f7", "#D7191C"), max_size= 3, limits = c(-2, 2),
-    highlight_significant = TRUE, cluster = FALSE) {
+    color_spectrum = c("#2C7BB6", "#f7f7f7", "#D7191C"), max_size = 3, limits = c(-2,
+        2), highlight_significant = TRUE, cluster = FALSE) {
     prepare_compare_cpdb_results <- function(res, alpha = 0.05, contrast = NULL,
         groups = NULL, cluster = FALSE) {
         if (class(res) == "list") {
@@ -423,6 +423,9 @@ plot_compare_cpdb <- function(result, contrast = NULL, groups = NULL, alpha = 0.
             }
             out <- do.call(rbind, out)
             out <- as.data.frame(out)
+            if (!is.null(groups)) {
+                out$Group <- factor(out$Group, levels = groups)
+            }
         } else if (class(res) == "data.frame") {
             if (length(contrast) > 1) {
                 res1 <- lapply(contrast, function(x) res %>%
@@ -468,6 +471,9 @@ plot_compare_cpdb <- function(result, contrast = NULL, groups = NULL, alpha = 0.
                 }
                 out <- do.call(rbind, out)
                 out <- as.data.frame(out)
+                if (!is.null(groups)) {
+                    out$Group <- factor(out$Group, levels = groups)
+                }
             } else {
                 res1 <- res %>%
                   filter(get(paste0("fit_Padj_", contrast)) < alpha & Singular >
@@ -482,33 +488,38 @@ plot_compare_cpdb <- function(result, contrast = NULL, groups = NULL, alpha = 0.
                 out <- make_table2(res1, res2, contrast)
             }
         }
-        if (class(res) == "list") {
-            val.var = "LFC"
+        if (nrow(out) > 0) {
+            if (class(res) == "list") {
+                val.var = "LFC"
+            } else {
+                val.var = "beta"
+            }
+            if (cluster) {
+                order1 <- suppressMessages(reshape2::dcast(out, interaction ~ celltypes,
+                  value.var = val.var))
+                rownames(order1) <- order1$interaction
+                order1 <- order1[, -1]
+                order2 <- suppressMessages(reshape2::dcast(out, celltypes ~ interaction,
+                  value.var = val.var))
+                rownames(order2) <- order2$celltypes
+                order2 <- order2[, -1]
+                order1[is.na(order1)] <- 0
+                order2[is.na(order2)] <- 0
+                d1 <- dist(order1)
+                h1 <- hclust(d1)
+                d2 <- dist(order2)
+                h2 <- hclust(d2)
+                order3 <- order1[h1$order, h2$order]
+                out$celltypes <- factor(out$celltypes, levels = colnames(order3))
+                out$interaction <- factor(out$interaction, levels = rownames(order3))
+            }
+
+            out$sig <- "no"
+            out$sig[out$padj < alpha] <- "yes"
+            return(out)
         } else {
-            val.var = "beta"
+            return(NULL)
         }
-        if (cluster){
-            order1 <- suppressMessages(reshape2::dcast(out, interaction ~ celltypes,
-                value.var = val.var))
-            rownames(order1) <- order1$interaction
-            order1 <- order1[, -1]
-            order2 <- suppressMessages(reshape2::dcast(out, celltypes ~ interaction,
-                value.var = val.var))
-            rownames(order2) <- order2$celltypes
-            order2 <- order2[, -1]
-            order1[is.na(order1)] <- 0
-            order2[is.na(order2)] <- 0
-            d1 <- dist(order1)
-            h1 <- hclust(d1)
-            d2 <- dist(order2)
-            h2 <- hclust(d2)
-            order3 <- order1[h1$order, h2$order]
-            out$celltypes <- factor(out$celltypes, levels = colnames(order3))
-            out$interaction <- factor(out$interaction, levels = rownames(order3))
-        }        
-        out$sig <- 'no'
-        out$sig[out$padj < alpha] <- "yes"
-        return(out)
     }
 
     make_table1 <- function(df) {
@@ -548,30 +559,44 @@ plot_compare_cpdb <- function(result, contrast = NULL, groups = NULL, alpha = 0.
 
     dat <- prepare_compare_cpdb_results(result, alpha = alpha, contrast = contrast,
         groups = groups, cluster = cluster)
-    if (class(result) == "list") {
-        fcol = "LFC"
+    if (is.null(dat)) {
+        stop("no significant hits.")
     } else {
-        fcol = "beta"
+        if (class(result) == "list") {
+            fcol = "LFC"
+        } else {
+            fcol = "beta"
+        }
+        p <- ggplot(dat, aes(y = interaction, x = celltypes, fill = get(fcol), colour = sig,
+            size = abs(get(fcol)))) + geom_point(shape = 21) + scale_size_area(limits = limits,
+            oob = scales::squish, max_size = max_size, name = paste0("abs(", fcol,
+                ")")) + theme_classic() + theme_bw() + theme(axis.line = element_blank(),
+            panel.border = element_rect(colour = "black", size = 0.1), panel.grid = element_line(colour = "grey",
+                size = 0.1), axis.ticks = element_line(colour = "black", size = 0.1),
+            axis.text.y = element_text(colour = "black"), axis.text.x = element_text(colour = "black",
+                angle = 90, vjust = 0.5, hjust = 1), legend.direction = "vertical",
+            legend.box = "horizontal")
+        if (any(grepl("Group", colnames(dat)))) {
+            p <- p + facet_grid(~Group)
+        }
+        p <- p + scale_fill_gradient2(low = color_spectrum[1], mid = color_spectrum[2],
+            high = color_spectrum[3], na.value = NA, guide = "colourbar", aesthetics = "fill",
+            limits = limits, oob = scales::squish, name = fcol)
+        if (highlight_significant) {
+            if (all(dat$sig == 'yes')){
+                p <- p + scale_colour_manual(values = "red", na.value = NA, drop = TRUE, na.translate = FALSE)
+            } else {
+                p <- p + scale_colour_manual(values = c(NA, "red"), na.value = NA, drop = TRUE, na.translate = FALSE)
+            }
+        } else {
+            if (all(dat$sig == 'yes')){
+                p <- p + scale_colour_manual(values = "red", na.value = NA,
+                    drop = TRUE, na.translate = FALSE)
+            } else {
+                p <- p + scale_colour_manual(values = c("$f7f7f7", "red"), na.value = NA,
+                    drop = TRUE, na.translate = FALSE)
+            }
+        }
+        return(p)
     }
-    p <- ggplot(dat, aes(y = interaction, x = celltypes, fill = get(fcol), colour = sig,
-        size = abs(get(fcol)))) + geom_point(shape = 21) + scale_size_area(limits = limits,
-        oob = scales::squish, max_size= max_size, name = paste0("abs(", fcol, ")")) + theme_classic() +
-        theme_bw() + theme(axis.line = element_blank(), panel.border = element_rect(colour = "black",
-        size = 0.1), panel.grid = element_line(colour = "grey", size = 0.1), axis.ticks = element_line(colour = "black",
-        size = 0.1), axis.text.y = element_text(colour = "black"), axis.text.x = element_text(colour = "black",
-        angle = 90, vjust = 0.5, hjust = 1), legend.direction = "vertical", legend.box = "horizontal")
-    if (any(grepl("Group", colnames(dat)))) {
-        p <- p + facet_grid(~Group)
-    }
-    p <- p + scale_fill_gradient2(low = color_spectrum[1], mid = color_spectrum[2],
-        high = color_spectrum[3], na.value = NA, guide = "colourbar", aesthetics = "fill",
-        limits = limits, oob = scales::squish, name = fcol)
-    if (highlight_significant) {
-        p <- p + scale_colour_manual(values = c(NA, "red"), na.value = NA, drop = TRUE,
-            na.translate = FALSE)
-    } else {
-        p <- p + scale_colour_manual(values = c("#ffffff", "red"), na.value = NA, drop = TRUE,
-            na.translate = FALSE)
-    }
-    return(p)
 }
