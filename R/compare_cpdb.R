@@ -18,7 +18,8 @@
 #' @param groups name of contrast to plot. only if method used was 'lmer'
 #' @param alpha adjusted pvalue cut off to keep in the plot.
 #' @param cluster whether or not to perform a simple clustering in the final plot
-#' @param color_limits upper and lower limits for plotting the results
+#' @param max_size maximum size of circles
+#' @param limits upper and lower limits for plotting the results
 #' @param highlight_significant whether or not to keep only significant results in the final plot
 #' @param ... passed to tests.
 #' @return results for plotting
@@ -397,7 +398,7 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col,
 
 #' @export
 plot_compare_cpdb <- function(result, contrast = NULL, groups = NULL, alpha = 0.05,
-    color_spectrum = c("#2C7BB6", "#f7f7f7", "#D7191C"), color_limits = c(-2, 2),
+    color_spectrum = c("#2C7BB6", "#f7f7f7", "#D7191C"), max_size= 3, limits = c(-2, 2),
     highlight_significant = TRUE, cluster = FALSE) {
     prepare_compare_cpdb_results <- function(res, alpha = 0.05, contrast = NULL,
         groups = NULL, cluster = FALSE) {
@@ -553,8 +554,8 @@ plot_compare_cpdb <- function(result, contrast = NULL, groups = NULL, alpha = 0.
         fcol = "beta"
     }
     p <- ggplot(dat, aes(y = interaction, x = celltypes, fill = get(fcol), colour = sig,
-        size = abs(get(fcol)))) + geom_point(shape = 21) + scale_size_area(limits = color_limits,
-        oob = scales::squish, name = paste0("abs(", fcol, ")")) + theme_classic() +
+        size = abs(get(fcol)))) + geom_point(shape = 21) + scale_size_area(limits = limits,
+        oob = scales::squish, max_size= max_size, name = paste0("abs(", fcol, ")")) + theme_classic() +
         theme_bw() + theme(axis.line = element_blank(), panel.border = element_rect(colour = "black",
         size = 0.1), panel.grid = element_line(colour = "grey", size = 0.1), axis.ticks = element_line(colour = "black",
         size = 0.1), axis.text.y = element_text(colour = "black"), axis.text.x = element_text(colour = "black",
@@ -564,7 +565,7 @@ plot_compare_cpdb <- function(result, contrast = NULL, groups = NULL, alpha = 0.
     }
     p <- p + scale_fill_gradient2(low = color_spectrum[1], mid = color_spectrum[2],
         high = color_spectrum[3], na.value = NA, guide = "colourbar", aesthetics = "fill",
-        limits = color_limits, oob = scales::squish, name = fcol)
+        limits = limits, oob = scales::squish, name = fcol)
     if (highlight_significant) {
         p <- p + scale_colour_manual(values = "red", na.value = NA, drop = TRUE,
             na.translate = FALSE)

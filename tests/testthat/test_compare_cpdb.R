@@ -45,3 +45,12 @@ test_that("compare_cpdb works 3", {
     expect_true(is.ggplot(p))
 })
 
+
+test_that("compare_cpdb works 4", {
+    out <- compare_cpdb(cpdb_meta = covid_cpdb_meta, sample_metadata = covid_sample_metadata,
+        celltypes = c("B_cell", "CD14", "CD16", "CD4", "CD8", "DCs", "MAIT", "NK_16hi",
+            "NK_56hi", "Plasmablast", "Platelets", "Treg", "gdT", "pDC"), celltype_col = "initial_clustering",
+        groupby = "Status_on_day_collection_summary", p.adjust.mode = 'all')    
+    expect_true(length(which(out[[1]]$padj < 0.05)) == 0)
+    expect_true(length(which(out[[1]]$pval < 0.05)) == 941)
+})

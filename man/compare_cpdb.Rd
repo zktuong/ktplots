@@ -57,7 +57,9 @@ compare_cpdb(
 
 \item{cluster}{whether or not to perform a simple clustering in the final plot}
 
-\item{color_limits}{upper and lower limits for plotting the results}
+\item{max_size}{maximum size of circles}
+
+\item{limits}{upper and lower limits for plotting the results}
 
 \item{highlight_significant}{whether or not to keep only significant results in the final plot}
 }
