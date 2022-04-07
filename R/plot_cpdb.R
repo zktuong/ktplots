@@ -5,7 +5,7 @@
 #' @param scdata single-cell data. can be seurat/summarizedexperiment object
 #' @param idents vector holding the idents for each cell or column name of scdata's metadata. MUST match cpdb's columns
 #' @param means object holding means.txt from cpdb output
-#' @param pvals object holding pvals.txt from cpdb output
+#' @param pvals object holding pvals.txt from cpdb output. Use relevant_interactions.txt if version 3.
 #' @param max_size max size of points.
 #' @param p.adjust.method correction method. p.adjust.methods of one of these options: c('holm', 'hochberg', 'hommel', 'bonferroni', 'BH', 'BY', 'fdr', 'none')
 #' @param keep_significant_only logical. Default is FALSE. Switch to TRUE if you only want to plot the significant hits from cpdb.
@@ -21,6 +21,7 @@
 #' @param highlight_size stroke size for highlight if p < 0.05. if NULL, scales to -log10(pval).
 #' @param separator separator to use to split between celltypes. Unless otherwise specified, the separator will be `>@<`. Make sure the idents and split.by doesn't overlap with this.
 #' @param special_character_search_pattern search pattern if the cell type names contains special character. NULL defaults to '/|:|\\?|\\*|\\+|[\\]|\\(|\\)'.
+#' @param version3 if is cellphonedb version3. 
 #' @param verbose prints cat/print statements if TRUE.
 #' @param return_table whether or not to return as a table rather than to plot.
 #' @param ... passes arguments to grep for cell_type1 and cell_type2.
@@ -41,7 +42,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
     p.adjust.method = NULL, keep_significant_only = FALSE, split.by = NULL, gene.family = NULL,
     genes = NULL, scale = NULL, standard_scale = NULL, col_option = viridis::viridis(50),
     default_style = TRUE, noir = FALSE, highlight = "red", highlight_size = NULL,
-    separator = NULL, special_character_search_pattern = NULL, verbose = FALSE, return_table = FALSE,
+    separator = NULL, special_character_search_pattern = NULL, version3 = FALSE, verbose = FALSE, return_table = FALSE,
     ...) {
     if (class(scdata) %in% c("SingleCellExperiment", "SummarizedExperiment")) {
         if (verbose) {
@@ -51,7 +52,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
         }
         requireNamespace("SummarizedExperiment")
         requireNamespace("SingleCellExperiment")
-        exp_mat <- SummarizedExperiment::assay(scdata)
+        # exp_mat <- SummarizedExperiment::assay(scdata)
         metadata <- SummarizedExperiment::colData(scdata)
     } else if (class(scdata) == "Seurat") {
         requireNamespace("Seurat")
@@ -59,12 +60,12 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
             cat("data provided is a Seurat object", sep = "\n")
             cat("extracting expression matrix", sep = "\n")
         }
-        exp_mat <- tryCatch(scdata@data, error = function(e) {
-            tryCatch(Seurat::GetAssayData(object = scdata), error = function(e) {
-                stop(paste0("are you sure that your data is normalized?"))
-                return(NULL)
-            })
-        })
+        # exp_mat <- tryCatch(scdata@data, error = function(e) {
+            # tryCatch(Seurat::GetAssayData(object = scdata), error = function(e) {
+                # stop(paste0("are you sure that your data is normalized?"))
+                # return(NULL)
+            # })
+        # })
         metadata <- scdata@meta.data
     }
 
@@ -76,6 +77,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
 
     means_mat <- means
     pvals_mat <- pvals
+    
     rownames(means_mat) <- make.names(means_mat$interacting_pair, unique = TRUE)
     rownames(pvals_mat) <- make.names(pvals_mat$interacting_pair, unique = TRUE)
     colnames(means_mat) <- gsub("\\|", sep, colnames(means_mat))
@@ -84,6 +86,10 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
     colnames(pvals_mat) <- gsub("\\|", sep, colnames(pvals_mat))
     rownames(pvals_mat) <- gsub("_", "-", rownames(pvals_mat))
     rownames(pvals_mat) <- gsub("[.]", " ", rownames(pvals_mat))
+
+    if (version3){
+        pvals_mat[,12:ncol(pvals_mat)] <- 1 - pvals_mat[,12:ncol(pvals_mat)]
+    }
 
     if (length(p.adjust.method) > 0) {
         pvals_tmp <- pvals[, 12:ncol(pvals)]

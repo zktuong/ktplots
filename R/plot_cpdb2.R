@@ -20,6 +20,8 @@
 #' @param interaction_grouping default = NULL. dataframe specifying groupings of cellphonedb interactions. First column must be cellphonedb's interacting_pair column. second column is whatever grouping you want.
 #' @param edge_group_colors default = NULL. vector for colour mapping for edge groups. only used if split.by is specified.
 #' @param node_group_colors default = NULL. vector for colour mapping for node labels.
+#' @param version3 if is cellphonedb version3. 
+#' @param return_df whether to just return this as a data.frame rather than plotting iot
 #' @param ... passes arguments plot_cpdb
 #' @return ggplot dot plot object of cellphone db output
 #' @examples
@@ -34,7 +36,7 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
     p.adjust.method = NULL, keep_significant_only = TRUE, split.by = NULL, standard_scale = TRUE,
     separator = NULL, gene_symbol_mapping = NULL, frac = 0.1, remove_self = TRUE,
     desiredInteractions = NULL, interaction_grouping = NULL, edge_group_colors = NULL,
-    node_group_colors = NULL, return_df = FALSE, ...) {
+    node_group_colors = NULL, version3 = FALSE, return_df = FALSE, ...) {
     if (class(scdata) == "Seurat") {
         stop("Sorry not supported yet. Please use a SingleCellExperiment object.")
     }
@@ -46,7 +48,7 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
 
     lr_interactions = plot_cpdb(cell_type1 = cell_type1, cell_type2 = cell_type2, scdata = scdata,
         idents = idents, split.by = split.by, means = means, pvals = pvals, keep_significant_only = keep_significant_only,
-        standard_scale = standard_scale, return_table = TRUE, ...)
+        standard_scale = standard_scale, return_table = TRUE, version3 = version3, ...)
     requireNamespace("SummarizedExperiment")
     requireNamespace("SingleCellExperiment")
     if (is.null(split.by)) {

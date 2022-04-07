@@ -26,6 +26,7 @@ plot_cpdb(
   highlight_size = NULL,
   separator = NULL,
   special_character_search_pattern = NULL,
+  version3 = FALSE,
   verbose = FALSE,
   return_table = FALSE,
   ...
@@ -42,7 +43,7 @@ plot_cpdb(
 
 \item{means}{object holding means.txt from cpdb output}
 
-\item{pvals}{object holding pvals.txt from cpdb output}
+\item{pvals}{object holding pvals.txt from cpdb output. Use relevant_interactions.txt if version 3.}
 
 \item{max_size}{max size of points.}
 
@@ -71,6 +72,8 @@ plot_cpdb(
 \item{separator}{separator to use to split between celltypes. Unless otherwise specified, the separator will be `>@<`. Make sure the idents and split.by doesn't overlap with this.}
 
 \item{special_character_search_pattern}{search pattern if the cell type names contains special character. NULL defaults to '/|:|\\?|\\*|\\+|[\\]|\\(|\\)'.}
+
+\item{version3}{if is cellphonedb version3.}
 
 \item{verbose}{prints cat/print statements if TRUE.}
 
