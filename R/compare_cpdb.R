@@ -398,9 +398,9 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col,
 #' @export
 plot_compare_cpdb <- function(result, contrast = NULL, groups = NULL, alpha = 0.05,
     color_spectrum = c("#2C7BB6", "#f7f7f7", "#D7191C"), color_limits = c(-2, 2),
-    highlight_significant = TRUE) {
+    highlight_significant = TRUE, cluster = FALSE) {
     prepare_compare_cpdb_results <- function(res, alpha = 0.05, contrast = NULL,
-        groups = NULL) {
+        groups = NULL, cluster = FALSE) {
         if (class(res) == "list") {
             tmp <- lapply(res, function(x) {
                 x <- x[x$padj < alpha, ]
@@ -486,23 +486,25 @@ plot_compare_cpdb <- function(result, contrast = NULL, groups = NULL, alpha = 0.
         } else {
             val.var = "beta"
         }
-        order1 <- suppressMessages(reshape2::dcast(out, interaction ~ celltypes,
-            value.var = val.var))
-        rownames(order1) <- order1$interaction
-        order1 <- order1[, -1]
-        order2 <- suppressMessages(reshape2::dcast(out, celltypes ~ interaction,
-            value.var = val.var))
-        rownames(order2) <- order2$celltypes
-        order2 <- order2[, -1]
-        order1[is.na(order1)] <- 0
-        order2[is.na(order2)] <- 0
-        d1 <- dist(order1)
-        h1 <- hclust(d1)
-        d2 <- dist(order2)
-        h2 <- hclust(d2)
-        order3 <- order1[h1$order, h2$order]
-        out$celltypes <- factor(out$celltypes, levels = colnames(order3))
-        out$interaction <- factor(out$interaction, levels = rownames(order3))
+        if (cluster){
+            order1 <- suppressMessages(reshape2::dcast(out, interaction ~ celltypes,
+                value.var = val.var))
+            rownames(order1) <- order1$interaction
+            order1 <- order1[, -1]
+            order2 <- suppressMessages(reshape2::dcast(out, celltypes ~ interaction,
+                value.var = val.var))
+            rownames(order2) <- order2$celltypes
+            order2 <- order2[, -1]
+            order1[is.na(order1)] <- 0
+            order2[is.na(order2)] <- 0
+            d1 <- dist(order1)
+            h1 <- hclust(d1)
+            d2 <- dist(order2)
+            h2 <- hclust(d2)
+            order3 <- order1[h1$order, h2$order]
+            out$celltypes <- factor(out$celltypes, levels = colnames(order3))
+            out$interaction <- factor(out$interaction, levels = rownames(order3))
+        }        
         out$sig <- NA
         out$sig[out$padj < alpha] <- "YES"
         return(out)
@@ -537,11 +539,22 @@ plot_compare_cpdb <- function(result, contrast = NULL, groups = NULL, alpha = 0.
         return(res)
     }
 
+    if (class(result) == "list") {
+        val.var = "LFC"
+    } else {
+        val.var = "beta"
+    }
+
     dat <- prepare_compare_cpdb_results(result, alpha = alpha, contrast = contrast,
-        groups = groups)
-    # do the actual plotting
-    p <- ggplot(dat, aes(y = interaction, x = celltypes, fill = beta, colour = sig,
-        size = abs(beta))) + geom_point(shape = 21) + scale_size_area() + theme_classic() +
+        groups = groups, cluster = cluster)
+    if (class(result) == "list") {
+        fcol = "LFC"
+    } else {
+        fcol = "beta"
+    }
+    p <- ggplot(dat, aes(y = interaction, x = celltypes, fill = get(fcol), colour = sig,
+        size = abs(get(fcol)))) + geom_point(shape = 21) + scale_size_area(limits = color_limits,
+        oob = scales::squish, name = paste0("abs(", fcol, ")")) + theme_classic() +
         theme_bw() + theme(axis.line = element_blank(), panel.border = element_rect(colour = "black",
         size = 0.1), panel.grid = element_line(colour = "grey", size = 0.1), axis.ticks = element_line(colour = "black",
         size = 0.1), axis.text.y = element_text(colour = "black"), axis.text.x = element_text(colour = "black",
@@ -551,7 +564,7 @@ plot_compare_cpdb <- function(result, contrast = NULL, groups = NULL, alpha = 0.
     }
     p <- p + scale_fill_gradient2(low = color_spectrum[1], mid = color_spectrum[2],
         high = color_spectrum[3], na.value = NA, guide = "colourbar", aesthetics = "fill",
-        limits = color_limits, oob = scales::squish)
+        limits = color_limits, oob = scales::squish, name = fcol)
     if (highlight_significant) {
         p <- p + scale_colour_manual(values = "red", na.value = NA, drop = TRUE,
             na.translate = FALSE)
