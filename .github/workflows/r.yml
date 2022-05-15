@@ -80,7 +80,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          install.packages(c("rcmdcheck", "covr"))
+          install.packages(c("rcmdcheck", "covr", "rgeos"))
           remotes::install_deps(dependencies = TRUE)
         shell: Rscript {0}
 
