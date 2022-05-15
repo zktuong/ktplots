@@ -382,8 +382,9 @@ g + g1
 
 
 ### Citation
-If you find these functions useful, please consider leaving a star, citing this repository, and/or citing the following [DOI](https://doi.org/10.5281/zenodo.5717923):
+If you find these functions useful, please consider leaving a star, citing this repository, and/or citing the following [DOI](https://doi.org/10.5281/zenodo.5717922):
 
+To cite a specific version of `ktplots`, please follow the links on the zenodo repository. e.g. v1.1.16:
 ```
 Zewen Kelvin Tuong. (2021). zktuong/ktplots: 1.1.16 (v1.1.16). Zenodo. https://doi.org/10.5281/zenodo.5717923
 ```
