@@ -82,6 +82,7 @@ jobs:
         run: |
           install.packages(c("rcmdcheck", "covr", "rgeos"))
           remotes::install_deps(dependencies = TRUE)
+          install.packages('https://cran.r-project.org/src/contrib/Archive/plyr/plyr_1.8.6.tar.gz')
         shell: Rscript {0}
 
       - name: Check
