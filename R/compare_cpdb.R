@@ -232,6 +232,7 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col,
         }, BPPARAM = SerialParam(progressbar = verbose))
         res3 <- do.call(rbind, res3)
         res3 <- as.data.frame(res3)
+        print(head(res3))
         tmpct <- as.data.frame(do.call(rbind, strsplit(res3[,1], '>@<'))[,1:2])
         tmpct[,3] <- paste0(tmpct[,1], '>@<', tmpct[,2])
         res3$celltypes <- tmpct[,3]
