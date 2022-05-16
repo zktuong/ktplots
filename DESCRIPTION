@@ -28,7 +28,7 @@ Suggests:
 	car,
 	testthat,
 	covr,
-	plyr (<=1.8.7)
+	plyr
 Depends:
 	ggplot2
 Remotes: 
