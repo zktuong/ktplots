@@ -80,6 +80,8 @@ jobs:
 
       - name: Install dependencies
         run: |
+          install.packages(c('RCurl','XML'))
+          remotes::install_cran("BiocManager")
           BiocManager::install(c('GenomeInfoDb', 'Rsamtools'))
           BiocManager::install(c('Biostrings', 'GenomicAlignments', 'IRanges'))
           install.packages(c("rcmdcheck", "covr", "rgeos"))
