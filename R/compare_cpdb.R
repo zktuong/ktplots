@@ -232,12 +232,14 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col,
         }, BPPARAM = SerialParam(progressbar = verbose))
         res3 <- do.call(rbind, res3)
         res3 <- as.data.frame(res3)
-        print(head(res3))
-        tmpct <- as.data.frame(do.call(rbind, strsplit(res3[,1], '>@<'))[,1:2])
-        tmpct[,3] <- paste0(tmpct[,1], '>@<', tmpct[,2])
-        res3$celltypes <- tmpct[,3]
-        res3$celltypes <- gsub('>@<', '-', res3$celltypes)
-        res3 <- split(res3, res3$contrast)
+        if (all(dim(res3) > 0)){
+            tmpct <- as.data.frame(do.call(rbind, strsplit(res3[,1], '>@<'))[,1:2])
+            tmpct[,3] <- paste0(tmpct[,1], '>@<', tmpct[,2])
+            res3$celltypes <- tmpct[,3]
+            res3$celltypes <- gsub('>@<', '-', res3$celltypes)
+            res3 <- split(res3, res3$contrast)
+        }
+        
     } else if (method == 'lmer'){
         require(lmerTest)
         if (!is.null(formula)) {
@@ -338,64 +340,68 @@ compare_cpdb <- function(cpdb_meta, sample_metadata, celltypes, celltype_col,
 
         res3 <- suppressMessages(suppressWarnings(do.call(rbind, res3fitstats3)))
         res3 <- as.data.frame(res3)
-        tmpct <- as.data.frame(do.call(rbind, strsplit(row.names(res3), '>@<'))[,1:2])
-        tmpct[,3] <- paste0(tmpct[,1], '>@<', tmpct[,2])
-        res3$celltypes <- tmpct[,3]
-        res3$celltypes <- gsub('>@<', '-', res3$celltypes)
+        if (all(dim(res3) > 0)){
+            tmpct <- as.data.frame(do.call(rbind, strsplit(row.names(res3), '>@<'))[,1:2])
+            tmpct[,3] <- paste0(tmpct[,1], '>@<', tmpct[,2])
+            res3$celltypes <- tmpct[,3]
+            res3$celltypes <- gsub('>@<', '-', res3$celltypes)
+        }
     }
 
     if (verbose) {
         cat("Correcting P values", sep = "\n")
     }
-    if (p.adjust.mode == "all") {
-        if (method != "lmer") {
-            res3 <- bplapply(res3, function(x) {
-                x$padj <- p.adjust(x$pval, method = p.adjust.method)
-                row.names(x) <- x[, 1]
-                x <- x[, -1, drop = FALSE]
-                return(x)
-            }, BPPARAM = SerialParam(progressbar = verbose))
-        } else {
-            p_cols <- grep("_P_", colnames(res3), value = TRUE)
-            for (p in p_cols) {
-                res3[, gsub("_P_", "_Padj_", p)] <- p.adjust(res3[, p], method = p.adjust.method)
+    if (all(dim(res3) > 0)) {
+        if (p.adjust.mode == "all") {
+            if (method != "lmer") {
+                res3 <- bplapply(res3, function(x) {
+                    x$padj <- p.adjust(x$pval, method = p.adjust.method)
+                    row.names(x) <- x[, 1]
+                    x <- x[, -1, drop = FALSE]
+                    return(x)
+                }, BPPARAM = SerialParam(progressbar = verbose))
+            } else {
+                p_cols <- grep("_P_", colnames(res3), value = TRUE)
+                for (p in p_cols) {
+                    res3[, gsub("_P_", "_Padj_", p)] <- p.adjust(res3[, p], method = p.adjust.method)
+                }
+            }
+        } else if (p.adjust.mode == "celltype") {
+            if (method != "lmer") {
+                res3 <- bplapply(res3, function(x) {
+                    tmp <- split(x, x$celltypes)
+                    tmp <- bplapply(tmp, function(y) {
+                      y$padj <- p.adjust(y$pval, method = p.adjust.method)
+                      row.names(y) <- y[, 1]
+                      y <- y[, -1, drop = FALSE]
+                      return(y)
+                    }, BPPARAM = SerialParam())
+                    names(tmp) <- NULL
+                    tmp <- do.call(rbind, tmp)
+                    tmp <- as.data.frame(tmp)
+                    # sort ffor most significant to be on top
+                    tmp <- tmp[order(tmp$padj), ]
+                    return(tmp)
+                }, BPPARAM = SerialParam(progressbar = verbose))
+            } else {
+                celltypes <- split(res3, res3$celltypes)
+                ctp <- bplapply(celltypes, function(x) {
+                    p_cols <- grep("_P_", colnames(x), value = TRUE)
+                    for (p in p_cols) {
+                      x[, gsub("_P_", "_Padj_", p)] <- p.adjust(x[, p], method = p.adjust.method)
+                    }
+                    return(x)
+                }, BPPARAM = SerialParam())
+                names(ctp) <- NULL
+                res3 <- do.call(rbind, ctp)
+                res3 <- as.data.frame(res3)
             }
         }
-    } else if (p.adjust.mode == "celltype") {
-        if (method != "lmer") {
-            res3 <- bplapply(res3, function(x) {
-                tmp <- split(x, x$celltypes)
-                tmp <- bplapply(tmp, function(y) {
-                    y$padj <- p.adjust(y$pval, method = p.adjust.method)
-                    row.names(y) <- y[, 1]
-                    y <- y[, -1, drop = FALSE]
-                    return(y)
-                }, BPPARAM = SerialParam())
-                names(tmp) <- NULL
-                tmp <- do.call(rbind, tmp)
-                tmp <- as.data.frame(tmp)
-                # sort ffor most significant to be on top
-                tmp <- tmp[order(tmp$padj), ]
-                return(tmp)
-            }, BPPARAM = SerialParam(progressbar = verbose))
-        } else {
-            celltypes <- split(res3, res3$celltypes)
-            ctp <- bplapply(celltypes, function(x) {
-                p_cols <- grep("_P_", colnames(x), value = TRUE)
-                for (p in p_cols) {
-                    x[, gsub("_P_", "_Padj_", p)] <- p.adjust(x[, p], method = p.adjust.method)
-                }
-                return(x)
-            }, BPPARAM = SerialParam())
-            names(ctp) <- NULL
-            res3 <- do.call(rbind, ctp)
-            res3 <- as.data.frame(res3)
+        if (verbose) {
+            cat("---- Done! ----|", sep = "\n")
         }
+        return(res3)
     }
-    if (verbose) {
-        cat("---- Done! ----|", sep = "\n")
-    }
-    return(res3)
 }
 
 #' @export
