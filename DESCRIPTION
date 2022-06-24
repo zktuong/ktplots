@@ -17,19 +17,15 @@ Imports:
 	viridis,
 	gtools,	
 	RColorBrewer,
-	purrr,
 	patchwork,
-	BiocParallel,
-	circlize,
-	ComplexHeatmap
+	circlize
 Suggests:
 	SummarizedExperiment,
 	SingleCellExperiment,
 	scater,
-	lmerTest,
-	car,
 	testthat,
 	covr,
+	ComplexHeatmap,
 	plyr
 Depends:
 	ggplot2
