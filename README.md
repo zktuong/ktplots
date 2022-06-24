@@ -115,13 +115,15 @@ p <- plot_cpdb3(cell_type1 = 'B cell', cell_type2 = 'CD4T cell|MNPd',
     idents = 'celltype', # column name where the cell ids are located in the metadata
     means = means2,
     pvals = pvals2,
-    deconvoluted = decon2, # new options from here on specific to plot_cpdb2
+    deconvoluted = decon2, # new options from here on specific to plot_cpdb3
     keep_significant_only = TRUE,
     standard_scale = TRUE,
     remove_self = TRUE
     )
 p
 ```
+
+![plot_cpdb3](exampleImages/plot_cpdb3.png)
 
 ### plot_cpdb2
 Generates a circos-style wire/arc/chord plot for cellphonedb results.
