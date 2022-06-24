@@ -1,5 +1,5 @@
 data(kidneyimmune)
-g <- Seurat::DimPlot(kidneyimmune, group.by = "celltype")
+g <- scater::plotReducedDim(kidneyimmune, dimred = "UMAP", colour_by = "celltype")
 
 test_that('miscellaneous works1', {	
 	g1 <- g + small_legend() + small_guide() + small_axis() + small_grid()

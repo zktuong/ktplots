@@ -15,16 +15,14 @@
 \alias{covid_sample_metadata}
 \title{kidneyimmune}
 \format{
-A Seurat object with the following slots filled
+A SingleCellExperiment object with the following slots filled
 \describe{
   \item{assays}{
-  \itemize{Currently only contains one assay ("RNA" - scRNA-seq expression data)
-  \item{data - Normalized expression data}}
+  \itemize{Currently only contains "counts" and "logcounts"
+  \item{counts - Raw expression data}
+  \item{logcounts - Normalized expression data}}
 }
-  \item{meta.data}{Cell level metadata}
-  \item{active.assay}{Current default assay}
-  \item{active.ident}{Current default idents}
-  \item{version}{Seurat version used to create the object}
+  \item{colData}{Cell level metadata}
 }
 
 Data frames containing outputs after CellPhoneDB analysis

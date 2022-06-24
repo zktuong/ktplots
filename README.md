@@ -20,14 +20,11 @@ devtools::install_github('zktuong/ktplots', dependencies = TRUE)
 ```R
 library(ktplots)
 ```
-There is a test dataset in Seurat format to test the functions.
+There is a test dataset in `SingleCellExperiment` format to test the functions.
 ```R
-# note, you need to load Seurat to interact with it
-# so maybe install Seurat if you haven't already
-# if (!requireNamespace("Seurat", quietly = TRUE))
-    # install.packages("Seurat")
-library(Seurat)
+library(SingleCellExperiment)
 data(kidneyimmune)
+#Some functions accept Seurat objects too.
 ```
 The data is downsampled from the [kidney cell atlas](https://kidneycellatlas.org).
 
@@ -104,6 +101,28 @@ if ```genes``` and ```gene.family``` are both not specified, the function will t
 
 Specifying ```keep_significant_only``` will only keep those that are p<0.05 (which you can try to adjust with ```p.adjust.method```).
 
+
+### plot_cpdb3
+Generates a chord diagram inspired from CellChat's way of showing the data!
+
+```R
+library(ktplots)
+data(kidneyimmune)
+data(cpdb_output2)
+
+p <- plot_cpdb3(cell_type1 = 'B cell', cell_type2 = 'CD4T cell|MNPd',
+    scdata = kidneyimmune,
+    idents = 'celltype', # column name where the cell ids are located in the metadata
+    means = means2,
+    pvals = pvals2,
+    deconvoluted = decon2, # new options from here on specific to plot_cpdb2
+    keep_significant_only = TRUE,
+    standard_scale = TRUE,
+    remove_self = TRUE
+    )
+p
+```
+
 ### plot_cpdb2
 Generates a circos-style wire/arc/chord plot for cellphonedb results.
 
@@ -119,9 +138,8 @@ library(ktplots)
 data(kidneyimmune)
 data(cpdb_output2)
 
-sce <- Seurat::as.SingleCellExperiment(kidneyimmune)
 p <- plot_cpdb2(cell_type1 = 'B cell', cell_type2 = 'CD4T cell',
-    scdata = sce,
+    scdata = kidneyimmune,
     idents = 'celltype', # column name where the cell ids are located in the metadata
     means = means2,
     pvals = pvals2,

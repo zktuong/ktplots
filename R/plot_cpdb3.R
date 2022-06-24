@@ -1,4 +1,4 @@
-#' Plotting cellphonedb results
+#' Plotting cellphonedb results as a chord diagram
 #'
 #' @param cell_type1 cell type 1
 #' @param cell_type2 cell type 2
@@ -17,26 +17,29 @@
 #' @param frac default = 0.1. Minimum fraction of celtypes expressing a gene in order to keep the interaction. Gene must be expressesd >= `frac` in either of the pair of celltypes in order to keep.
 #' @param remove_self default = TRUE. Remove self-self arcs.
 #' @param desiredInteractions default = NULL. Specific list of celltype comparisons e.g. list(c('CD4_Tcm', 'cDC1'), c('CD4_Tcm', 'cDC2')). Also accepts a dataframe where first column is celltype 1 and 2nd column is celltype 2.
-#' @param interaction_grouping default = NULL. dataframe specifying groupings of cellphonedb interactions. First column must be cellphonedb's interacting_pair column. second column is whatever grouping you want.
-#' @param edge_group_colors default = NULL. vector for colour mapping for edge groups. only used if split.by is specified.
-#' @param node_group_colors default = NULL. vector for colour mapping for node labels.
 #' @param version3 if is cellphonedb version3. 
-#' @param return_df whether to just return this as a data.frame rather than plotting iot
+#' @param directional Whether links have directions. 1 means the direction is from the first column in df to the second column, -1 is the reverse, 0 is no direction, and 2 for two directional.
+#' @param alpha transparency for links
+#' @param edge_colors vector of colors for links
+#' @param grid_colors vector of colrs for grids
+#' @param show_legend whether or not to show the legend
+#' @param legend.pos.x x position of legend
+#' @param legend.pos.y y position of legend
 #' @param ... passes arguments plot_cpdb
-#' @return Plotting cellphonedb results as a weird chord diagram
+#' @return Plotting cellphonedb results as a CellChat inspired chord diagram
 #' @examples
 #' \donttest{
 #' }
-#' @import ggplot2
-#' @import ggraph
-#' @import ggrepel
+#' @importFrom circlize circos.clear chordDiagram
+#' @importFrom grDevices recordPlot
 #' @export
 
-plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, deconvoluted,
+plot_cpdb3 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, deconvoluted,
     p.adjust.method = NULL, keep_significant_only = TRUE, split.by = NULL, standard_scale = TRUE,
     separator = NULL, gene_symbol_mapping = NULL, frac = 0.1, remove_self = TRUE,
-    desiredInteractions = NULL, interaction_grouping = NULL, edge_group_colors = NULL,
-    node_group_colors = NULL, version3 = FALSE, return_df = FALSE, ...) {
+    desiredInteractions = NULL, version3 = FALSE, directional = 1,
+    alpha = 0.5, edge_colors = NULL, grid_colors = NULL, show_legend = TRUE, legend.pos.x = 20,
+    legend.pos.y = 20, ...) {
     if (class(scdata) == "Seurat") {
         stop("Sorry not supported yet. Please use a SingleCellExperiment object.")
     }
@@ -46,9 +49,10 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
         sep = ">@<"
     }
 
-    lr_interactions = plot_cpdb(cell_type1 = cell_type1, cell_type2 = cell_type2, scdata = scdata,
-        idents = idents, split.by = split.by, means = means, pvals = pvals, keep_significant_only = keep_significant_only,
-        standard_scale = standard_scale, return_table = TRUE, version3 = version3, ...)
+    lr_interactions = plot_cpdb(cell_type1 = cell_type1, cell_type2 = cell_type2,
+        scdata = scdata, idents = idents, split.by = split.by, means = means, pvals = pvals,
+        keep_significant_only = keep_significant_only, standard_scale = standard_scale,
+        return_table = TRUE, version3 = version3, ...)
     requireNamespace("SummarizedExperiment")
     requireNamespace("SingleCellExperiment")
     if (is.null(split.by)) {
@@ -105,17 +109,10 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
             "id_a", "id_b")]
     }
 
-    if (!is.null(interaction_grouping)) {
-        if ((class(interaction_grouping) == "data.frame")) {
-            interactions_subset$group = interaction_grouping[, 2][match(interactions_subset$interacting_pair,
-                interaction_grouping[, 1])]
-        }
-    }
-
     # extract all the possible genes.
     geneid = unique(c(interactions_subset$id_a, interactions_subset$id_b))
-    # rmg = which(geneid == '') if (length(rmg) > 0){ geneid = geneid[-which(geneid
-    # == '')] }
+    # rmg = which(geneid == '') if (length(rmg) > 0){ geneid =
+    # geneid[-which(geneid == '')] }
     if (all(!geneid %in% row.names(sce_subset))) {
         geneid = unique(c(interactions_subset$gene_a, interactions_subset$gene_b))
     }
@@ -238,8 +235,8 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
         cm <- mean(Matrix::rowMeans(SingleCellExperiment::counts(scex)))
         return(cm)
     }
-    # to retrieve the fraction, we use the average fraction of all genes mapping to
-    # the complex
+    # to retrieve the fraction, we use the average fraction of all genes
+    # mapping to the complex
     cellTypeFraction_complex <- function(sce_, genes, gene_symbol_mapping = NULL) {
         scex <- tryCatch(sce_[genes, ], error = function(e) {
             if (!is.null(gene_symbol_mapping)) {
@@ -256,8 +253,8 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
     decon_subset <- deconvoluted[deconvoluted$complex_name %in% findComplex(interactions_subset),
         ]
     if (nrow(decon_subset) > 0) {
-        # although multiple rows are returned, really it's the same value for the same
-        # complex
+        # although multiple rows are returned, really it's the same value for
+        # the same complex
         decon_subset <- split(decon_subset, decon_subset$complex_name)
         decon_subset_expr <- lapply(decon_subset, function(x) {
             x <- x[, colnames(x) %in% colnames(sce_list2)]
@@ -439,220 +436,114 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
         dfx[[1]] <- dfx[[1]][dfx[[1]]$barcode %in% barcodes, ]
     }
 
-    if (return_df) {
-        return(dfx)
-    } else {
-        # set the bundled connections
-        df0 <- lapply(dfx, function(x) x[x$producer_fraction >= frac | x$receiver_fraction >=
-            frac, ])  #save this for later
-
-        # now construct the hierachy
-        constructGraph <- function(input_group, sep, el, el0, unique_id, interactions_df,
-            plot_cpdb_out, edge_group = FALSE, edge_group_colors = NULL, node_group_colors = NULL) {
-            require(igraph)
-            celltypes <- unique(c(as.character(el$producer), as.character(el$receiver)))
-            el1 <- data.frame(from = "root", to = celltypes, barcode_1 = NA, barcode_2 = NA,
-                barcode_3 = NA)
-            el2 <- data.frame(from = celltypes, to = paste0(celltypes, sep, "ligand"),
-                barcode_1 = NA, barcode_2 = NA, barcode_3 = NA)
-            el3 <- data.frame(from = celltypes, to = paste0(celltypes, sep, "receptor"),
-                barcode_1 = NA, barcode_2 = NA, barcode_3 = NA)
-            el4 <- do.call(rbind, lapply(celltypes, function(x) {
-                cell_ligands <- grep(x, el$from, value = TRUE)
-                cell_ligands_idx <- grep(x, el$from)
-                if (length(cell_ligands) > 0) {
-                  df <- data.frame(from = paste0(x, sep, "ligand"), to = cell_ligands,
-                    barcode_1 = el$barcode[cell_ligands_idx], barcode_2 = el$pair[cell_ligands_idx],
-                    barcode_3 = paste0(el$from[cell_ligands_idx], sep, el$to[cell_ligands_idx]))
-                } else {
-                  df = NULL
-                }
-            }))
-            el5 <- do.call(rbind, lapply(celltypes, function(x) {
-                cell_ligands <- grep(x, el$to, value = TRUE)
-                cell_ligands_idx <- grep(x, el$to)
-                if (length(cell_ligands) > 0) {
-                  df <- data.frame(from = paste0(x, sep, "receptor"), to = cell_ligands,
-                    barcode_1 = el$barcode[cell_ligands_idx], barcode_2 = el$pair[cell_ligands_idx],
-                    barcode_3 = paste0(el$from[cell_ligands_idx], sep, el$to[cell_ligands_idx]))
-                } else {
-                  df = NULL
-                }
-            }))
-
-            gr_el <- do.call(rbind, list(el1, el2, el3, el4, el5))
-            plot_cpdb_out$barcode <- paste0(plot_cpdb_out$Var2, sep, plot_cpdb_out$Var1)
-            mean_col <- grep("means$", colnames(plot_cpdb_out), value = TRUE)
-            means <- plot_cpdb_out[match(gr_el$barcode_1, plot_cpdb_out$barcode),
-                mean_col]
-            pval_col <- grep("pvals", colnames(plot_cpdb_out), value = TRUE)
-            pvals <- plot_cpdb_out[match(gr_el$barcode_1, plot_cpdb_out$barcode),
-                pval_col]
-            gr_el <- cbind(gr_el, means, pvals)
-
-            if (edge_group) {
-                groups <- interactions_df$group[match(gr_el$barcode_2, interactions_df$interacting_pair)]
-            }
-
-            gr <- graph_from_edgelist(as.matrix(gr_el[, 1:2]))
-            E(gr)$interaction_score <- as.numeric(means)
-            E(gr)$pvals <- as.numeric(pvals)
-            if (edge_group) {
-                E(gr)$group <- groups
-            }
-            E(gr)$name <- gr_el$barcode_3
-
-            # order the graph vertices
-            V(gr)$type <- NA
-            V(gr)$type[V(gr)$name %in% el4$to] <- "ligand"
-            V(gr)$type[V(gr)$name %in% el5$to] <- "receptor"
-
-            from = match(el0$from, V(gr)$name)
-            to = match(el0$to, V(gr)$name)
-            dat = data.frame(from = el0$from, to = el0$to)
-            if (nrow(dat) > 0) {
-                dat$barcode = paste0(dat$from, sep, dat$to)
-                interaction_score = E(gr)$interaction_score[match(dat$barcode, gr_el$barcode_3)]
-                pval = E(gr)$pvals[match(dat$barcode, gr_el$barcode_3)]
-                if (any(is.na(pval))) {
-                  pval[is.na(pval)] <- 1
-                }
-                if (!all(is.na(range01(-log10(pval))))) {
-                  pval <- range01(-log10(pval))
-                }
-
-                if (edge_group) {
-                  group = E(gr)$group[match(dat$barcode, gr_el$barcode_3)]
-                }
-
-                ligand_expr <- data.frame(cell_mol = el$from, expression = el$producer_expression,
-                  fraction = el$producer_fraction)
-                recep_expr <- data.frame(cell_mol = el$to, expression = el$receiver_expression,
-                  fraction = el$receiver_fraction)
-                expression <- rbind(ligand_expr, recep_expr)
-
-                df <- igraph::as_data_frame(gr, "both")
-                df$vertices$expression <- 0
-                df$vertices$fraction <- 0
-                df$vertices$expression <- as.numeric(expression$expression)[match(df$vertices$name,
-                  expression$cell_mol)]
-                df$vertices$fraction <- as.numeric(expression$fraction)[match(df$vertices$name,
-                  expression$cell_mol)]
-                df$vertices$celltype <- ""
-                for (x in cells_test) {
-                  idx <- grepl(paste0(x, sep), df$vertices$name)
-                  df$vertices$celltype[idx] <- x
-                }
-                df$vertices$label <- df$vertices$name
-                df$vertices$label[!df$vertices$name %in% c(el0$from, el0$to)] <- ""
-                gr <- graph_from_data_frame(df$edges, directed = TRUE, vertices = df$vertices)
-
-                for (x in unique_id) {
-                  V(gr)$label <- gsub(paste0(x, sep), "", V(gr)$label)
-                }
-
-                require(ggraph)
-                require(ggrepel)
-
-                gg_color_hue <- function(n) {
-                  hues = seq(15, 375, length = n + 1)
-                  hcl(h = hues, l = 65, c = 100)[1:n]
-                }
-
-                if (!is.null(edge_group_colors)) {
-                  edge_group_colors = edge_group_colors
-                } else {
-                  nn = length(unique(E(gr)$group))
-                  edge_group_colors = gg_color_hue(nn)
-                }
-                if (!is.null(node_group_colors)) {
-                  node_group_colors = node_group_colors
-                } else {
-                  nn = length(unique(meta[, idents]))
-                  node_group_colors = gg_color_hue(nn)
-                }
-                # plot the graph
-                if (edge_group) {
-                  pl <- ggraph(gr, layout = "dendrogram", circular = TRUE) + geom_conn_bundle(data = get_con(from = from,
-                    to = to, group = group, `-log10(sig)` = pval, interaction_score = interaction_score),
-                    aes(colour = group, alpha = interaction_score, width = `-log10(sig)`),
-                    tension = 0.5) + # scale_edge_width(range = c(1, 3)) + scale_edge_alpha(limits = c(0, 1)) +
-                  scale_edge_color_manual(values = edge_group_colors) + geom_node_point(pch = 19,
-                    aes(size = fraction, filter = leaf, color = celltype, alpha = type)) +
-                    theme_void() + coord_fixed() + scale_size_continuous(limits = c(0,
-                    1)) + scale_shape_manual(values = c(ligand = 19, receptor = 15)) +
-                    scale_color_manual(values = node_group_colors) + geom_text_repel(aes(x = x,
-                    y = y, label = label), segment.square = TRUE, segment.inflect = TRUE,
-                    segment.size = 0.2, force = 0.5, size = 2, force_pull = 0) +
-                    # geom_node_text(aes(x = x*1.15, y=y*1.15, filter = leaf, label=name, size =0.1))
-                  # +
-                  scale_alpha_manual(values = c(ligand = 0.5, receptor = 1)) + small_legend(keysize = 0.5) +
-                    ggtitle(input_group)
-                } else {
-                  pl <- ggraph(gr, layout = "dendrogram", circular = TRUE) + geom_conn_bundle(data = get_con(from = from,
-                    to = to, `-log10(sig)` = pval, interaction_score = interaction_score),
-                    aes(alpha = interaction_score, width = `-log10(sig)`), tension = 0.5) +
-                    # scale_edge_width(range = c(1, 3)) + scale_edge_alpha(limits = c(0, 1)) +
-                  scale_edge_color_manual(values = edge_group_colors) + geom_node_point(pch = 19,
-                    aes(size = fraction, filter = leaf, color = celltype, alpha = type)) +
-                    theme_void() + coord_fixed() + scale_size_continuous(limits = c(0,
-                    1)) + scale_shape_manual(values = c(ligand = 19, receptor = 15)) +
-                    scale_color_manual(values = node_group_colors) + geom_text_repel(aes(x = x,
-                    y = y, label = label), segment.square = TRUE, segment.inflect = TRUE,
-                    segment.size = 0.2, force = 0.5, size = 2, force_pull = 0) +
-                    # geom_node_text(aes(x = x*1.15, y=y*1.15, filter = leaf, label=label, size
-                  # =0.01)) +
-                  scale_alpha_manual(values = c(ligand = 0.5, receptor = 1)) + small_legend(keysize = 0.5) +
-                    ggtitle(input_group)
-                }
-                return(pl)
-            } else {
-                return(NA)
-            }
-        }
-
-        gl <- list()
-        if (!is.null(interaction_grouping)) {
-            edge_group = TRUE
+    scPalette <- function(n) {
+        colorSpace <- c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#F29403", "#F781BF",
+            "#BC9DCC", "#A65628", "#54B0E4", "#222F75", "#1B9E77", "#B2DF8A", "#E3BE00",
+            "#FB9A99", "#E7298A", "#910241", "#00CDD1", "#A6CEE3", "#CE1261", "#5E4FA2",
+            "#8CA77B", "#00441B", "#DEDC00", "#B3DE69", "#8DD3C7", "#999999")
+        if (n <= length(colorSpace)) {
+            colors <- colorSpace[1:n]
         } else {
-            edge_group = FALSE
+            colors <- (grDevices::colorRampPalette(colorSpace))(n)
         }
-        cantplot <- c()
-        noplot <- FALSE
+        return(colors)
+    }
+
+    chord_diagram <- function(tmp_dfx, lr_interactions, p.adjust_method, scaled,
+        alpha, directional, show_legend, edge_cols, grid_cols, legend.pos.x, legend.pos.y) {
+
+        if (scaled) {
+            interactions_items <- lr_interactions$scaled_means
+        } else {
+            interactions_items <- lr_interactions$means
+        }
+        names(interactions_items) <- paste0(lr_interactions$Var2, sep, lr_interactions$Var1)
+        if (!is.null(p.adjust_method)) {
+            pvals_items <- lr_interactions$pvals_adj
+        } else {
+            pvals_items <- lr_interactions$pvals
+        }
+        names(pvals_items) <- paste0(lr_interactions$Var2, sep, lr_interactions$Var1)
+        interactions_items[is.na(pvals_items)] <- 1
+        tmp_dfx$pair <- gsub("_", " - ", tmp_dfx$pair)
+        tmp_dfx$value <- interactions_items[tmp_dfx$barcode]
+        tmp_dfx$pval <- pvals_items[tmp_dfx$barcode]
+        if (!is.null(edge_cols)) {
+            if (length(edge_cols) != length(unique(tmp_dfx$pair))) {
+                stop(paste0("Please provide ", length(unique(tmp_dfx$pair)), " to edge_colors."))
+            } else {
+                edge_color <- edge_cols
+            }
+        } else {
+            edge_color <- scPalette(length(unique(tmp_dfx$pair)))
+        }
+
+        if (!is.null(grid_cols)) {
+            if (length(grid_cols) != length(unique(tmp_dfx$receiver))) {
+                stop(paste0("Please provide ", length(unique(tmp_dfx$receiver)),
+                  " to grid_colors."))
+            } else {
+                grid_color <- grid_cols
+            }
+        } else {
+            grid_color <- scPalette(length(unique(tmp_dfx$receiver)))
+        }
+        names(edge_color) <- unique(tmp_dfx$pair)
+        names(grid_color) <- unique(tmp_dfx$receiver)
+        tmp_dfx$edge_color = edge_color[tmp_dfx$pair]
+        tmp_dfx$edge_color <- colorspace::adjust_transparency(tmp_dfx$edge_color,
+            alpha = alpha)
+        tmp_dfx$edge_color[is.na(tmp_dfx$pval)] <- "#00000000"
+        tmp_dfx$grid_color = grid_color[tmp_dfx$receiver]
+
+        tmp_dfx <- tmp_dfx[!duplicated(tmp_dfx$barcode), ]
+
+        if (directional == 2) {
+            link.arr.type = "triangle"
+        } else {
+            link.arr.type = "big.arrow"
+        }
+
+        cells <- unique(c(tmp_dfx$producer, tmp_dfx$receiver))
+        names(cells) <- cells
+
+        circos.clear()
+        chordDiagram(tmp_dfx[c("producer", "receiver", "value")], directional = directional,
+            direction.type = c("diffHeight", "arrows"), link.arr.type = link.arr.type,
+            annotationTrack = c("name", "grid"), col = tmp_dfx$edge_color, grid.col = grid_color,
+            group = cells)
+        requireNamespace("ComplexHeatmap")
+        if (show_legend) {
+            lgd <- ComplexHeatmap::Legend(at = names(edge_color), type = "grid",
+                legend_gp = grid::gpar(fill = edge_color), title = "interactions")
+            ComplexHeatmap::draw(lgd, x = unit(1, "npc") - unit(legend.pos.x, "mm"),
+                y = unit(legend.pos.y, "mm"), just = c("right", "bottom"))
+        }
+
+        circos.clear()
+
+        gg <- recordPlot()
+        return(gg)
+    }
+    gl <- list()
+    if (length(show_legend) > 1) {
         for (i in 1:length(dfx)) {
-            if (!is.null(split.by)) {
-                if (nrow(dfx[[i]]) > 0 & nrow(df0[[i]]) > 0) {
-                  gl[[i]] <- constructGraph(names(dfx)[i], sep, dfx[[i]], df0[[i]],
-                    cells_test, interactions_subset, lr_interactions, edge_group,
-                    edge_group_colors, node_group_colors)
-                } else {
-                  gl[[i]] <- NA
-                  cantplot <- c(cantplot, names(dfx)[i])
-                }
-            } else {
-                if (nrow(dfx[[i]]) > 0 & nrow(df0[[i]]) > 0) {
-                  gl[[i]] <- constructGraph(NULL, sep, dfx[[i]], df0[[i]], cells_test,
-                    interactions_subset, lr_interactions, edge_group, edge_group_colors,
-                    node_group_colors)
-                } else {
-                  gl[[i]] <- NA
-                  noplot <- TRUE
-                }
-            }
-
+            gl[[i]] <- tryCatch(chord_diagram(dfx[[i]], lr_interactions, p.adjust.method,
+                standard_scale, alpha, directional, show_legend[i], edge_colors,
+                grid_colors, legend.pos.x, legend.pos.y), error = function(e) return(NA))
         }
-        if (length(cantplot) > 0) {
-            cat("The following groups in split.by cannot be plotted due to missing/no significant interactions/celltypes",
-                sep = "\n")
-            cat(cantplot, sep = "\n")
-        }
-        if (noplot) {
-            cat("Please check that plot_cpdb works first!", sep = "\n")
-        }
-        if (length(gl) > 1) {
-            return(gl)
-        } else {
-            return(gl[[1]])
+    } else {
+        for (i in 1:length(dfx)) {
+            gl[[i]] <- tryCatch(chord_diagram(dfx[[i]], lr_interactions, p.adjust.method,
+                standard_scale, alpha, directional, show_legend, edge_colors, grid_colors,
+                legend.pos.x, legend.pos.y), error = function(e) return(NA))
         }
     }
+    
+    if (length(gl) > 1) {
+        return(gl)
+    } else {
+        return(gl[[1]])
+    }
+
 }
