@@ -152,14 +152,13 @@ test_that("plot_cpdb3 works 1",{
         remove_self = TRUE
         )
 
-    expect_true(is.ggplot(p))
+    expect_that(class(p), equals("recordedplot"))
 })
 
 
 test_that("plot_cpdb3 2",{
-    sce <- kidneyimmune
     p <- plot_cpdb3(cell_type1 = 'B cell', cell_type2 = 'CD4T cell',
-        scdata = sce,
+        scdata = kidneyimmune,
         idents = 'celltype', # column name where the cell ids are located in the metadata
         split.by = 'Experiment', # column name where the grouping column is. Optional.
         means = means,
@@ -170,15 +169,15 @@ test_that("plot_cpdb3 2",{
         remove_self = TRUE
         )
 
-    expect_true(is.ggplot(p[[1]]))
-    expect_true(is.ggplot(p[[2]]))
-    expect_true(is.ggplot(p[[3]]))
-    expect_true(is.ggplot(p[[4]]))
-    expect_true(is.ggplot(p[[5]]))
-    expect_true(is.ggplot(p[[6]]))
-    expect_false(is.ggplot(p[[7]]))
-    expect_true(is.ggplot(p[[8]]))
-    expect_false(is.ggplot(p[[9]]))
-    expect_false(is.ggplot(p[[10]]))
-    expect_false(is.ggplot(p[[11]]))
+    expect_that(class(p[[1]]), equals("recordedplot"))
+    expect_that(class(p[[2]]), equals("recordedplot"))
+    expect_that(class(p[[3]]), equals("recordedplot"))
+    expect_that(class(p[[4]]), equals("recordedplot"))
+    expect_that(class(p[[5]]), equals("recordedplot"))
+    expect_that(class(p[[6]]), equals("recordedplot"))
+    expect_true(is.na(p[[7]]))
+    expect_that(class(p[[8]]), equals("recordedplot"))
+    expect_true(is.na(p[[9]]))
+    expect_true(is.na(p[[10]]))
+    expect_true(is.na(p[[11]]))
 })
