@@ -77,7 +77,7 @@ plot_cpdb2(
 \item{scale}{logical. scale the expression to mean +/- SD. NULL defaults to TRUE.}
 }
 \value{
-ggplot dot plot object of cellphone db output
+Plotting cellphonedb results as a weird chord diagram
 }
 \description{
 Plotting cellphonedb results
