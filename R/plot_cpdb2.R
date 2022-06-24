@@ -38,7 +38,7 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
     desiredInteractions = NULL, interaction_grouping = NULL, edge_group_colors = NULL,
     node_group_colors = NULL, version3 = FALSE, return_df = FALSE, ...) {
     if (class(scdata) == "Seurat") {
-        stop("Sorry not supported yet. Please use a SingleCellExperiment object.")
+        stop("Sorry not supported. Please use a SingleCellExperiment object.")
     }
     if (length(separator) > 0) {
         sep = separator

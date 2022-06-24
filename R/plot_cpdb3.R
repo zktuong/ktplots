@@ -41,7 +41,7 @@ plot_cpdb3 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
     alpha = 0.5, edge_colors = NULL, grid_colors = NULL, show_legend = TRUE, legend.pos.x = 20,
     legend.pos.y = 20, ...) {
     if (class(scdata) == "Seurat") {
-        stop("Sorry not supported yet. Please use a SingleCellExperiment object.")
+        stop("Sorry not supported. Please use a SingleCellExperiment object.")
     }
     if (length(separator) > 0) {
         sep = separator
