@@ -99,7 +99,7 @@ test_that("plot_cpdb2 works 1",{
 
 
 test_that("plot_cpdb2 works 2",{
-    p <- plot_cpdb_chord(cell_type1 = 'B cell', cell_type2 = 'CD4T cell',
+    p <- plot_cpdb2(cell_type1 = 'B cell', cell_type2 = 'CD4T cell',
         scdata = kidneyimmune,
         idents = 'celltype', # column name where the cell ids are located in the metadata
         split.by = 'Experiment', # column name where the grouping column is. Optional.
@@ -140,8 +140,8 @@ test_that("plot_cpdb2 works 2",{
 })
 
 
-test_that("plot_cpdb_chord works 1",{
-    p <- plot_cpdb2(cell_type1 = 'B cell', cell_type2 = 'CD4T cell',
+test_that("plot_cpdb3 works 1",{
+    p <- plot_cpdb3(cell_type1 = 'B cell', cell_type2 = 'CD4T cell',
         scdata = kidneyimmune,
         idents = 'celltype', # column name where the cell ids are located in the metadata
         means = means2,
@@ -156,9 +156,9 @@ test_that("plot_cpdb_chord works 1",{
 })
 
 
-test_that("plot_cpdb_chord 2",{
+test_that("plot_cpdb3 2",{
     sce <- kidneyimmune
-    p <- plot_cpdb_chord(cell_type1 = 'B cell', cell_type2 = 'CD4T cell',
+    p <- plot_cpdb3(cell_type1 = 'B cell', cell_type2 = 'CD4T cell',
         scdata = sce,
         idents = 'celltype', # column name where the cell ids are located in the metadata
         split.by = 'Experiment', # column name where the grouping column is. Optional.
