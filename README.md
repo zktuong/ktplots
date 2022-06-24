@@ -369,37 +369,6 @@ cowplot::plot_grid(pa, pb, p1, p2, ncol = 2)
 ```
 ![plot_cpdb](exampleImages/correlationSpot_example.png)
 
-### StackedVlnPlot
-Generates a stacked violinplot like in scanpy's ```sc.pl.stacked_violin```.
-
-Credits to [@tangming2005](https://twitter.com/tangming2005).
-```R
-features <- c("CD79A", "MS4A1", "CD8A", "CD8B", "LYZ", "LGALS3", "S100A8", "GNLY", "NKG7", "KLRB1", "FCGR3A", "FCER1A", "CST3")
-StackedVlnPlot(kidneyimmune, features = features) + theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 8))
-```
-![StackedVlnPlot](exampleImages/StackedVlnPlot_example.png)
-Seems like standard ggplot ```theme``` functions only work on the x-axis. Need to work out how to adjust that.
-
-### rainCloudPlot
-Generates a raincloudplot to use boxplot, scatterplot and violin all at once!
-
-Adopted from [https://wellcomeopenresearch.org/articles/4-63](https://wellcomeopenresearch.org/articles/4-63)
-```R
-rainCloudPlot(data = kidneyimmune@meta.data, groupby = "celltype", parameter = "n_counts") + coord_flip()
-```
-![rainCloudPlot](exampleImages/rainCloudPlot_example.png)
-
-### small_legend/small_guide/small_axis/small_grid/topright_legend/topleft_legend/bottomleft_legend/bottomright_legend
-As shown in the examples above, these are some functions to quickly adjust the size and position of ggplots.
-```R
-# for example
-g <- Seurat::DimPlot(kidneyimmune, group.by = "celltype")
-g1 <- g + small_legend() + small_guide() + small_axis() + bottomleft_legend()
-library(patchwork)
-g + g1
-```
-![gghelperfunctions](exampleImages/gghelperfunctions_example.png)
-
 
 ### Citation
 If you find these functions useful, please consider leaving a star, citing this repository, and/or citing the following [DOI](https://doi.org/10.5281/zenodo.5717922):
