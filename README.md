@@ -257,6 +257,19 @@ cowplot::plot_grid(pa, pb, p1, p2, ncol = 2)
 ![plot_cpdb](exampleImages/correlationSpot_example.png)
 
 
+### small_legend/small_guide/small_axis/small_grid/topright_legend/topleft_legend/bottomleft_legend/bottomright_legend
+As shown in the examples above, these are some functions to quickly adjust the size and position of ggplots.
+```R
+# for example
+g <- Seurat::DimPlot(kidneyimmune, group.by = "celltype")
+g1 <- g + small_legend() + small_guide() + small_axis() + bottomleft_legend()
+library(patchwork)
+g + g1
+```
+![gghelperfunctions](exampleImages/gghelperfunctions_example.png)
+
+
+
 ### Citation
 If you find these functions useful, please consider leaving a star, citing this repository, and/or citing the following [DOI](https://doi.org/10.5281/zenodo.5717922):
 
