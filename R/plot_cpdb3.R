@@ -450,7 +450,7 @@ plot_cpdb3 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
     }
 
     chord_diagram <- function(tmp_dfx, lr_interactions, p.adjust_method, scaled,
-        alpha, directional, show_legend, edge_cols, grid_cols, legend.pos.x, legend.pos.y) {
+        alpha, directional, show_legend, edge_cols, grid_cols, legend.pos.x, legend.pos.y, title) {
 
         if (scaled) {
             interactions_items <- lr_interactions$scaled_means
@@ -519,6 +519,7 @@ plot_cpdb3 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
             ComplexHeatmap::draw(lgd, x = unit(1, "npc") - unit(legend.pos.x, "mm"),
                 y = unit(legend.pos.y, "mm"), just = c("right", "bottom"))
         }
+        title(main = title)
 
         circos.clear()
 
@@ -530,13 +531,13 @@ plot_cpdb3 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
         for (i in 1:length(dfx)) {
             gl[[i]] <- tryCatch(chord_diagram(dfx[[i]], lr_interactions, p.adjust.method,
                 standard_scale, alpha, directional, show_legend[i], edge_colors,
-                grid_colors, legend.pos.x, legend.pos.y), error = function(e) return(NA))
+                grid_colors, legend.pos.x, legend.pos.y, names(dfx)[i]), error = function(e) return(NA))
         }
     } else {
         for (i in 1:length(dfx)) {
             gl[[i]] <- tryCatch(chord_diagram(dfx[[i]], lr_interactions, p.adjust.method,
                 standard_scale, alpha, directional, show_legend, edge_colors, grid_colors,
-                legend.pos.x, legend.pos.y), error = function(e) return(NA))
+                legend.pos.x, legend.pos.y, names(dfx)[i]), error = function(e) return(NA))
         }
     }
     
