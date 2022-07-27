@@ -51,7 +51,10 @@ jobs:
 
       - name: Setup r-lib/remotes
         run: |
-          install.packages(c("remotes", "devtools"))
+          install.packages("remotes")
+          install.packages("ragg")
+          install.packages("pkgdown")
+          install.packages("devtools")
         shell: Rscript {0}
 
       - id: bioc
