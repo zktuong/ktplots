@@ -38,7 +38,7 @@ jobs:
       - name: Install ubuntu system dependencies
         if: matrix.config.os == 'ubuntu-latest'
         run: |
-          sudo apt-get install git libcurl4-openssl-dev libssl-dev libicu-dev libxml2-dev make pandoc libgit2-dev
+          sudo apt-get install git libcurl4-openssl-dev libssl-dev libicu-dev libxml2-dev make pandoc libgit2-dev libharfbuzz-dev libfribidi-dev
       - name: Install macOS system dependencies
         if: matrix.config.os == 'macos-latest'
         run: |
@@ -51,10 +51,7 @@ jobs:
 
       - name: Setup r-lib/remotes
         run: |
-          install.packages("remotes")
-          install.packages("ragg")
-          install.packages("pkgdown")
-          install.packages("devtools")
+          install.packages(c("remotes", "devtools"))
         shell: Rscript {0}
 
       - id: bioc
