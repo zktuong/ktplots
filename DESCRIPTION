@@ -17,14 +17,14 @@ Imports:
 	viridis,
 	gtools,	
 	RColorBrewer,
-	circlize
+	circlize,
+	ComplexHeatmap
 Suggests:
 	SummarizedExperiment,
 	SingleCellExperiment,
 	scater,
 	testthat,
 	covr,
-	ComplexHeatmap,
 	plyr
 Depends:
 	ggplot2
