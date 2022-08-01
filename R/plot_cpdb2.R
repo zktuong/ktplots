@@ -140,11 +140,11 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
             }
         }
         sce_list2 <- lapply(sce_list, function(y) {
-            z <- lapply(y, cellTypeMeans)
+            z <- lapply(y, .cellTypeMeans)
             return(z)
         })
         sce_list3 <- lapply(sce_list, function(y) {
-            z <- lapply(y, cellTypeFraction)
+            z <- lapply(y, .cellTypeFraction)
             return(z)
         })
         sce_list2 <- lapply(sce_list2, function(x) do.call(cbind, x))
@@ -162,8 +162,8 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
             sce_list[[x]] <- sce_subset_tmp[, meta[, idents] == x]
             sce_list_alt[[x]] <- sce_subset[, meta[, idents] == x]
         }
-        sce_list2 <- lapply(sce_list, cellTypeMeans)
-        sce_list3 <- lapply(sce_list, cellTypeFraction)
+        sce_list2 <- lapply(sce_list, .cellTypeMeans)
+        sce_list3 <- lapply(sce_list, .cellTypeFraction)
         sce_list2 <- do.call(cbind, sce_list2)
         sce_list3 <- do.call(cbind, sce_list3)
     }
