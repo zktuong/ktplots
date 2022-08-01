@@ -29,6 +29,7 @@ plot_cpdb(
   degs_analysis = FALSE,
   verbose = FALSE,
   return_table = FALSE,
+  exclude_interactions = NULL,
   ...
 )
 }
@@ -78,6 +79,8 @@ plot_cpdb(
 \item{verbose}{prints cat/print statements if TRUE.}
 
 \item{return_table}{whether or not to return as a table rather than to plot.}
+
+\item{exclude_interactions}{if provided, the interactions will be removed from the output.}
 
 \item{...}{passes arguments to grep for cell_type1 and cell_type2.}
 

@@ -1,3 +1,25 @@
+.create_celltype_query <- function(ctype1, ctype2, sep) {
+    ct1 = list()
+    ct2 = list()
+    for (i in 1:length(ctype2)) {
+        ct1[i] = paste0("^", ctype1, sep, ctype2[i], "$")
+        ct2[i] = paste0("^", ctype2[i], sep, ctype1, "$")
+    }
+    ct_1 = do.call(paste0, list(ct1, collapse = "|"))
+    ct_2 = do.call(paste0, list(ct2, collapse = "|"))
+    ct = list(ct_1, ct_2)
+    ct = do.call(paste0, list(ct, collapse = "|"))
+    return(ct)
+}
+
+.keep_interested_groups <- function(g, ct, sep) {
+    ctx <- strsplit(ct, "\\|")[[1]]
+    idx <- grep(paste0(g, paste0(".*", sep), g), ctx)
+    ctx <- ctx[idx]
+    ctx <- paste0(ctx, collapse = "|")
+    return(ctx)
+}
+
 .scPalette <- function(n) {
     requireNamespace("grDevice")
     colorSpace <- c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#F29403", "#F781BF",
