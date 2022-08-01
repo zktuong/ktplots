@@ -24,7 +24,7 @@ plot_cpdb2(
   interaction_grouping = NULL,
   edge_group_colors = NULL,
   node_group_colors = NULL,
-  version3 = FALSE,
+  degs_analysis = FALSE,
   return_df = FALSE,
   ...
 )
@@ -68,7 +68,7 @@ plot_cpdb2(
 
 \item{node_group_colors}{default = NULL. vector for colour mapping for node labels.}
 
-\item{version3}{if is cellphonedb version3.}
+\item{degs_analysis}{if is cellphonedb degs_analysis mode.}
 
 \item{return_df}{whether to just return this as a data.frame rather than plotting iot}
 

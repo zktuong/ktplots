@@ -1,6 +1,6 @@
 Package: ktplots
 Title: Plot single-cell data dotplots
-Version: 1.1.20
+Version: 1.1.21
 Authors@R: person("Kelvin", "Tuong", email = c("z.tuong@uq.edu.au", "zkt22@cam.ac.uk", "kt16@sanger.ac.uk"), role = c("aut", "cre"))
 Description: Plotting tools for scData.
 License: MIT
@@ -30,3 +30,14 @@ Depends:
 	ggplot2
 LazyData: true
 RoxygenNote: 7.1.2
+Collate: 
+    'correlationSpot.R'
+    'data.R'
+    'geneDotPlot.R'
+    'init_ktplots.R'
+    'ktplots.R'
+    'misc.R'
+    'plot_cpdb.R'
+    'plot_cpdb2.R'
+    'utils.R'
+    'plot_cpdb3.R'

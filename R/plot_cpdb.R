@@ -21,7 +21,7 @@
 #' @param highlight_size stroke size for highlight if p < 0.05. if NULL, scales to -log10(pval).
 #' @param separator separator to use to split between celltypes. Unless otherwise specified, the separator will be `>@<`. Make sure the idents and split.by doesn't overlap with this.
 #' @param special_character_search_pattern search pattern if the cell type names contains special character. NULL defaults to '/|:|\\?|\\*|\\+|[\\]|\\(|\\)'.
-#' @param version3 if is cellphonedb version3. 
+#' @param degs_analysis if is cellphonedb degs_analysis mode. 
 #' @param verbose prints cat/print statements if TRUE.
 #' @param return_table whether or not to return as a table rather than to plot.
 #' @param ... passes arguments to grep for cell_type1 and cell_type2.
@@ -42,7 +42,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
     p.adjust.method = NULL, keep_significant_only = FALSE, split.by = NULL, gene.family = NULL,
     genes = NULL, scale = NULL, standard_scale = NULL, col_option = viridis::viridis(50),
     default_style = TRUE, noir = FALSE, highlight = "red", highlight_size = NULL,
-    separator = NULL, special_character_search_pattern = NULL, version3 = FALSE, verbose = FALSE, return_table = FALSE,
+    separator = NULL, special_character_search_pattern = NULL, degs_analysis = FALSE, verbose = FALSE, return_table = FALSE,
     ...) {
     if (class(scdata) %in% c("SingleCellExperiment", "SummarizedExperiment")) {
         if (verbose) {
@@ -87,7 +87,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
     rownames(pvals_mat) <- gsub("_", "-", rownames(pvals_mat))
     rownames(pvals_mat) <- gsub("[.]", " ", rownames(pvals_mat))
 
-    if (version3){
+    if (degs_analysis){
         pvals_mat[,12:ncol(pvals_mat)] <- 1 - pvals_mat[,12:ncol(pvals_mat)]
     }
 

@@ -21,7 +21,7 @@ plot_cpdb3(
   frac = 0.1,
   remove_self = TRUE,
   desiredInteractions = NULL,
-  version3 = FALSE,
+  degs_analysis = FALSE,
   directional = 1,
   alpha = 0.5,
   edge_colors = NULL,
@@ -65,7 +65,7 @@ plot_cpdb3(
 
 \item{desiredInteractions}{default = NULL. Specific list of celltype comparisons e.g. list(c('CD4_Tcm', 'cDC1'), c('CD4_Tcm', 'cDC2')). Also accepts a dataframe where first column is celltype 1 and 2nd column is celltype 2.}
 
-\item{version3}{if is cellphonedb version3.}
+\item{degs_analysis}{if is cellphonedb degs_analysis mode.}
 
 \item{directional}{Whether links have directions. 1 means the direction is from the first column in df to the second column, -1 is the reverse, 0 is no direction, and 2 for two directional.}
 

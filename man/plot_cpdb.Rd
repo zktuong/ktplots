@@ -26,7 +26,7 @@ plot_cpdb(
   highlight_size = NULL,
   separator = NULL,
   special_character_search_pattern = NULL,
-  version3 = FALSE,
+  degs_analysis = FALSE,
   verbose = FALSE,
   return_table = FALSE,
   ...
@@ -73,7 +73,7 @@ plot_cpdb(
 
 \item{special_character_search_pattern}{search pattern if the cell type names contains special character. NULL defaults to '/|:|\\?|\\*|\\+|[\\]|\\(|\\)'.}
 
-\item{version3}{if is cellphonedb version3.}
+\item{degs_analysis}{if is cellphonedb degs_analysis mode.}
 
 \item{verbose}{prints cat/print statements if TRUE.}
 

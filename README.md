@@ -47,7 +47,7 @@ so to set up an example vector, it would be something like:
 annotation <- paste0(kidneyimmune$Experiment, '_', kidneyimmune$celltype)
 ```
 
-To run, you will need to load in the means.txt and pvals.txt from the analysis. If you are using results from cellphonedb version 3, the `pvalues.txt` is `relevant_interactions.txt` and also add `version3 = TRUE` into all the functions below. 
+To run, you will need to load in the means.txt and pvals.txt from the analysis. If you are using results from cellphonedb `deg_analysis` mode from version >= 3, the `pvalues.txt` is `relevant_interactions.txt` and also add `degs_analysis = TRUE` into all the functions below. 
 ```R
 # pvals <- read.delim("pvalues.txt", check.names = FALSE)
 # means <- read.delim("means.txt", check.names = FALSE)
