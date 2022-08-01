@@ -2,31 +2,35 @@ data(kidneyimmune)
 data(cpdb_output)
 data(cpdb_output2)
 
-test_that("plot_cpdb works 1",{
-    p <- plot_cpdb("B cell", "CD4T cell", kidneyimmune, 'celltype', means, pvals, split.by = "Experiment", genes = c("CXCL13", "CD274", "CXCR5"), verbose = TRUE)
+test_that("plot_cpdb works 1", {
+    p <- plot_cpdb("B cell", "CD4T cell", kidneyimmune, "celltype", means, pvals,
+        split.by = "Experiment", genes = c("CXCL13", "CD274", "CXCR5"), verbose = TRUE)
     expect_true(is.ggplot(p))
 })
 
-test_that("plot_cpdb works 2",{
-    p <- plot_cpdb("B cell", "CD4T cell", kidneyimmune, 'celltype', means, pvals, split.by = "Experiment", gene.family = 'chemokines', verbose = TRUE)
+test_that("plot_cpdb works 2", {
+    p <- plot_cpdb("B cell", "CD4T cell", kidneyimmune, "celltype", means, pvals,
+        split.by = "Experiment", gene.family = "chemokines", verbose = TRUE)
     expect_true(is.ggplot(p))
 })
 
-test_that("plot_cpdb works 3",{
-    p <- plot_cpdb("B cell", "CD4T cell", kidneyimmune, 'celltype', means, pvals, split.by = "Experiment", gene.family = 'chemokines', verbose = FALSE, default_style = FALSE)
+test_that("plot_cpdb works 3", {
+    p <- plot_cpdb("B cell", "CD4T cell", kidneyimmune, "celltype", means, pvals,
+        split.by = "Experiment", gene.family = "chemokines", verbose = FALSE, default_style = FALSE)
     expect_true(is.ggplot(p))
 })
 
-test_that("plot_cpdb works 4",{
-    p <- plot_cpdb("B cell", "B cell", kidneyimmune, 'celltype', means, pvals, split.by = "Experiment", gene.family = 'chemokines', verbose = FALSE)
+test_that("plot_cpdb works 4", {
+    p <- plot_cpdb("B cell", "B cell", kidneyimmune, "celltype", means, pvals, split.by = "Experiment",
+        gene.family = "chemokines", verbose = FALSE)
     expect_true(is.ggplot(p))
 })
 
-test_that("plot_cpdb works 5",{
-    p <- plot_cpdb("B cell", "cell", kidneyimmune, 'celltype', means, pvals, split.by = "Experiment", gene.family = 'chemokines', verbose = FALSE, default_style = FALSE, p.adjust.method = 'BH')
+test_that("plot_cpdb works 5", {
+    p <- plot_cpdb("B cell", "cell", kidneyimmune, "celltype", means, pvals, split.by = "Experiment",
+        gene.family = "chemokines", verbose = FALSE, default_style = FALSE, p.adjust.method = "BH")
     expect_true(is.ggplot(p))
 })
-
 
 test_that("werid characters are ok", {
     # edit the example objects to simulate Rachel's objects
@@ -93,7 +97,6 @@ test_that("plot_cpdb2 works 1",{
         standard_scale = TRUE,
         remove_self = TRUE
         )
-
     expect_true(is.ggplot(p))
 })
 
@@ -125,7 +128,6 @@ test_that("plot_cpdb2 works 2",{
         standard_scale = TRUE,
         remove_self = TRUE
         )
-
     expect_true(is.ggplot(p[[1]]))
     expect_true(is.ggplot(p[[2]]))
     expect_true(is.ggplot(p[[3]]))
@@ -158,6 +160,73 @@ test_that("plot_cpdb3 works 1",{
 
 test_that("plot_cpdb3 2",{
     p <- plot_cpdb3(cell_type1 = 'B cell', cell_type2 = 'CD4T cell',
+        scdata = kidneyimmune,
+        idents = 'celltype', # column name where the cell ids are located in the metadata
+        split.by = 'Experiment', # column name where the grouping column is. Optional.
+        means = means,
+        pvals = pvals,
+        deconvoluted = decon, # new options from here on specific to plot_cpdb2
+        keep_significant_only = TRUE,
+        standard_scale = TRUE,
+        remove_self = TRUE
+        )
+
+    expect_that(class(p[[1]]), equals("recordedplot"))
+    expect_that(class(p[[2]]), equals("recordedplot"))
+    expect_that(class(p[[3]]), equals("recordedplot"))
+    expect_that(class(p[[4]]), equals("recordedplot"))
+    expect_that(class(p[[5]]), equals("recordedplot"))
+    expect_that(class(p[[6]]), equals("recordedplot"))
+    expect_true(is.na(p[[7]]))
+    expect_that(class(p[[8]]), equals("recordedplot"))
+    expect_true(is.na(p[[9]]))
+    expect_true(is.na(p[[10]]))
+    expect_true(is.na(p[[11]]))
+})
+
+test_that("plot_cpdb4 works 1",{
+    p <- plot_cpdb4(
+        interaction = 'CLEC2D-KLRB1',
+        cell_type1 = 'NK', cell_type2 = 'Mast',
+        scdata = kidneyimmune,
+        idents = 'celltype', # column name where the cell ids are located in the metadata
+        means = means2,
+        pvals = pvals2,
+        deconvoluted = decon2, # new options from here on specific to plot_cpdb2
+        keep_significant_only = TRUE,
+        standard_scale = TRUE,
+        remove_self = TRUE
+        )
+
+    expect_that(class(p), equals("recordedplot"))
+})
+
+
+test_that("plot_cpdb4 works 2",{
+    p <- plot_cpdb4(
+        interaction = c('CLEC2D-KLRB1', 'CD40-CD40LG'),
+        cell_type1 = 'NK|B', cell_type2 = 'Mast|CD4T',
+        scdata = kidneyimmune,
+        idents = 'celltype',
+        means = means2,
+        pvals = pvals2,
+        deconvoluted = decon2,
+        desiredInteractions = list(
+            c('NK cell', 'Mast cell'),
+            c('NK cell', 'NKT cell'),
+            c('NKT cell', 'Mast cell'),
+            c('B cell', 'CD4T cell')),
+        keep_significant_only = TRUE,
+        )
+
+    expect_that(class(p), equals("recordedplot"))
+})
+
+
+test_that("plot_cpdb4 works 3",{
+    p <- plot_cpdb4(
+        interaction = 'CLEC2D-KLRB1',
+        cell_type1 = 'NK', cell_type2 = 'Mast',
         scdata = kidneyimmune,
         idents = 'celltype', # column name where the cell ids are located in the metadata
         split.by = 'Experiment', # column name where the grouping column is. Optional.

@@ -1,3 +1,8 @@
+.gg_color_hue <- function(n) {
+    hues = seq(15, 375, length = n + 1)
+    hcl(h = hues, l = 65, c = 100)[1:n]
+}
+
 .create_celltype_query <- function(ctype1, ctype2, sep) {
     ct1 = list()
     ct2 = list()
