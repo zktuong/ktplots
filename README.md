@@ -47,7 +47,7 @@ so to set up an example vector, it would be something like:
 annotation <- paste0(kidneyimmune$Experiment, '_', kidneyimmune$celltype)
 ```
 
-To run, you will need to load in the means.txt and pvals.txt from the analysis. If you are using results from cellphonedb version 3, the `pvalues.txt` is `relevant_interactions.txt` and also add `version3 = TRUE` into all the functions below. 
+To run, you will need to load in the means.txt and pvals.txt from the analysis. If you are using results from cellphonedb `deg_analysis` mode from version >= 3, the `pvalues.txt` is `relevant_interactions.txt` and also add `degs_analysis = TRUE` into all the functions below. 
 ```R
 # pvals <- read.delim("pvalues.txt", check.names = FALSE)
 # means <- read.delim("means.txt", check.names = FALSE)
@@ -215,6 +215,53 @@ p
 ```
 
 ![plot_cpdb3](exampleImages/plot_cpdb3.png)
+
+
+### plot_cpdb4
+New! Alternate way of showing the chord diagram for specific interactions!
+
+Usage is similar to `plot_cpdb3` but with additional required `interaction` option. Additional kwargs are passed to `plot_cpdb`.
+```R
+library(ktplots)
+data(kidneyimmune)
+data(cpdb_output2)
+
+p <- plot_cpdb4(
+    interaction = 'CLEC2D-KLRB1',
+    cell_type1 = 'NK', cell_type2 = 'Mast',
+    scdata = kidneyimmune,
+    idents = 'celltype',
+    means = means2,
+    pvals = pvals2,
+    deconvoluted = decon2,
+    keep_significant_only = TRUE,
+    standard_scale = TRUE,
+    )
+p
+```
+
+![plot_cpdb4](exampleImages/plot_cpdb4.png)
+
+or specify more than 1 interactions + only show specific cell-type type interactions!
+```R
+plot_cpdb4(
+        interaction = c('CLEC2D-KLRB1', 'CD40-CD40LG'),
+        cell_type1 = 'NK|B', cell_type2 = 'Mast|CD4T',
+        scdata = kidneyimmune,
+        idents = 'celltype',
+        means = means2,
+        pvals = pvals2,
+        deconvoluted = decon2,
+        desiredInteractions = list(
+            c('NK cell', 'Mast cell'),
+            c('NK cell', 'NKT cell'),
+            c('NKT cell', 'Mast cell'),
+            c('B cell', 'CD4T cell')),
+        keep_significant_only = TRUE,
+        )
+```
+
+![plot_cpdb42](exampleImages/plot_cpdb4_2.png)
 
 
 ## Other useful functions

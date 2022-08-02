@@ -26,9 +26,10 @@ plot_cpdb(
   highlight_size = NULL,
   separator = NULL,
   special_character_search_pattern = NULL,
-  version3 = FALSE,
+  degs_analysis = FALSE,
   verbose = FALSE,
   return_table = FALSE,
+  exclude_interactions = NULL,
   ...
 )
 }
@@ -73,11 +74,13 @@ plot_cpdb(
 
 \item{special_character_search_pattern}{search pattern if the cell type names contains special character. NULL defaults to '/|:|\\?|\\*|\\+|[\\]|\\(|\\)'.}
 
-\item{version3}{if is cellphonedb version3.}
+\item{degs_analysis}{if is cellphonedb degs_analysis mode.}
 
 \item{verbose}{prints cat/print statements if TRUE.}
 
 \item{return_table}{whether or not to return as a table rather than to plot.}
+
+\item{exclude_interactions}{if provided, the interactions will be removed from the output.}
 
 \item{...}{passes arguments to grep for cell_type1 and cell_type2.}
 

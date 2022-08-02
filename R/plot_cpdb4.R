@@ -1,5 +1,6 @@
-#' Plotting cellphonedb results as a chord diagram
+#' Plotting select interactions from cellphonedb results as a chord diagram
 #'
+#' @param interaction interaction to plot. Please use '-' to separate the two molecules e.g. CD40-CD40LG
 #' @param cell_type1 cell type 1
 #' @param cell_type2 cell type 2
 #' @param scdata single-cell data. can be seurat/summarizedexperiment object
@@ -17,16 +18,17 @@
 #' @param frac default = 0.1. Minimum fraction of celtypes expressing a gene in order to keep the interaction. Gene must be expressesd >= `frac` in either of the pair of celltypes in order to keep.
 #' @param remove_self default = TRUE. Remove self-self arcs.
 #' @param desiredInteractions default = NULL. Specific list of celltype comparisons e.g. list(c('CD4_Tcm', 'cDC1'), c('CD4_Tcm', 'cDC2')). Also accepts a dataframe where first column is celltype 1 and 2nd column is celltype 2.
-#' @param degs_analysis if is cellphonedb degs_analysis mode. 
+#' @param degs_analysis if is cellphonedb degs_analysis mode.
 #' @param directional Whether links have directions. 1 means the direction is from the first column in df to the second column, -1 is the reverse, 0 is no direction, and 2 for two directional.
 #' @param alpha transparency for links
 #' @param edge_colors vector of colors for links
 #' @param grid_colors vector of colrs for grids
+#' @param grid_scale scale the width of grids for empty nodes.
 #' @param show_legend whether or not to show the legend
 #' @param legend.pos.x x position of legend
 #' @param legend.pos.y y position of legend
 #' @param ... passes arguments plot_cpdb
-#' @return Plotting cellphonedb results as a CellChat inspired chord diagram
+#' @return Plotting cellphonedb results as a CellChat inspired chord diagram for specific interactions
 #' @examples
 #' \donttest{
 #' }
@@ -35,12 +37,15 @@
 #' @importFrom grDevices recordPlot
 #' @export
 
-plot_cpdb3 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, deconvoluted,
-    p.adjust.method = NULL, keep_significant_only = TRUE, split.by = NULL, standard_scale = TRUE,
-    separator = NULL, gene_symbol_mapping = NULL, frac = 0.1, remove_self = TRUE,
-    desiredInteractions = NULL, degs_analysis = FALSE, directional = 1, alpha = 0.5, edge_colors = NULL,
-    grid_colors = NULL, show_legend = TRUE, legend.pos.x = 20, legend.pos.y = 20,
-    ...) {
+plot_cpdb4 <- function(interaction, cell_type1, cell_type2, scdata, idents, means,
+    pvals, deconvoluted, p.adjust.method = NULL, keep_significant_only = TRUE, split.by = NULL,
+    standard_scale = TRUE, separator = NULL, gene_symbol_mapping = NULL, frac = 0.1,
+    remove_self = TRUE, desiredInteractions = NULL, degs_analysis = FALSE, directional = 1,
+    alpha = 0.5, edge_colors = NULL, grid_colors = NULL, grid_scale = 0.1, show_legend = TRUE,
+    legend.pos.x = 20, legend.pos.y = 20, ...) {
+    genes <- strsplit(interaction, "-")
+    genesx <- unlist(lapply(genes, function(g) c(paste(g, collapse = "-"), paste(rev(g),
+        collapse = "-"))))
     if (class(scdata) == "Seurat") {
         stop("Sorry not supported. Please use a SingleCellExperiment object.")
     }
@@ -49,22 +54,24 @@ plot_cpdb3 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
     } else {
         sep = ">@<"
     }
-    lr_interactions = plot_cpdb(cell_type1 = cell_type1, cell_type2 = cell_type2,
-        scdata = scdata, idents = idents, split.by = split.by, means = means, pvals = pvals,
-        keep_significant_only = keep_significant_only, standard_scale = standard_scale,
-        return_table = TRUE, degs_analysis = degs_analysis, ...)
+    lr_interactions = plot_cpdb(cell_type1 = ".", cell_type2 = ".", scdata = scdata,
+        idents = idents, split.by = split.by, means = means, pvals = pvals, keep_significant_only = keep_significant_only,
+        standard_scale = standard_scale, return_table = TRUE, degs_analysis = degs_analysis,
+        ...)
+    lr_interactions <- lr_interactions[lr_interactions$Var1 %in% genesx, ]
+    lr_interactions <- cbind(lr_interactions, do.call(rbind, strsplit(as.character(lr_interactions$group),
+        ">@<")))
+    vals1 = grep(paste0(c(cell_type1, cell_type2), collapse = "|"), lr_interactions$`1`,
+        value = TRUE)
+    vals2 = grep(paste0(c(cell_type1, cell_type2), collapse = "|"), lr_interactions$`2`,
+        value = TRUE)
+    vals <- unique(c(vals1, vals2))
+    lr_interactions[!((lr_interactions$`1` %in% vals) & (lr_interactions$`2` %in%
+        vals)), 3] <- 0
+    lr_interactions[!((lr_interactions$`1` %in% vals) & (lr_interactions$`2` %in%
+        vals)), 4] <- NA
     requireNamespace("SummarizedExperiment")
     requireNamespace("SingleCellExperiment")
-    if (is.null(split.by)) {
-        if (any(lr_interactions[, 3] > 0)) {
-            if (any(is.na(lr_interactions[, 3]))) {
-                lr_interactions <- lr_interactions[lr_interactions[, 3] > 0 & !is.na(lr_interactions[,
-                  3]), ]
-            } else {
-                lr_interactions <- lr_interactions[lr_interactions[, 3] > 0, ]
-            }
-        }
-    }
     subset_clusters <- unique(unlist(lapply(as.character(lr_interactions$group),
         strsplit, sep)))
     sce_subset <- scdata[, SummarizedExperiment::colData(scdata)[, idents] %in% subset_clusters]
@@ -267,10 +274,15 @@ plot_cpdb3 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
             converted_pair, producers, receivers, expr_df, fraction_df)
         dfx[[1]] <- dfx[[1]][dfx[[1]]$barcode %in% barcodes, ]
     }
+
+
     chord_diagram <- function(tmp_dfx, lr_interactions, p.adjust_method, scaled,
         alpha, directional, show_legend, edge_cols, grid_cols, legend.pos.x, legend.pos.y,
-        title) {
+        title, grid_scale) {
         tmp_dfx <- .swap_ligand_receptor(tmp_dfx)
+        unique_celltype <- unique(c(lr_interactions$`1`, lr_interactions$`2`))
+        na_df = data.frame(t(combn(unique_celltype, 2)))
+        colnames(na_df) <- c("producer_swap", "receiver_swap")
         if (scaled) {
             interactions_items <- lr_interactions$scaled_means
         } else {
@@ -316,6 +328,14 @@ plot_cpdb3 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
         tmp_dfx$grid_color = grid_color[tmp_dfx$receiver_swap]
         tmp_dfx$grid_color[is.na(tmp_dfx$pval)] <- NA
         tmp_dfx <- tmp_dfx[!duplicated(tmp_dfx$barcode), ]
+        # filter to non na
+        tmp_dfx_not_na <- tmp_dfx[!is.na(tmp_dfx$pval), ]
+        emptydf <- data.frame(matrix(ncol = ncol(tmp_dfx_not_na), nrow = nrow(na_df)))
+        colnames(emptydf) <- colnames(tmp_dfx_not_na)
+        emptydf$producer_swap <- na_df$producer_swap
+        emptydf$receiver_swap <- na_df$receiver_swap
+        tmp_dfx <- rbind(tmp_dfx_not_na, emptydf)
+        tmp_dfx$value[is.na(tmp_dfx$value)] <- grid_scale
         if (directional == 2) {
             link.arr.type = "triangle"
         } else {
@@ -345,13 +365,14 @@ plot_cpdb3 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
         for (i in 1:length(dfx)) {
             gl[[i]] <- tryCatch(chord_diagram(dfx[[i]], lr_interactions, p.adjust.method,
                 standard_scale, alpha, directional, show_legend[i], edge_colors,
-                grid_colors, legend.pos.x, legend.pos.y, names(dfx)[i]), error = function(e) return(NA))
+                grid_colors, legend.pos.x, legend.pos.y, names(dfx)[i], grid_scale),
+                error = function(e) return(NA))
         }
     } else {
         for (i in 1:length(dfx)) {
             gl[[i]] <- tryCatch(chord_diagram(dfx[[i]], lr_interactions, p.adjust.method,
                 standard_scale, alpha, directional, show_legend, edge_colors, grid_colors,
-                legend.pos.x, legend.pos.y, names(dfx)[i]), error = function(e) return(NA))
+                legend.pos.x, legend.pos.y, names(dfx)[i], grid_scale), error = function(e) return(NA))
         }
     }
     if (length(gl) > 1) {
