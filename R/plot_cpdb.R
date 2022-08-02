@@ -21,7 +21,7 @@
 #' @param highlight_size stroke size for highlight if p < 0.05. if NULL, scales to -log10(pval).
 #' @param separator separator to use to split between celltypes. Unless otherwise specified, the separator will be `>@<`. Make sure the idents and split.by doesn't overlap with this.
 #' @param special_character_search_pattern search pattern if the cell type names contains special character. NULL defaults to '/|:|\\?|\\*|\\+|[\\]|\\(|\\)'.
-#' @param degs_analysis if is cellphonedb degs_analysis mode. 
+#' @param degs_analysis if is cellphonedb degs_analysis mode.
 #' @param verbose prints cat/print statements if TRUE.
 #' @param return_table whether or not to return as a table rather than to plot.
 #' @param exclude_interactions if provided, the interactions will be removed from the output.
@@ -93,22 +93,8 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
     } else {
         pattern <- special_character_search_pattern
     }
-    cell_type1_tmp <- unlist(strsplit(cell_type1, "*"))
-    cell_type2_tmp <- unlist(strsplit(cell_type2, "*"))
-    if (any(grepl(pattern, cell_type1_tmp))) {
-        idxz <- grep(pattern, cell_type1_tmp)
-        cell_type1_tmp[idxz] <- paste0("\\", cell_type1_tmp[idxz])
-        cell_type1 <- do.call(paste, c(as.list(cell_type1_tmp), sep = ""))
-    } else {
-        cell_type1 <- cell_type1
-    }
-    if (any(grepl(pattern, cell_type2_tmp))) {
-        idxz <- grep(pattern, cell_type2_tmp)
-        cell_type2_tmp[idxz] <- paste0("\\", cell_type2_tmp[idxz])
-        cell_type2 <- do.call(paste, c(as.list(cell_type2_tmp), sep = ""))
-    } else {
-        cell_type2 <- cell_type2
-    }
+    cell_type1 <- .sub_pattern(cell_type1, pattern)
+    cell_type2 <- .sub_pattern(cell_type2, pattern)
     if (length(idents) > 1) {
         ct1 = grep(cell_type1, idents, value = TRUE, ...)
         ct2 = grep(cell_type2, idents, value = TRUE, ...)
@@ -299,6 +285,8 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
             ct2 = grep(cell_type2, labels2, ...)
             c_type1 <- as.list(labels[ct1])
             c_type2 <- as.list(labels[ct2])
+            c_type1 <- lapply(c_type1, .sub_pattern, pattern)
+            c_type2 <- lapply(c_type2, .sub_pattern, pattern)
             grp <- as.list(groups)
             celltype = list()
             for (i in 1:length(c_type1)) {
@@ -314,22 +302,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
                 rm <- which(unlist(lapply(celltype, is.null)))
                 celltype <- celltype[-rm]
             }
-            celltype2 <- lapply(celltype, function(x) {
-                xx <- as.list(unlist(strsplit(x, "\\|")))
-                xx <- lapply(xx, function(z) {
-                  xz <- paste0("^", z, "$")
-                  tmp_ <- unlist(strsplit(xz, "*"))
-                  if (any(grepl(pattern, tmp_))) {
-                    idxz <- grep(pattern, tmp_)
-                    tmp_[idxz] <- paste0("\\", tmp_[idxz])
-                  }
-                  xz <- do.call(paste, c(as.list(tmp_), sep = ""))
-                  return(xz)
-                })
-                zz <- paste0(unlist(xx), collapse = "|")
-                return(zz)
-            })
-            cell_type <- do.call(paste0, list(celltype2, collapse = "|"))
+            cell_type <- do.call(paste0, list(celltype, collapse = "|"))
         } else {
             if (length(idents) > 1) {
                 labels <- idents
@@ -340,6 +313,8 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
             labels <- levels(labels)
             c_type1 = as.list(grep(cell_type1, labels, value = TRUE, ...))
             c_type2 = as.list(grep(cell_type2, labels, value = TRUE, ...))
+            c_type1 <- lapply(c_type1, .sub_pattern, pattern)
+            c_type2 <- lapply(c_type2, .sub_pattern, pattern)
             celltype = list()
             for (i in 1:length(c_type1)) {
                 celltype[[i]] <- .create_celltype_query(c_type1[[i]], c_type2, sep)
@@ -356,31 +331,50 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
         labels <- levels(labels)
         c_type1 = as.list(grep(cell_type1, labels, value = TRUE))
         c_type2 = as.list(grep(cell_type2, labels, value = TRUE))
-
+        c_type1 <- lapply(c_type1, .sub_pattern, pattern)
+        c_type2 <- lapply(c_type2, .sub_pattern, pattern)
         celltype = list()
         for (i in 1:length(c_type1)) {
             celltype[[i]] <- .create_celltype_query(c_type1[[i]], c_type2, sep)
         }
         cell_type <- do.call(paste0, list(celltype, collapse = "|"))
-        cell_type_tmp <- unlist(strsplit(cell_type, "*"))
-        if (any(grepl(pattern, cell_type_tmp))) {
-            idxz <- grep(pattern, cell_type_tmp)
-            cell_type_tmp[idxz] <- paste0("\\", cell_type_tmp[idxz])
-            cell_type <- do.call(paste, c(as.list(cell_type_tmp), sep = ""))
-        } else {
-            cell_type <- cell_type
-        }
     }
     if (!is.null(gene.family) & is.null(genes)) {
-        means_mat <- means_mat[query_group[[tolower(gene.family)]], grep(cell_type,
-            colnames(means_mat), ...), drop = FALSE]
-        pvals_mat <- pvals_mat[query_group[[tolower(gene.family)]], grep(cell_type,
-            colnames(pvals_mat), ...), drop = FALSE]
+        means_mat <- suppressWarnings(tryCatch(means_mat[query_group[[tolower(gene.family)]],
+            grep(cell_type, colnames(means_mat), useBytes = TRUE, ...), drop = FALSE],
+            error = function(e) {
+                colidx <- lapply(celltype, function(z) grep(z, colnames(means_mat),
+                  useBytes = TRUE, ...))
+                colidx <- unique(do.call(c, colidx))
+                tmpm <- means_mat[query_group[[tolower(gene.family)]], colidx, drop = FALSE]
+                return(tmpm)
+            }))
+        pvals_mat <- suppressWarnings(tryCatch(pvals_mat[query_group[[tolower(gene.family)]],
+            grep(cell_type, colnames(pvals_mat), useBytes = TRUE, ...), drop = FALSE],
+            error = function(e) {
+                colidx <- lapply(celltype, function(z) grep(z, colnames(pvals_mat),
+                  useBytes = TRUE, ...))
+                colidx <- unique(do.call(c, colidx))
+                tmpm <- pvals_mat[query_group[[tolower(gene.family)]], colidx, drop = FALSE]
+                return(tmpm)
+            }))
     } else if (is.null(gene.family) & !is.null(genes) | is.null(gene.family) & is.null(genes)) {
-        means_mat <- means_mat[query, grep(cell_type, colnames(means_mat), ...),
-            drop = FALSE]
-        pvals_mat <- pvals_mat[query, grep(cell_type, colnames(pvals_mat), ...),
-            drop = FALSE]
+        means_mat <- suppressWarnings(tryCatch(means_mat[query, grep(cell_type, colnames(means_mat),
+            useBytes = TRUE, ...), drop = FALSE], error = function(e) {
+            colidx <- lapply(celltype, function(z) grep(z, colnames(means_mat), useBytes = TRUE,
+                ...))
+            colidx <- unique(do.call(c, colidx))
+            tmpm <- means_mat[query, colidx, drop = FALSE]
+            return(tmpm)
+        }))
+        pvals_mat <- suppressWarnings(tryCatch(pvals_mat[query, grep(cell_type, colnames(pvals_mat),
+            useBytes = TRUE, ...), drop = FALSE], error = function(e) {
+            colidx <- lapply(celltype, function(z) grep(z, colnames(pvals_mat), useBytes = TRUE,
+                ...))
+            colidx <- unique(do.call(c, colidx))
+            tmpm <- pvals_mat[query, colidx, drop = FALSE]
+            return(tmpm)
+        }))
     }
     if (length(means_mat) == 0) {
         stop("Please check your options for split.by and your celltypes.")
@@ -393,7 +387,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
                 gx <- grep(g, colnames(means_mat), ...)
                 return(gx)
             })
-            group_id <- do.call(rbind, group_i)
+            group_id <- do.call(c, group_i)
             means_mat <- means_mat[, as.vector(group_id), drop = FALSE]
             if (dim(pvals_mat)[2] > 0) {
                 pvals_mat <- pvals_mat[, as.vector(group_id), drop = FALSE]

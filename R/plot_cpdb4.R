@@ -330,7 +330,7 @@ plot_cpdb4 <- function(interaction, cell_type1, cell_type2, scdata, idents, mean
         tmp_dfx <- tmp_dfx[!duplicated(tmp_dfx$barcode), ]
         # filter to non na
         tmp_dfx_not_na <- tmp_dfx[!is.na(tmp_dfx$pval), ]
-        emptydf <- data.frame(matrix(ncol = 29, nrow = nrow(na_df)))
+        emptydf <- data.frame(matrix(ncol = ncol(tmp_dfx_not_na), nrow = nrow(na_df)))
         colnames(emptydf) <- colnames(tmp_dfx_not_na)
         emptydf$producer_swap <- na_df$producer_swap
         emptydf$receiver_swap <- na_df$receiver_swap

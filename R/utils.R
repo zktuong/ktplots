@@ -1,3 +1,15 @@
+.sub_pattern <- function(cell_type, pattern){
+    cell_type_tmp <- unlist(strsplit(cell_type, "*"))
+    if (any(grepl(pattern, cell_type_tmp))) {
+        idxz <- grep(pattern, cell_type_tmp)
+        cell_type_tmp[idxz] <- paste0("\\", cell_type_tmp[idxz])
+        cell_typex <- do.call(paste, c(as.list(cell_type_tmp), sep = ""))
+    } else {
+        cell_typex <- cell_type
+    }
+    return(cell_typex)
+}
+
 .gg_color_hue <- function(n) {
     hues = seq(15, 375, length = n + 1)
     hcl(h = hues, l = 65, c = 100)[1:n]

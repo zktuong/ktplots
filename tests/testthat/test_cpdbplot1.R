@@ -238,15 +238,7 @@ test_that("plot_cpdb4 works 3",{
         remove_self = TRUE
         )
 
-    expect_that(class(p[[1]]), equals("recordedplot"))
-    expect_that(class(p[[2]]), equals("recordedplot"))
-    expect_that(class(p[[3]]), equals("recordedplot"))
-    expect_that(class(p[[4]]), equals("recordedplot"))
-    expect_that(class(p[[5]]), equals("recordedplot"))
-    expect_that(class(p[[6]]), equals("recordedplot"))
-    expect_true(is.na(p[[7]]))
-    expect_that(class(p[[8]]), equals("recordedplot"))
-    expect_true(is.na(p[[9]]))
-    expect_true(is.na(p[[10]]))
-    expect_true(is.na(p[[11]]))
+    for (i in 1:13){
+        expect_that(class(p[[i]]), equals("recordedplot"))
+    }
 })
