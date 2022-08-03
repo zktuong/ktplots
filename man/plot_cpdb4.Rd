@@ -31,6 +31,7 @@ plot_cpdb4(
   show_legend = TRUE,
   legend.pos.x = 20,
   legend.pos.y = 20,
+  sort = TRUE,
   ...
 )
 }
@@ -86,6 +87,8 @@ plot_cpdb4(
 \item{legend.pos.x}{x position of legend}
 
 \item{legend.pos.y}{y position of legend}
+
+\item{sort}{whether to sort the edges (by value) before plotting.}
 
 \item{...}{passes arguments plot_cpdb}
 

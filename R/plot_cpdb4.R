@@ -27,6 +27,7 @@
 #' @param show_legend whether or not to show the legend
 #' @param legend.pos.x x position of legend
 #' @param legend.pos.y y position of legend
+#' @param sort whether to sort the edges (by value) before plotting.
 #' @param ... passes arguments plot_cpdb
 #' @return Plotting cellphonedb results as a CellChat inspired chord diagram for specific interactions
 #' @examples
@@ -42,7 +43,7 @@ plot_cpdb4 <- function(interaction, cell_type1, cell_type2, scdata, idents, mean
     standard_scale = TRUE, separator = NULL, gene_symbol_mapping = NULL, frac = 0.1,
     remove_self = TRUE, desiredInteractions = NULL, degs_analysis = FALSE, directional = 1,
     alpha = 0.5, edge_colors = NULL, grid_colors = NULL, grid_scale = 0.1, show_legend = TRUE,
-    legend.pos.x = 20, legend.pos.y = 20, ...) {
+    legend.pos.x = 20, legend.pos.y = 20, sort = TRUE, ...) {
     genes <- strsplit(interaction, "-")
     genesx <- unlist(lapply(genes, function(g) c(paste(g, collapse = "-"), paste(rev(g),
         collapse = "-"))))
@@ -339,6 +340,9 @@ plot_cpdb4 <- function(interaction, cell_type1, cell_type2, scdata, idents, mean
         }
         cells <- unique(c(tmp_dfx$producer_swap, tmp_dfx$receiver_swap))
         names(cells) <- cells
+        if (sort){
+            tmp_dfx <- tmp_dfx[order(tmp_dfx$value),]
+        }
         circos.clear()
         chordDiagram(tmp_dfx[c("producer_swap", "receiver_swap", "value")], directional = directional,
             direction.type = c("diffHeight", "arrows"), link.arr.type = link.arr.type,
@@ -361,14 +365,14 @@ plot_cpdb4 <- function(interaction, cell_type1, cell_type2, scdata, idents, mean
         for (i in 1:length(dfx)) {
             gl[[i]] <- tryCatch(chord_diagram(dfx[[i]], lr_interactions, p.adjust.method,
                 standard_scale, alpha, directional, show_legend[i], edge_colors,
-                grid_colors, legend.pos.x, legend.pos.y, names(dfx)[i], grid_scale),
+                grid_colors, legend.pos.x, legend.pos.y, names(dfx)[i], grid_scale, sort),
                 error = function(e) return(NA))
         }
     } else {
         for (i in 1:length(dfx)) {
             gl[[i]] <- tryCatch(chord_diagram(dfx[[i]], lr_interactions, p.adjust.method,
                 standard_scale, alpha, directional, show_legend, edge_colors, grid_colors,
-                legend.pos.x, legend.pos.y, names(dfx)[i], grid_scale), error = function(e) return(NA))
+                legend.pos.x, legend.pos.y, names(dfx)[i], grid_scale, sort), error = function(e) return(NA))
         }
     }
     if (length(gl) > 1) {
