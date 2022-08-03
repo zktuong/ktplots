@@ -77,7 +77,7 @@ plot_cpdb4(
 
 \item{edge_colors}{vector of colors for links}
 
-\item{grid_colors}{vector of colrs for grids}
+\item{grid_colors}{vector of colors for grids}
 
 \item{grid_scale}{scale the width of grids for empty nodes.}
 

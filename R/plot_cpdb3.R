@@ -21,7 +21,7 @@
 #' @param directional Whether links have directions. 1 means the direction is from the first column in df to the second column, -1 is the reverse, 0 is no direction, and 2 for two directional.
 #' @param alpha transparency for links
 #' @param edge_colors vector of colors for links
-#' @param grid_colors vector of colrs for grids
+#' @param grid_colors vector of colors for grids
 #' @param show_legend whether or not to show the legend
 #' @param legend.pos.x x position of legend
 #' @param legend.pos.y y position of legend
@@ -307,8 +307,12 @@ plot_cpdb3 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
         } else {
             grid_color <- .scPalette(length(unique(tmp_dfx$receiver_swap)))
         }
-        names(edge_color) <- unique(tmp_dfx$pair_swap)
-        names(grid_color) <- unique(tmp_dfx$receiver_swap)
+        if (is.null(edge_cols)){
+            names(edge_color) <- unique(tmp_dfx$pair_swap)
+        }
+        if (is.null(grid_cols)){
+            names(grid_color) <- unique(tmp_dfx$receiver_swap)
+        }
         tmp_dfx$edge_color = edge_color[tmp_dfx$pair_swap]
         tmp_dfx$edge_color <- colorspace::adjust_transparency(tmp_dfx$edge_color,
             alpha = alpha)

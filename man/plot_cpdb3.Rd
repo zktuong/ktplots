@@ -73,7 +73,7 @@ plot_cpdb3(
 
 \item{edge_colors}{vector of colors for links}
 
-\item{grid_colors}{vector of colrs for grids}
+\item{grid_colors}{vector of colors for grids}
 
 \item{show_legend}{whether or not to show the legend}
 
