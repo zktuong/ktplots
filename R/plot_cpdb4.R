@@ -299,15 +299,10 @@ plot_cpdb4 <- function(interaction, cell_type1, cell_type2, scdata, idents, mean
         tmp_dfx$pair_swap <- gsub("_", " - ", tmp_dfx$pair_swap)
         tmp_dfx$value <- interactions_items[tmp_dfx$barcode]
         tmp_dfx$pval <- pvals_items[tmp_dfx$barcode]
+        edge_color <- .scPalette(length(unique(tmp_dfx$pair_swap)))
+        names(edge_color) <- unique(tmp_dfx$pair_swap)
         if (!is.null(edge_cols)) {
-            if (length(edge_cols) != length(unique(tmp_dfx$pair_swap))) {
-                stop(paste0("Please provide ", length(unique(tmp_dfx$pair_swap)),
-                  " to edge_colors."))
-            } else {
-                edge_color <- edge_cols
-            }
-        } else {
-            edge_color <- .scPalette(length(unique(tmp_dfx$pair_swap)))
+            edge_color[names(edge_cols)] = edge_cols
         }
         if (!is.null(grid_cols)) {
             if (length(grid_cols) != length(unique(tmp_dfx$receiver_swap))) {
@@ -318,9 +313,6 @@ plot_cpdb4 <- function(interaction, cell_type1, cell_type2, scdata, idents, mean
             }
         } else {
             grid_color <- .scPalette(length(unique(tmp_dfx$receiver_swap)))
-        }
-        if (is.null(edge_cols)){
-            names(edge_color) <- unique(tmp_dfx$pair_swap)
         }
         if (is.null(grid_cols)){
             names(grid_color) <- unique(tmp_dfx$receiver_swap)
