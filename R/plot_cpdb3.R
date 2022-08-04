@@ -260,14 +260,15 @@ plot_cpdb3 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
             dfx[[i]] <- .generateDf(ligand = ligand, sep = sep, receptor = receptor,
                 receptor_a = receptor_a, receptor_b = receptor_b, pair = pair, converted_pair = converted_pair,
                 producers = producers, receivers = receivers, cell_type_means = expr_df,
-                cell_type_fractions = fraction_df, sce = sce_subset, splitted = i)
+                cell_type_fractions = fraction_df, sce = sce_subset, gsm = gene_symbol_mapping,
+                splitted = i)
             dfx[[i]] <- dfx[[i]][dfx[[i]]$barcode %in% barcodes, ]
         }
     } else {
         dfx[[1]] = .generateDf(ligand = ligand, sep = sep, receptor = receptor, receptor_a = receptor_a,
             receptor_b = receptor_b, pair = pair, converted_pair = converted_pair,
             producers = producers, receivers = receivers, cell_type_means = expr_df,
-            cell_type_fractions = fraction_df, sce = sce_subset)
+            cell_type_fractions = fraction_df, sce = sce_subset, gsm = gene_symbol_mapping)
         dfx[[1]] <- dfx[[1]][dfx[[1]]$barcode %in% barcodes, ]
     }
     chord_diagram <- function(tmp_dfx, lr_interactions, p.adjust_method, scaled,
