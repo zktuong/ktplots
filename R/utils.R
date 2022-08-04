@@ -137,8 +137,10 @@
                 y <- cell_type_fractions[ligand[j], pp[i]]
             } else {
                 if (any(grepl(paste0("^", ligand[j], "$"), row.names(sce)))) {
-                  x <- .cellTypeExpr_complex(sce_alt[[pp[i]]], ligand[j], gsm)
-                  y <- .cellTypeFraction_complex(sce_alt[[pp[i]]], ligand[j], gsm)
+                  x <- .cellTypeExpr_complex(sce_alt[[splitted]][[producers[i]]],
+                    ligand[j], gsm)
+                  y <- .cellTypeFraction_complex(sce_alt[[splitted]][[producers[i]]],
+                    ligand[j], gsm)
                 } else {
                   x <- 0
                   y <- 0
@@ -157,8 +159,10 @@
                 y <- cell_type_fractions[receptor[j], rc[i]]
             } else {
                 if (any(grepl(paste0("^", receptor[j], "$"), row.names(sce)))) {
-                  x <- .cellTypeExpr_complex(sce_alt[[rc[i]]], receptor[j], gsm)
-                  y <- .cellTypeFraction_complex(sce_alt[[rc[i]]], receptor[j], gsm)
+                  x <- .cellTypeExpr_complex(sce_alt[[splitted]][[receivers[i]]],
+                    receptor[j], gsm)
+                  y <- .cellTypeFraction_complex(sce_alt[[splitted]][[receivers[i]]],
+                    receptor[j], gsm)
                 } else {
                   x <- 0
                   y <- 0
