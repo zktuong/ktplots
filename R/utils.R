@@ -119,7 +119,7 @@
 }
 
 .generateDf <- function(ligand, sep, receptor, receptor_a, receptor_b, pair, converted_pair,
-    producers, receivers, cell_type_means, cell_type_fractions, sce, splitted = NULL) {
+    producers, receivers, cell_type_means, cell_type_fractions, sce, gsm, splitted = NULL) {
     if (!is.null(splitted)) {
         pp <- paste0(splitted, "_", producers)
         rc <- paste0(splitted, "_", receivers)
@@ -136,9 +136,9 @@
                 y <- cell_type_fractions[ligand[j], pp[i]]
             } else {
                 if (any(grepl(paste0("^", ligand[j], "$"), row.names(sce)))) {
-                  x <- .cellTypeExpr_complex(sce_list_alt[[pp[i]]], ligand[j], gene_symbol_mapping)
+                  x <- .cellTypeExpr_complex(sce_list_alt[[pp[i]]], ligand[j], gsm)
                   y <- .cellTypeFraction_complex(sce_list_alt[[pp[i]]], ligand[j],
-                    gene_symbol_mapping)
+                    gsm)
                 } else {
                   x <- 0
                   y <- 0
@@ -157,10 +157,8 @@
                 y <- cell_type_fractions[receptor[j], rc[i]]
             } else {
                 if (any(grepl(paste0("^", receptor[j], "$"), row.names(sce)))) {
-                  x <- .cellTypeExpr_complex(sce_list_alt[[rc[i]]], receptor[j],
-                    gene_symbol_mapping)
-                  y <- .cellTypeFraction_complex(sce_list_alt[[rc[i]]], receptor[j],
-                    gene_symbol_mapping)
+                  x <- .cellTypeExpr_complex(sce_list_alt[[rc[i]]], receptor[j], gsm)
+                  y <- .cellTypeFraction_complex(sce_list_alt[[rc[i]]], receptor[j], gsm)
                 } else {
                   x <- 0
                   y <- 0
