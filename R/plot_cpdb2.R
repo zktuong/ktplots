@@ -260,19 +260,21 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
     receivers <- as.character(cell_type_grid[, 2])
     barcodes = paste0(lr_interactions$Var2, sep, lr_interactions$Var1)
     dfx <- list()
-    if (!is.null(split.by)) {
+        if (!is.null(split.by)) {
         for (i in unique(meta[, split.by])) {
             dfx[[i]] <- .generateDf(ligand = ligand, sep = sep, receptor = receptor,
                 receptor_a = receptor_a, receptor_b = receptor_b, pair = pair, converted_pair = converted_pair,
                 producers = producers, receivers = receivers, cell_type_means = expr_df,
-                cell_type_fractions = fraction_df, sce = sce_subset, gsm = gene_symbol_mapping, splitted = i)
+                cell_type_fractions = fraction_df, sce = sce_subset, sce_alt = sce_list_alt,
+                gsm = gene_symbol_mapping, splitted = i)
             dfx[[i]] <- dfx[[i]][dfx[[i]]$barcode %in% barcodes, ]
         }
     } else {
         dfx[[1]] = .generateDf(ligand = ligand, sep = sep, receptor = receptor, receptor_a = receptor_a,
             receptor_b = receptor_b, pair = pair, converted_pair = converted_pair,
             producers = producers, receivers = receivers, cell_type_means = expr_df,
-            cell_type_fractions = fraction_df, sce = sce_subset, gsm = gene_symbol_mapping)
+            cell_type_fractions = fraction_df, sce = sce_subset, sce_alt = sce_list_alt,
+            gsm = gene_symbol_mapping)
         dfx[[1]] <- dfx[[1]][dfx[[1]]$barcode %in% barcodes, ]
     }
     if (return_df) {
