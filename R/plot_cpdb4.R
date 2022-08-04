@@ -265,7 +265,7 @@ plot_cpdb4 <- function(interaction, cell_type1, cell_type2, scdata, idents, mean
     if (!is.null(split.by)) {
         for (i in unique(meta[, split.by])) {
             dfx[[i]] <- .generateDf(ligand, sep, receptor, receptor_a, receptor_b,
-                pair, converted_pair, producers, receivers, expr_df, fraction_df, sce_subset
+                pair, converted_pair, producers, receivers, expr_df, fraction_df, sce_subset,
                 i)
             dfx[[i]] <- dfx[[i]][dfx[[i]]$barcode %in% barcodes, ]
         }
