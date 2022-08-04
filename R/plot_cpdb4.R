@@ -267,14 +267,14 @@ plot_cpdb4 <- function(interaction, cell_type1, cell_type2, scdata, idents, mean
             dfx[[i]] <- .generateDf(ligand = ligand, sep = sep, receptor = receptor,
                 receptor_a = receptor_a, receptor_b = receptor_b, pair = pair, converted_pair = converted_pair,
                 producers = producers, receivers = receivers, cell_type_means = expr_df,
-                cell_type_fractions = fraction_df, sce_subset = sce_subset, splitted = i)
+                cell_type_fractions = fraction_df, sce = sce_subset, splitted = i)
             dfx[[i]] <- dfx[[i]][dfx[[i]]$barcode %in% barcodes, ]
         }
     } else {
         dfx[[1]] = .generateDf(ligand = ligand, sep = sep, receptor = receptor, receptor_a = receptor_a,
             receptor_b = receptor_b, pair = pair, converted_pair = converted_pair,
             producers = producers, receivers = receivers, cell_type_means = expr_df,
-            cell_type_fractions = fraction_df, sce_subset = sce_subset)
+            cell_type_fractions = fraction_df, sce = sce_subset)
         dfx[[1]] <- dfx[[1]][dfx[[1]]$barcode %in% barcodes, ]
     }
 
