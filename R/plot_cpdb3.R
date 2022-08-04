@@ -17,7 +17,7 @@
 #' @param frac default = 0.1. Minimum fraction of celtypes expressing a gene in order to keep the interaction. Gene must be expressesd >= `frac` in either of the pair of celltypes in order to keep.
 #' @param remove_self default = TRUE. Remove self-self arcs.
 #' @param desiredInteractions default = NULL. Specific list of celltype comparisons e.g. list(c('CD4_Tcm', 'cDC1'), c('CD4_Tcm', 'cDC2')). Also accepts a dataframe where first column is celltype 1 and 2nd column is celltype 2.
-#' @param degs_analysis if is cellphonedb degs_analysis mode. 
+#' @param degs_analysis if is cellphonedb degs_analysis mode.
 #' @param directional Whether links have directions. 1 means the direction is from the first column in df to the second column, -1 is the reverse, 0 is no direction, and 2 for two directional.
 #' @param alpha transparency for links
 #' @param edge_colors vector of colors for links
@@ -38,9 +38,9 @@
 plot_cpdb3 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, deconvoluted,
     p.adjust.method = NULL, keep_significant_only = TRUE, split.by = NULL, standard_scale = TRUE,
     separator = NULL, gene_symbol_mapping = NULL, frac = 0.1, remove_self = TRUE,
-    desiredInteractions = NULL, degs_analysis = FALSE, directional = 1, alpha = 0.5, edge_colors = NULL,
-    grid_colors = NULL, show_legend = TRUE, legend.pos.x = 20, legend.pos.y = 20,
-    ...) {
+    desiredInteractions = NULL, degs_analysis = FALSE, directional = 1, alpha = 0.5,
+    edge_colors = NULL, grid_colors = NULL, show_legend = TRUE, legend.pos.x = 20,
+    legend.pos.y = 20, ...) {
     if (class(scdata) == "Seurat") {
         stop("Sorry not supported. Please use a SingleCellExperiment object.")
     }
@@ -257,14 +257,17 @@ plot_cpdb3 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
     dfx <- list()
     if (!is.null(split.by)) {
         for (i in unique(meta[, split.by])) {
-            dfx[[i]] <- .generateDf(ligand, sep, receptor, receptor_a, receptor_b,
-                pair, converted_pair, producers, receivers, expr_df, fraction_df, sce_subset,
-                i)
+            dfx[[i]] <- .generateDf(ligand = ligand, sep = sep, receptor = receptor,
+                receptor_a = receptor_a, receptor_b = receptor_b, pair = pair, converted_pair = converted_pair,
+                producers = producers, receivers = receivers, cell_type_means = expr_df,
+                cell_type_fractions = fraction_df, sce = sce_subset, splitted = i)
             dfx[[i]] <- dfx[[i]][dfx[[i]]$barcode %in% barcodes, ]
         }
     } else {
-        dfx[[1]] = .generateDf(ligand, sep, receptor, receptor_a, receptor_b, pair,
-            converted_pair, producers, receivers, expr_df, fraction_df, sce_subset)
+        dfx[[1]] = .generateDf(ligand = ligand, sep = sep, receptor = receptor, receptor_a = receptor_a,
+            receptor_b = receptor_b, pair = pair, converted_pair = converted_pair,
+            producers = producers, receivers = receivers, cell_type_means = expr_df,
+            cell_type_fractions = fraction_df, sce = sce_subset)
         dfx[[1]] <- dfx[[1]][dfx[[1]]$barcode %in% barcodes, ]
     }
     chord_diagram <- function(tmp_dfx, lr_interactions, p.adjust_method, scaled,
@@ -302,7 +305,7 @@ plot_cpdb3 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
         } else {
             grid_color <- .scPalette(length(unique(tmp_dfx$receiver_swap)))
         }
-        if (is.null(grid_cols)){
+        if (is.null(grid_cols)) {
             names(grid_color) <- unique(tmp_dfx$receiver_swap)
         }
         tmp_dfx$edge_color = edge_color[tmp_dfx$pair_swap]
