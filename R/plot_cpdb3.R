@@ -258,13 +258,13 @@ plot_cpdb3 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
     if (!is.null(split.by)) {
         for (i in unique(meta[, split.by])) {
             dfx[[i]] <- .generateDf(ligand, sep, receptor, receptor_a, receptor_b,
-                pair, converted_pair, producers, receivers, expr_df, fraction_df,
+                pair, converted_pair, producers, receivers, expr_df, fraction_df, sce_subset
                 i)
             dfx[[i]] <- dfx[[i]][dfx[[i]]$barcode %in% barcodes, ]
         }
     } else {
         dfx[[1]] = .generateDf(ligand, sep, receptor, receptor_a, receptor_b, pair,
-            converted_pair, producers, receivers, expr_df, fraction_df)
+            converted_pair, producers, receivers, expr_df, fraction_df, sce_subset)
         dfx[[1]] <- dfx[[1]][dfx[[1]]$barcode %in% barcodes, ]
     }
     chord_diagram <- function(tmp_dfx, lr_interactions, p.adjust_method, scaled,
