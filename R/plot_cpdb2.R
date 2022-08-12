@@ -196,7 +196,7 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
             decon_subset_fraction <- lapply(decon_subset, function(x) {
                 x <- unique(x$gene_name)
                 test <- lapply(sce_list_alt, function(y) {
-                  return(lapply(y, .cellTypeFraction_complex, x, gene_symbol_mapping))
+                  return(lapply(y, .cellTypeFraction_complex, genes = z, gene_symbol_mapping = gene_symbol_mapping))
                 })
                 return(test)
             })
@@ -210,9 +210,9 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
             })
         } else {
             decon_subset_fraction <- lapply(decon_subset, function(x) {
-                x <- unique(x$gene_name)
+                z <- unique(x$gene_name)
                 test <- lapply(sce_list_alt, function(y) {
-                  return(.cellTypeFraction_complex(y, x, gene_symbol_mapping))
+                  return(.cellTypeFraction_complex(y, genes = z, gene_symbol_mapping = gene_symbol_mapping))
                 })
                 return(do.call(cbind, test))
             })

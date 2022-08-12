@@ -110,6 +110,7 @@
             sce_[which(SingleCellExperiment::rowData(sce_)[, gene_symbol_mapping] %in%
                 genes), ]
         } else {
+
             sce_[which(SingleCellExperiment::rowData(sce_)[, "index"] %in% genes),
                 ]
         }
@@ -130,6 +131,11 @@
     }
     producer_expression <- data.frame()
     producer_fraction <- data.frame()
+    if (!is.null(splitted)){
+        sce_altx <- sce_alt[[splitted]]
+    } else {
+        sce_altx <- sce_alt
+    }
     for (i in seq_along(pp)) {
         for (j in seq_along(ligand)) {
             if (any(grepl(paste0("^", ligand[j], "$"), row.names(cell_type_means)))) {
@@ -137,9 +143,9 @@
                 y <- cell_type_fractions[ligand[j], pp[i]]
             } else {
                 if (any(grepl(paste0("^", ligand[j], "$"), row.names(sce)))) {
-                  x <- .cellTypeExpr_complex(sce_alt[[splitted]][[producers[i]]],
+                  x <- .cellTypeExpr_complex(sce_altx[[producers[i]]],
                     ligand[j], gsm)
-                  y <- .cellTypeFraction_complex(sce_alt[[splitted]][[producers[i]]],
+                  y <- .cellTypeFraction_complex(sce_altx[[producers[i]]],
                     ligand[j], gsm)
                 } else {
                   x <- 0
@@ -159,9 +165,9 @@
                 y <- cell_type_fractions[receptor[j], rc[i]]
             } else {
                 if (any(grepl(paste0("^", receptor[j], "$"), row.names(sce)))) {
-                  x <- .cellTypeExpr_complex(sce_alt[[splitted]][[receivers[i]]],
+                  x <- .cellTypeExpr_complex(sce_altx[[receivers[i]]],
                     receptor[j], gsm)
-                  y <- .cellTypeFraction_complex(sce_alt[[splitted]][[receivers[i]]],
+                  y <- .cellTypeFraction_complex(sce_altx[[receivers[i]]],
                     receptor[j], gsm)
                 } else {
                   x <- 0
