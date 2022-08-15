@@ -101,45 +101,45 @@ test_that("plot_cpdb2 works 1",{
 })
 
 
-test_that("plot_cpdb2 works 2",{
-    p <- plot_cpdb2(cell_type1 = 'B cell', cell_type2 = 'CD4T cell',
-        scdata = kidneyimmune,
-        idents = 'celltype', # column name where the cell ids are located in the metadata
-        split.by = 'Experiment', # column name where the grouping column is. Optional.
-        means = means,
-        pvals = pvals,
-        deconvoluted = decon, # new options from here on specific to plot_cpdb2
-        desiredInteractions = list(
-            c('CD4T cell', 'B cell'),
-            c('B cell', 'CD4T cell')),
-        interaction_grouping = interaction_annotation,
-        edge_group_colors = c(
-            "Activating" = "#e15759",
-            "Chemotaxis" = "#59a14f",
-            "Inhibitory" = "#4e79a7",
-            "Intracellular trafficking" = "#9c755f",
-            "DC_development" = "#B07aa1",
-            "Unknown" = NA
-            ),
-        node_group_colors = c(
-            "CD4T cell" = "#86bc86",
-            "B cell" = "#79706e"),
-        keep_significant_only = TRUE,
-        standard_scale = TRUE,
-        remove_self = TRUE
-        )
-    expect_true(is.ggplot(p[[1]]))
-    expect_true(is.ggplot(p[[2]]))
-    expect_true(is.ggplot(p[[3]]))
-    expect_true(is.ggplot(p[[4]]))
-    expect_true(is.ggplot(p[[5]]))
-    expect_true(is.ggplot(p[[6]]))
-    expect_false(is.ggplot(p[[7]]))
-    expect_true(is.ggplot(p[[8]]))
-    expect_false(is.ggplot(p[[9]]))
-    expect_false(is.ggplot(p[[10]]))
-    expect_false(is.ggplot(p[[11]]))
-})
+# test_that("plot_cpdb2 works 2",{
+#     p <- plot_cpdb2(cell_type1 = 'B cell', cell_type2 = 'CD4T cell',
+#         scdata = kidneyimmune,
+#         idents = 'celltype', # column name where the cell ids are located in the metadata
+#         split.by = 'Experiment', # column name where the grouping column is. Optional.
+#         means = means,
+#         pvals = pvals,
+#         deconvoluted = decon, # new options from here on specific to plot_cpdb2
+#         desiredInteractions = list(
+#             c('CD4T cell', 'B cell'),
+#             c('B cell', 'CD4T cell')),
+#         interaction_grouping = interaction_annotation,
+#         edge_group_colors = c(
+#             "Activating" = "#e15759",
+#             "Chemotaxis" = "#59a14f",
+#             "Inhibitory" = "#4e79a7",
+#             "Intracellular trafficking" = "#9c755f",
+#             "DC_development" = "#B07aa1",
+#             "Unknown" = NA
+#             ),
+#         node_group_colors = c(
+#             "CD4T cell" = "#86bc86",
+#             "B cell" = "#79706e"),
+#         keep_significant_only = TRUE,
+#         standard_scale = TRUE,
+#         remove_self = TRUE
+#         )
+#     expect_true(is.ggplot(p[[1]]))
+#     expect_true(is.ggplot(p[[2]]))
+#     expect_true(is.ggplot(p[[3]]))
+#     expect_true(is.ggplot(p[[4]]))
+#     expect_true(is.ggplot(p[[5]]))
+#     expect_true(is.ggplot(p[[6]]))
+#     expect_false(is.ggplot(p[[7]]))
+#     expect_true(is.ggplot(p[[8]]))
+#     expect_false(is.ggplot(p[[9]]))
+#     expect_false(is.ggplot(p[[10]]))
+#     expect_false(is.ggplot(p[[11]]))
+# })
 
 
 test_that("plot_cpdb3 works 1",{
