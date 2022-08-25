@@ -264,6 +264,17 @@ plot_cpdb4(
 ![plot_cpdb42](exampleImages/plot_cpdb4_2.png)
 
 
+### plot_cpdb_heatmap
+
+New! original heatmap plot as per the main cellphonedb repo. Uses `pheatmap` internally.
+
+```R
+plot_cpdb_heatmap(kidneyimmune, 'celltype', pvals2, cellheight = 10, cellwidth = 10)
+```
+
+![plot_cpdb_heatmap](exampleImages/plot_cpdb_heatmap.png)
+
+
 ## Other useful functions
 
 ### geneDotPlot
