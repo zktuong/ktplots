@@ -245,5 +245,5 @@ test_that("plot_cpdb4 works 3",{
 
 test_that("plot_cpdb_heatmap works",{
     p <- plot_cpdb_heatmap(kidneyimmune, 'celltype', pvals2)
-    expect_true(is.ggplot(p))
+    expect_that(class(p), equals("pheatmap"))
 })
