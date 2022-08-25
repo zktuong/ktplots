@@ -266,7 +266,7 @@ plot_cpdb4(
 
 ### plot_cpdb_heatmap
 
-New! original heatmap plot as per the main cellphonedb repo. Uses `pheatmap` internally.
+New! Ported the original heatmap plot to this pacakge as per the main cellphonedb repo. Uses `pheatmap` internally. Colours indicate the number of significant interactions.
 
 ```R
 plot_cpdb_heatmap(kidneyimmune, 'celltype', pvals2, cellheight = 10, cellwidth = 10)
