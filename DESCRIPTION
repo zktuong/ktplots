@@ -1,6 +1,6 @@
 Package: ktplots
 Title: Plot single-cell data dotplots
-Version: 1.1.23
+Version: 1.2.0
 Authors@R: person("Kelvin", "Tuong", email = c("z.tuong@uq.edu.au", "zkt22@cam.ac.uk", "kt16@sanger.ac.uk"), role = c("aut", "cre"))
 Description: Plotting tools for scData.
 License: MIT
@@ -18,7 +18,8 @@ Imports:
 	gtools,	
 	RColorBrewer,
 	circlize,
-	ComplexHeatmap
+	ComplexHeatmap,
+	pheatmap
 Suggests:
 	SummarizedExperiment,
 	SingleCellExperiment,
@@ -42,3 +43,4 @@ Collate:
     'plot_cpdb2.R'
     'plot_cpdb3.R'
     'plot_cpdb4.R'
+    'plot_cpdb_heatmap.R'
