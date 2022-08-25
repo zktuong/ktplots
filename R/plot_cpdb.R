@@ -5,7 +5,7 @@
 #' @param scdata single-cell data. can be seurat/summarizedexperiment object
 #' @param idents vector holding the idents for each cell or column name of scdata's metadata. MUST match cpdb's columns
 #' @param means object holding means.txt from cpdb output
-#' @param pvals object holding pvals.txt from cpdb output. Use relevant_interactions.txt if version 3.
+#' @param pvals object holding pvals.txt from cpdb output. Use relevant_interactions.txt if degs_analysis mode.
 #' @param max_size max size of points.
 #' @param p.adjust.method correction method. p.adjust.methods of one of these options: c('holm', 'hochberg', 'hommel', 'bonferroni', 'BH', 'BY', 'fdr', 'none')
 #' @param keep_significant_only logical. Default is FALSE. Switch to TRUE if you only want to plot the significant hits from cpdb.
@@ -46,6 +46,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
     default_style = TRUE, noir = FALSE, highlight = "red", highlight_size = NULL,
     separator = NULL, special_character_search_pattern = NULL, degs_analysis = FALSE,
     verbose = FALSE, return_table = FALSE, exclude_interactions = NULL, ...) {
+    requireNamespace("grDevices")
     if (class(scdata) %in% c("SingleCellExperiment", "SummarizedExperiment")) {
         if (verbose) {
             cat("data provided is a SingleCellExperiment/SummarizedExperiment object",
@@ -581,10 +582,10 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
                 g <- g + scale_fill_gradient(low = "white", high = "#131313", na.value = "white")
             } else {
                 if (length(col_option) == 1) {
-                  g <- g + scale_fill_gradientn(colors = colorRampPalette(c("white",
+                  g <- g + scale_fill_gradientn(colors = grDevices::colorRampPalette(c("white",
                     col_option))(100), na.value = "white")
                 } else {
-                  g <- g + scale_fill_gradientn(colors = c("white", colorRampPalette(col_option)(99)),
+                  g <- g + scale_fill_gradientn(colors = c("white", grDevices::colorRampPalette(col_option)(99)),
                     na.value = "white")
                 }
             }
