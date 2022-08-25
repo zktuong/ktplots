@@ -44,7 +44,7 @@ plot_cpdb(
 
 \item{means}{object holding means.txt from cpdb output}
 
-\item{pvals}{object holding pvals.txt from cpdb output. Use relevant_interactions.txt if version 3.}
+\item{pvals}{object holding pvals.txt from cpdb output. Use relevant_interactions.txt if degs_analysis mode.}
 
 \item{max_size}{max size of points.}
 
