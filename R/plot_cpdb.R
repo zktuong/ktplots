@@ -482,6 +482,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
             df <- do.call(rbind, df_)
         }
         df$pvals_adj[which(df$pvals_adj == 0)] <- 0.001
+        df$pvals_adj[which(df$pvals_adj >= 0.05)] <- NA
     } else {
         df_pvals <- melt(pvals_mat2, value.name = "pvals")
         df <- data.frame(cbind(df_means, pvals = df_pvals$pvals))
@@ -501,6 +502,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
             df <- do.call(rbind, df_)
         }
         df$pvals[which(df$pvals == 0)] <- 0.001
+        df$pvals[which(df$pvals >= 0.05)] <- NA
     }
     if (!is.null(split.by)) {
         if (length(groups) > 0) {
@@ -527,6 +529,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
             }
         }
     }
+
     df$Var2 <- gsub(sep, "-", df$Var2)
     final_levels = unique(df$Var2)
     df$Var2 <- factor(df$Var2, unique(df$Var2))
