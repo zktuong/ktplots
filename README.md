@@ -6,6 +6,7 @@
 # ktplots
 R plotting functions to plot gene expression data of single-cell data.
 
+For a python port of `ktplots`, please check out my other [repository](https://www.github.com/zktuong/ktplotspy).
 
 ## Installation instructions
 You can install the package via ```devtools::install_github()``` function in R
