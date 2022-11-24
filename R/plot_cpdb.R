@@ -238,7 +238,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
                 sep = "\n")
         }
     }
-    if (!is.null(gene.family) & is.null(genes)) {
+    if (is.null(genes)) {
         chemokines <- grep("^CXC|CCL|CCR|CX3|XCL|XCR", means_mat$interacting_pair)
         th1 <- grep("IL2|IL12|IL18|IL27|IFNG|IL10|TNF$|TNF |LTA|LTB|STAT1|CCR5|CXCR3|IL12RB1|IFNGR1|TBX21|STAT4",
             means_mat$interacting_pair)
@@ -255,9 +255,9 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
             th2 = th2, th17 = th17, treg = treg, costimulatory = costimulatory, coinhibitory = coinhibitory,
             costimulation = costimulatory, coinhibition = coinhibitory, niche = niche)
 
-        if (!is.null(custom_gene_family)){
-            query_group <- c(query_group, as.list(custom_gene_family))
-        }
+    if (!is.null(custom_gene_family)){
+        query_group <- c(query_group, as.list(custom_gene_family))
+    }
     } else if (is.null(gene.family) & !is.null(genes)) {
         query <- grep(paste(genes, collapse = "|"), means_mat$interacting_pair)
     }
