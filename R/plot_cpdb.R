@@ -43,10 +43,11 @@
 
 plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_size = 8,
     p.adjust.method = NULL, keep_significant_only = FALSE, split.by = NULL, gene.family = NULL,
-    genes = NULL, scale = NULL, standard_scale = NULL, col_option = viridis::viridis(50),
-    default_style = TRUE, noir = FALSE, highlight = "red", highlight_size = NULL,
-    separator = NULL, special_character_search_pattern = NULL, degs_analysis = FALSE,
-    verbose = FALSE, return_table = FALSE, exclude_interactions = NULL, ...) {
+    custom_gene_family = NULL, genes = NULL, scale = NULL, standard_scale = NULL,
+    col_option = viridis::viridis(50), default_style = TRUE, noir = FALSE, highlight = "red",
+    highlight_size = NULL, separator = NULL, special_character_search_pattern = NULL,
+    degs_analysis = FALSE, verbose = FALSE, return_table = FALSE, exclude_interactions = NULL,
+    ...) {
     requireNamespace("grDevices")
     if (class(scdata) %in% c("SingleCellExperiment", "SummarizedExperiment")) {
         if (verbose) {
