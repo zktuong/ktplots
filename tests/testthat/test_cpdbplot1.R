@@ -32,6 +32,20 @@ test_that("plot_cpdb works 5", {
     expect_true(is.ggplot(p))
 })
 
+test_that("plot_cpdb works 6", {
+    p <- plot_cpdb("B cell", "CD4T cell", kidneyimmune, "celltype", means, pvals,
+        split.by = "Experiment", gene.family = "custom_family", custom_gene_family = list(custom_family = c("CXCL13",
+            "CD274", "CXCR5")), verbose = FALSE)
+    expect_true(is.ggplot(p))
+})
+
+test_that("plot_cpdb works 7", {
+    p <- plot_cpdb("B cell", "CD4T cell", kidneyimmune, "celltype", means, pvals,
+        split.by = "Experiment", gene.family = "custom_family", custom_gene_family = data.frame(custom_family = c("CXCL13",
+            "CD274", "CXCR5")), verbose = FALSE)
+    expect_true(is.ggplot(p))
+})
+
 test_that("werid characters are ok", {
     # edit the example objects to simulate Rachel's objects
     # rename B cells to TRC+
