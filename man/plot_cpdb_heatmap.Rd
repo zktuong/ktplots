@@ -26,6 +26,7 @@ plot_cpdb_heatmap(
   high_col = "deeppink4",
   alpha = 0.05,
   return_tables = FALSE,
+  degs_analysis = FALSE,
   verbose = FALSE,
   ...
 )
@@ -73,11 +74,11 @@ plot_cpdb_heatmap(
 
 \item{return_tables}{whether or not to return the results as a table rather than the heatmap}
 
+\item{degs_analysis}{if is cellphonedb degs_analysis mode.}
+
 \item{verbose}{prints cat/print statements if TRUE.}
 
 \item{...}{passed to pheatmap::pheatmap.}
-
-\item{degs_analysis}{if is cellphonedb degs_analysis mode.}
 }
 \value{
 pheatmap object of cellphone db output

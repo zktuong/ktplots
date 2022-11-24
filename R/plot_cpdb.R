@@ -10,10 +10,12 @@
 #' @param p.adjust.method correction method. p.adjust.methods of one of these options: c('holm', 'hochberg', 'hommel', 'bonferroni', 'BH', 'BY', 'fdr', 'none')
 #' @param keep_significant_only logical. Default is FALSE. Switch to TRUE if you only want to plot the significant hits from cpdb.
 #' @param split.by column name in the metadata/coldata table to split the spots by. Can only take columns with binary options. If specified, name to split by MUST be specified in the meta file provided to cpdb prior to analysis.
-#' @param gene.family default = NULL. some predefined group of genes. can take one of these options: 'chemokines', 'Th1', 'Th2', 'Th17', 'Treg', 'costimulatory', 'coinhibitory', 'niche'
+#' @param gene.family default = NULL. some predefined group of genes. can take one (or several) of these default options: 'chemokines', 'Th1', 'Th2', 'Th17', 'Treg', 'costimulatory', 'coinhibitory', 'niche'. Also accepts name(s) of custom gene families.
+#' @param custom_gene_family default = NULL. If provided, will update the gene.family function with this custom entry. Both `gene.family` (name of the custom family) and `custom_gene_family` must be specified for this to work. Provide either a data.frame with column names as name of family and genes in rows or a named likes like : list("customfamily" = c("genea", "geneb", "genec"))
 #' @param genes default = NULL. can specify custom list of genes if gene.family is NULL
 #' @param scale logical. scale the expression to mean +/- SD. NULL defaults to TRUE.
 #' @param standard_scale logical. scale the expression to range from 0 to 1. NULL defaults to FALSE.
+#' @param cluster_rows logical. whether or not to cluster the rows.
 #' @param col_option specify plotting colours
 #' @param default_stlye default = TRUE. Show all mean values and trace significant interactions with `higlight` colour. If FALSE, significant interactions will be presented as a white ring.
 #' @param noir default = FALSE. makes it b/w
@@ -42,10 +44,11 @@
 
 plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_size = 8,
     p.adjust.method = NULL, keep_significant_only = FALSE, split.by = NULL, gene.family = NULL,
-    genes = NULL, scale = NULL, standard_scale = NULL, col_option = viridis::viridis(50),
-    default_style = TRUE, noir = FALSE, highlight = "red", highlight_size = NULL,
-    separator = NULL, special_character_search_pattern = NULL, degs_analysis = FALSE,
-    verbose = FALSE, return_table = FALSE, exclude_interactions = NULL, ...) {
+    custom_gene_family = NULL, genes = NULL, scale = NULL, standard_scale = NULL, cluster_rows = TRUE,
+    col_option = viridis::viridis(50), default_style = TRUE, noir = FALSE, highlight = "red",
+    highlight_size = NULL, separator = NULL, special_character_search_pattern = NULL,
+    degs_analysis = FALSE, verbose = FALSE, return_table = FALSE, exclude_interactions = NULL,
+    ...) {
     requireNamespace("grDevices")
     if (class(scdata) %in% c("SingleCellExperiment", "SummarizedExperiment")) {
         if (verbose) {
@@ -253,6 +256,12 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
         query_group <- list(chemokines = chemokines, chemokine = chemokines, th1 = th1,
             th2 = th2, th17 = th17, treg = treg, costimulatory = costimulatory, coinhibitory = coinhibitory,
             costimulation = costimulatory, coinhibition = coinhibitory, niche = niche)
+
+        if (!is.null(custom_gene_family)){
+            cgf <- as.list(custom_gene_family)
+            cgf <- lapply(cgf, function(x) grep(paste(x, collapse = "|"), means_mat$interacting_pair))
+            query_group <- c(query_group, cgf)
+        }
     } else if (is.null(gene.family) & !is.null(genes)) {
         query <- grep(paste(genes, collapse = "|"), means_mat$interacting_pair)
     }
@@ -341,24 +350,45 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
         cell_type <- do.call(paste0, list(celltype, collapse = "|"))
     }
     if (!is.null(gene.family) & is.null(genes)) {
-        means_mat <- suppressWarnings(tryCatch(means_mat[query_group[[tolower(gene.family)]],
-            grep(cell_type, colnames(means_mat), useBytes = TRUE, ...), drop = FALSE],
-            error = function(e) {
-                colidx <- lapply(celltype, function(z) grep(z, colnames(means_mat),
-                  useBytes = TRUE, ...))
-                colidx <- unique(do.call(c, colidx))
-                tmpm <- means_mat[query_group[[tolower(gene.family)]], colidx, drop = FALSE]
-                return(tmpm)
-            }))
-        pvals_mat <- suppressWarnings(tryCatch(pvals_mat[query_group[[tolower(gene.family)]],
-            grep(cell_type, colnames(pvals_mat), useBytes = TRUE, ...), drop = FALSE],
-            error = function(e) {
-                colidx <- lapply(celltype, function(z) grep(z, colnames(pvals_mat),
-                  useBytes = TRUE, ...))
-                colidx <- unique(do.call(c, colidx))
-                tmpm <- pvals_mat[query_group[[tolower(gene.family)]], colidx, drop = FALSE]
-                return(tmpm)
-            }))
+        if (length(gene.family) == 1){
+            means_mat <- suppressWarnings(tryCatch(means_mat[query_group[[tolower(gene.family)]],
+                grep(cell_type, colnames(means_mat), useBytes = TRUE, ...), drop = FALSE],
+                error = function(e) {
+                    colidx <- lapply(celltype, function(z) grep(z, colnames(means_mat),
+                    useBytes = TRUE, ...))
+                    colidx <- unique(do.call(c, colidx))
+                    tmpm <- means_mat[query_group[[tolower(gene.family)]], colidx, drop = FALSE]
+                    return(tmpm)
+                }))
+            pvals_mat <- suppressWarnings(tryCatch(pvals_mat[query_group[[tolower(gene.family)]],
+                grep(cell_type, colnames(pvals_mat), useBytes = TRUE, ...), drop = FALSE],
+                error = function(e) {
+                    colidx <- lapply(celltype, function(z) grep(z, colnames(pvals_mat),
+                    useBytes = TRUE, ...))
+                    colidx <- unique(do.call(c, colidx))
+                    tmpm <- pvals_mat[query_group[[tolower(gene.family)]], colidx, drop = FALSE]
+                    return(tmpm)
+                }))
+        } else if (length(gene.family) > 1){
+            means_mat <- suppressWarnings(tryCatch(means_mat[unlist(query_group[c(tolower(gene.family))], use.names = FALSE),
+                grep(cell_type, colnames(means_mat), useBytes = TRUE, ...), drop = FALSE],
+                error = function(e) {
+                    colidx <- lapply(celltype, function(z) grep(z, colnames(means_mat),
+                    useBytes = TRUE, ...))
+                    colidx <- unique(do.call(c, colidx))
+                    tmpm <- means_mat[unlist(query_group[c(tolower(gene.family))], use.names = FALSE), colidx, drop = FALSE]
+                    return(tmpm)
+                }))
+            pvals_mat <- suppressWarnings(tryCatch(pvals_mat[unlist(query_group[c(tolower(gene.family))], use.names = FALSE),
+                grep(cell_type, colnames(pvals_mat), useBytes = TRUE, ...), drop = FALSE],
+                error = function(e) {
+                    colidx <- lapply(celltype, function(z) grep(z, colnames(pvals_mat),
+                    useBytes = TRUE, ...))
+                    colidx <- unique(do.call(c, colidx))
+                    tmpm <- pvals_mat[unlist(query_group[c(tolower(gene.family))], use.names = FALSE), colidx, drop = FALSE]
+                    return(tmpm)
+                }))
+        }        
     } else if (is.null(gene.family) & !is.null(genes) | is.null(gene.family) & is.null(genes)) {
         means_mat <- suppressWarnings(tryCatch(means_mat[query, grep(cell_type, colnames(means_mat),
             useBytes = TRUE, ...), drop = FALSE], error = function(e) {
@@ -402,11 +432,13 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
             stop("No significant hits.")
         }
     }
-    if (nrow(means_mat) > 2) {
-        d <- dist(as.data.frame(means_mat))
-        h <- hclust(d)
-        means_mat <- means_mat[h$order, , drop = FALSE]
-        pvals_mat <- pvals_mat[h$order, , drop = FALSE]
+    if (cluster_rows) {
+        if (nrow(means_mat) > 2) {
+            d <- dist(as.data.frame(means_mat))
+            h <- hclust(d)
+            means_mat <- means_mat[h$order, , drop = FALSE]
+            pvals_mat <- pvals_mat[h$order, , drop = FALSE]
+        }
     }
     # scaling
     if (length(standard_scale) > 0) {
@@ -616,6 +648,9 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
                 scale_x_discrete(position = "top") + scale_radius(range = c(0, max_size))
         }
         if (!is.null(gene.family) & is.null(genes)) {
+            if (length(gene.family) > 1){
+                gene.family <- paste(gene.family, collapse = ', ')
+            }
             g <- g + ggtitle(gene.family)
         }
         return(g)

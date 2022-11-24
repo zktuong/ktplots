@@ -102,6 +102,24 @@ if ```genes``` and ```gene.family``` are both not specified, the function will t
 
 Specifying ```keep_significant_only``` will only keep those that are p<0.05 (which you can try to adjust with ```p.adjust.method```).
 
+You can now also specify more than 1 gene families:
+```R
+p <- plot_cpdb("B cell", "CD4T cell", kidneyimmune, "celltype", means, pvals,
+        split.by = "Experiment", gene.family = c("Coinhibitory", "Costimulatory"),
+        cluster_rows = FALSE, # ensures that the families are separate
+        keep_significant_only = TRUE)
+```
+![plot_cpdb](exampleImages/plotcpdb_two.png)
+
+And also provide custom families as a ```data.frame```.
+```R
+df = data.frame(set1 = c("CCR6", "CCL20"), set2 = c("CCL5", "CCR4"))
+p <- plot_cpdb("B cell", "CD4T cell", kidneyimmune, "celltype", means, pvals,
+        split.by = "Experiment", gene.family = c("set1", "set2"), custom_gene_family =df,
+        keep_significant_only = TRUE)
+```
+![plot_cpdb](exampleImages/plotcpdb_custom.png)
+
 
 ### plot_cpdb2
 Generates a circos-style wire/arc/chord plot for cellphonedb results.
