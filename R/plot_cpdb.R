@@ -11,7 +11,7 @@
 #' @param keep_significant_only logical. Default is FALSE. Switch to TRUE if you only want to plot the significant hits from cpdb.
 #' @param split.by column name in the metadata/coldata table to split the spots by. Can only take columns with binary options. If specified, name to split by MUST be specified in the meta file provided to cpdb prior to analysis.
 #' @param gene.family default = NULL. some predefined group of genes. can take one of these options: 'chemokines', 'Th1', 'Th2', 'Th17', 'Treg', 'costimulatory', 'coinhibitory', 'niche'
-#' @param custom_gene_family default = NULL. provide either a data.frame with column names as name of family and genes in rows or a named likes like : list("customfamily" = c("genea", "geneb", "genec"))
+#' @param custom_gene_family default = NULL. If provided, will update the gene.family function with this custom entry. Both `gene.family` (name of the custom family) and `custom_gene_family` must be specified for this to work. Provide either a data.frame with column names as name of family and genes in rows or a named likes like : list("customfamily" = c("genea", "geneb", "genec"))
 #' @param genes default = NULL. can specify custom list of genes if gene.family is NULL
 #' @param scale logical. scale the expression to mean +/- SD. NULL defaults to TRUE.
 #' @param standard_scale logical. scale the expression to range from 0 to 1. NULL defaults to FALSE.
@@ -238,7 +238,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
                 sep = "\n")
         }
     }
-    if (is.null(genes)) {
+    if (!is.null(gene.family) & is.null(genes)) {
         chemokines <- grep("^CXC|CCL|CCR|CX3|XCL|XCR", means_mat$interacting_pair)
         th1 <- grep("IL2|IL12|IL18|IL27|IFNG|IL10|TNF$|TNF |LTA|LTB|STAT1|CCR5|CXCR3|IL12RB1|IFNGR1|TBX21|STAT4",
             means_mat$interacting_pair)
