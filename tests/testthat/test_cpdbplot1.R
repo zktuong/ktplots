@@ -48,7 +48,7 @@ test_that("plot_cpdb works 7", {
 
 test_that("plot_cpdb works 8", {
     p <- plot_cpdb("B cell", "CD4T cell", kidneyimmune, "celltype", means2, pvals2,
-        gene.family = c("chemokines", "cytokines"), verbose = FALSE)
+        gene.family = c("chemokines", "th1"), verbose = FALSE)
     expect_true(is.ggplot(p))
 })
 
