@@ -15,6 +15,7 @@
 #' @param genes default = NULL. can specify custom list of genes if gene.family is NULL
 #' @param scale logical. scale the expression to mean +/- SD. NULL defaults to TRUE.
 #' @param standard_scale logical. scale the expression to range from 0 to 1. NULL defaults to FALSE.
+#' @param cluster_rows logical. whether or not to cluster the rows.
 #' @param col_option specify plotting colours
 #' @param default_stlye default = TRUE. Show all mean values and trace significant interactions with `higlight` colour. If FALSE, significant interactions will be presented as a white ring.
 #' @param noir default = FALSE. makes it b/w
@@ -43,7 +44,7 @@
 
 plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_size = 8,
     p.adjust.method = NULL, keep_significant_only = FALSE, split.by = NULL, gene.family = NULL,
-    custom_gene_family = NULL, genes = NULL, scale = NULL, standard_scale = NULL,
+    custom_gene_family = NULL, genes = NULL, scale = NULL, standard_scale = NULL, cluster_rows = TRUE,
     col_option = viridis::viridis(50), default_style = TRUE, noir = FALSE, highlight = "red",
     highlight_size = NULL, separator = NULL, special_character_search_pattern = NULL,
     degs_analysis = FALSE, verbose = FALSE, return_table = FALSE, exclude_interactions = NULL,
@@ -431,11 +432,13 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
             stop("No significant hits.")
         }
     }
-    if (nrow(means_mat) > 2) {
-        d <- dist(as.data.frame(means_mat))
-        h <- hclust(d)
-        means_mat <- means_mat[h$order, , drop = FALSE]
-        pvals_mat <- pvals_mat[h$order, , drop = FALSE]
+    if (cluster_rows) {
+        if (nrow(means_mat) > 2) {
+            d <- dist(as.data.frame(means_mat))
+            h <- hclust(d)
+            means_mat <- means_mat[h$order, , drop = FALSE]
+            pvals_mat <- pvals_mat[h$order, , drop = FALSE]
+        }
     }
     # scaling
     if (length(standard_scale) > 0) {

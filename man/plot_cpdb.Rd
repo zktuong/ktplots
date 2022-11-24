@@ -20,6 +20,7 @@ plot_cpdb(
   genes = NULL,
   scale = NULL,
   standard_scale = NULL,
+  cluster_rows = TRUE,
   col_option = viridis::viridis(50),
   default_style = TRUE,
   noir = FALSE,
@@ -55,7 +56,7 @@ plot_cpdb(
 
 \item{split.by}{column name in the metadata/coldata table to split the spots by. Can only take columns with binary options. If specified, name to split by MUST be specified in the meta file provided to cpdb prior to analysis.}
 
-\item{gene.family}{default = NULL. some predefined group of genes. can take one of these options: 'chemokines', 'Th1', 'Th2', 'Th17', 'Treg', 'costimulatory', 'coinhibitory', 'niche'}
+\item{gene.family}{default = NULL. some predefined group of genes. can take one (or several) of these default options: 'chemokines', 'Th1', 'Th2', 'Th17', 'Treg', 'costimulatory', 'coinhibitory', 'niche'. Also accepts name(s) of custom gene families.}
 
 \item{custom_gene_family}{default = NULL. If provided, will update the gene.family function with this custom entry. Both `gene.family` (name of the custom family) and `custom_gene_family` must be specified for this to work. Provide either a data.frame with column names as name of family and genes in rows or a named likes like : list("customfamily" = c("genea", "geneb", "genec"))}
 
@@ -64,6 +65,8 @@ plot_cpdb(
 \item{scale}{logical. scale the expression to mean +/- SD. NULL defaults to TRUE.}
 
 \item{standard_scale}{logical. scale the expression to range from 0 to 1. NULL defaults to FALSE.}
+
+\item{cluster_rows}{logical. whether or not to cluster the rows.}
 
 \item{col_option}{specify plotting colours}
 
