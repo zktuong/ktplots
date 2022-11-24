@@ -349,24 +349,45 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
         cell_type <- do.call(paste0, list(celltype, collapse = "|"))
     }
     if (!is.null(gene.family) & is.null(genes)) {
-        means_mat <- suppressWarnings(tryCatch(means_mat[query_group[[tolower(gene.family)]],
-            grep(cell_type, colnames(means_mat), useBytes = TRUE, ...), drop = FALSE],
-            error = function(e) {
-                colidx <- lapply(celltype, function(z) grep(z, colnames(means_mat),
-                  useBytes = TRUE, ...))
-                colidx <- unique(do.call(c, colidx))
-                tmpm <- means_mat[query_group[[tolower(gene.family)]], colidx, drop = FALSE]
-                return(tmpm)
-            }))
-        pvals_mat <- suppressWarnings(tryCatch(pvals_mat[query_group[[tolower(gene.family)]],
-            grep(cell_type, colnames(pvals_mat), useBytes = TRUE, ...), drop = FALSE],
-            error = function(e) {
-                colidx <- lapply(celltype, function(z) grep(z, colnames(pvals_mat),
-                  useBytes = TRUE, ...))
-                colidx <- unique(do.call(c, colidx))
-                tmpm <- pvals_mat[query_group[[tolower(gene.family)]], colidx, drop = FALSE]
-                return(tmpm)
-            }))
+        if (length(gene.family) == 1){
+            means_mat <- suppressWarnings(tryCatch(means_mat[query_group[[tolower(gene.family)]],
+                grep(cell_type, colnames(means_mat), useBytes = TRUE, ...), drop = FALSE],
+                error = function(e) {
+                    colidx <- lapply(celltype, function(z) grep(z, colnames(means_mat),
+                    useBytes = TRUE, ...))
+                    colidx <- unique(do.call(c, colidx))
+                    tmpm <- means_mat[query_group[[tolower(gene.family)]], colidx, drop = FALSE]
+                    return(tmpm)
+                }))
+            pvals_mat <- suppressWarnings(tryCatch(pvals_mat[query_group[[tolower(gene.family)]],
+                grep(cell_type, colnames(pvals_mat), useBytes = TRUE, ...), drop = FALSE],
+                error = function(e) {
+                    colidx <- lapply(celltype, function(z) grep(z, colnames(pvals_mat),
+                    useBytes = TRUE, ...))
+                    colidx <- unique(do.call(c, colidx))
+                    tmpm <- pvals_mat[query_group[[tolower(gene.family)]], colidx, drop = FALSE]
+                    return(tmpm)
+                }))
+        } else if (length(gene.family) > 1){
+            means_mat <- suppressWarnings(tryCatch(means_mat[unlist(query_group[c(tolower(gene.family))], use.names = FALSE),
+                grep(cell_type, colnames(means_mat), useBytes = TRUE, ...), drop = FALSE],
+                error = function(e) {
+                    colidx <- lapply(celltype, function(z) grep(z, colnames(means_mat),
+                    useBytes = TRUE, ...))
+                    colidx <- unique(do.call(c, colidx))
+                    tmpm <- means_mat[unlist(query_group[c(tolower(gene.family))], use.names = FALSE), colidx, drop = FALSE]
+                    return(tmpm)
+                }))
+            pvals_mat <- suppressWarnings(tryCatch(pvals_mat[unlist(query_group[c(tolower(gene.family))], use.names = FALSE),
+                grep(cell_type, colnames(pvals_mat), useBytes = TRUE, ...), drop = FALSE],
+                error = function(e) {
+                    colidx <- lapply(celltype, function(z) grep(z, colnames(pvals_mat),
+                    useBytes = TRUE, ...))
+                    colidx <- unique(do.call(c, colidx))
+                    tmpm <- pvals_mat[unlist(query_group[c(tolower(gene.family))], use.names = FALSE), colidx, drop = FALSE]
+                    return(tmpm)
+                }))
+        }        
     } else if (is.null(gene.family) & !is.null(genes) | is.null(gene.family) & is.null(genes)) {
         means_mat <- suppressWarnings(tryCatch(means_mat[query, grep(cell_type, colnames(means_mat),
             useBytes = TRUE, ...), drop = FALSE], error = function(e) {
@@ -624,6 +645,9 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
                 scale_x_discrete(position = "top") + scale_radius(range = c(0, max_size))
         }
         if (!is.null(gene.family) & is.null(genes)) {
+            if (length(gene.family) > 1){
+                gene.family <- paste(gene.family, collapse = ', ')
+            }
             g <- g + ggtitle(gene.family)
         }
         return(g)
