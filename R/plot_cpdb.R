@@ -256,9 +256,11 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
             th2 = th2, th17 = th17, treg = treg, costimulatory = costimulatory, coinhibitory = coinhibitory,
             costimulation = costimulatory, coinhibition = coinhibitory, niche = niche)
 
-    if (!is.null(custom_gene_family)){
-        query_group <- c(query_group, as.list(custom_gene_family))
-    }
+        if (!is.null(custom_gene_family)){
+            cgf <- as.list(custom_gene_family)
+            cgf <- lapply(cgf, function(x) grep(paste(x, collapse = "|"), means_mat$interacting_pair))
+            query_group <- c(query_group, cgf)
+        }
     } else if (is.null(gene.family) & !is.null(genes)) {
         query <- grep(paste(genes, collapse = "|"), means_mat$interacting_pair)
     }

@@ -16,6 +16,7 @@ plot_cpdb(
   keep_significant_only = FALSE,
   split.by = NULL,
   gene.family = NULL,
+  custom_gene_family = NULL,
   genes = NULL,
   scale = NULL,
   standard_scale = NULL,
@@ -56,6 +57,8 @@ plot_cpdb(
 
 \item{gene.family}{default = NULL. some predefined group of genes. can take one of these options: 'chemokines', 'Th1', 'Th2', 'Th17', 'Treg', 'costimulatory', 'coinhibitory', 'niche'}
 
+\item{custom_gene_family}{default = NULL. If provided, will update the gene.family function with this custom entry. Both `gene.family` (name of the custom family) and `custom_gene_family` must be specified for this to work. Provide either a data.frame with column names as name of family and genes in rows or a named likes like : list("customfamily" = c("genea", "geneb", "genec"))}
+
 \item{genes}{default = NULL. can specify custom list of genes if gene.family is NULL}
 
 \item{scale}{logical. scale the expression to mean +/- SD. NULL defaults to TRUE.}
@@ -83,8 +86,6 @@ plot_cpdb(
 \item{exclude_interactions}{if provided, the interactions will be removed from the output.}
 
 \item{...}{passes arguments to grep for cell_type1 and cell_type2.}
-
-\item{custom_gene_family}{default = NULL. provide either a data.frame with column names as name of family and genes in rows or a named likes like : list("customfamily" = c("genea", "geneb", "genec"))}
 
 \item{default_stlye}{default = TRUE. Show all mean values and trace significant interactions with `higlight` colour. If FALSE, significant interactions will be presented as a white ring.}
 }
