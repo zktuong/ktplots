@@ -11,6 +11,7 @@
 #' @param keep_significant_only logical. Default is FALSE. Switch to TRUE if you only want to plot the significant hits from cpdb.
 #' @param split.by column name in the metadata/coldata table to split the spots by. Can only take columns with binary options. If specified, name to split by MUST be specified in the meta file provided to cpdb prior to analysis.
 #' @param gene.family default = NULL. some predefined group of genes. can take one of these options: 'chemokines', 'Th1', 'Th2', 'Th17', 'Treg', 'costimulatory', 'coinhibitory', 'niche'
+#' @param custom_gene_family default = NULL. provide either a data.frame with column names as name of family and genes in rows or a named likes like : list("customfamily" = c("genea", "geneb", "genec"))
 #' @param genes default = NULL. can specify custom list of genes if gene.family is NULL
 #' @param scale logical. scale the expression to mean +/- SD. NULL defaults to TRUE.
 #' @param standard_scale logical. scale the expression to range from 0 to 1. NULL defaults to FALSE.
@@ -253,6 +254,10 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
         query_group <- list(chemokines = chemokines, chemokine = chemokines, th1 = th1,
             th2 = th2, th17 = th17, treg = treg, costimulatory = costimulatory, coinhibitory = coinhibitory,
             costimulation = costimulatory, coinhibition = coinhibitory, niche = niche)
+
+        if (!is.null(custom_gene_family)){
+            query_group <- c(query_group, as.list(custom_gene_family))
+        }
     } else if (is.null(gene.family) & !is.null(genes)) {
         query <- grep(paste(genes, collapse = "|"), means_mat$interacting_pair)
     }

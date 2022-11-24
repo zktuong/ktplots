@@ -84,6 +84,8 @@ plot_cpdb(
 
 \item{...}{passes arguments to grep for cell_type1 and cell_type2.}
 
+\item{custom_gene_family}{default = NULL. provide either a data.frame with column names as name of family and genes in rows or a named likes like : list("customfamily" = c("genea", "geneb", "genec"))}
+
 \item{default_stlye}{default = TRUE. Show all mean values and trace significant interactions with `higlight` colour. If FALSE, significant interactions will be presented as a white ring.}
 }
 \value{
