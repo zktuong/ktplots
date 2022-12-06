@@ -38,16 +38,6 @@ Generates a dot plot after CellPhoneDB analysis via specifying the query celltyp
 
 The plotting is largely determined by the format of the meta file provided to CellPhoneDB analysis.
 
-For the ```split.by``` option to work, the annotation in the meta file must be defined in the following format:
-```R
-{split.by}_{idents}
-```
-
-so to set up an example vector, it would be something like:
-```R
-annotation <- paste0(kidneyimmune$Experiment, '_', kidneyimmune$celltype)
-```
-
 To run, you will need to load in the means.txt and pvals.txt from the analysis. If you are using results from cellphonedb `deg_analysis` mode from version >= 3, the `pvalues.txt` is `relevant_interactions.txt` and also add `degs_analysis = TRUE` into all the functions below. 
 ```R
 # pvals <- read.delim("pvalues.txt", check.names = FALSE)
@@ -67,34 +57,34 @@ small_axis(fontsize = 3) + small_grid() + small_guide() + small_legend(fontsize 
 You can also try specifying ```gene.family``` option which will grep some pre-determined genes.
 ```R
 plot_cpdb(cell_type1 = 'B cell', cell_type2 = 'CD4T cell', scdata = kidneyimmune,
-	idents = 'celltype', means = means, pvals = pvals, split.by = 'Experiment',
-	gene.family = 'chemokines') + small_guide() + small_axis() + small_legend(keysize=.5)
+    idents = 'celltype', means = means, pvals = pvals, split.by = 'Experiment',
+    gene.family = 'chemokines') + small_guide() + small_axis() + small_legend(keysize=.5)
 ```
 ![plot_cpdb](exampleImages/plot_cpdb_example1.png)
 ```R
 plot_cpdb(cell_type1 = 'B cell', cell_type2 = 'CD4T cell', scdata = kidneyimmune,
-	idents = 'celltype', means = means, pvals = pvals, split.by = 'Experiment',
-	gene.family = 'chemokines', col_option = "maroon", highlight = "blue") + small_guide() + small_axis() + small_legend(keysize=.5)
+    idents = 'celltype', means = means, pvals = pvals, split.by = 'Experiment',
+    gene.family = 'chemokines', col_option = "maroon", highlight = "blue") + small_guide() + small_axis() + small_legend(keysize=.5)
 ```
 ![plot_cpdb](exampleImages/plot_cpdb_example2.png)
 ```R
 plot_cpdb(cell_type1 = 'B cell', cell_type2 = 'CD4T cell', scdata = kidneyimmune,
-	idents = 'celltype', means = means, pvals = pvals, split.by = 'Experiment',
-	gene.family = 'chemokines', col_option = viridis::cividis(50)) + small_guide() + small_axis() + small_legend(keysize=.5)
+    idents = 'celltype', means = means, pvals = pvals, split.by = 'Experiment',
+    gene.family = 'chemokines', col_option = viridis::cividis(50)) + small_guide() + small_axis() + small_legend(keysize=.5)
 ```
 ![plot_cpdb](exampleImages/plot_cpdb_example3.png)
 ```R
 plot_cpdb(cell_type1 = 'B cell', cell_type2 = 'CD4T cell', scdata = kidneyimmune,
-	idents = 'celltype', means = means, pvals = pvals, split.by = 'Experiment',
-	gene.family = 'chemokines', noir = TRUE) + small_guide() + small_axis() + small_legend(keysize=.5)
+    idents = 'celltype', means = means, pvals = pvals, split.by = 'Experiment',
+    gene.family = 'chemokines', noir = TRUE) + small_guide() + small_axis() + small_legend(keysize=.5)
 ```
 ![plot_cpdb](exampleImages/plot_cpdb_example4.png)
 
 A new style to plot inspired from `squidpy.pl.ligrec` where significant interactions are shown as outline instead.
 ```R
 plot_cpdb(cell_type1 = 'B cell', cell_type2 = 'CD4T cell', scdata = kidneyimmune,
-	idents = 'celltype', means = means, pvals = pvals, split.by = 'Experiment',
-	gene.family = 'chemokines', default_style = FALSE) + small_guide() + small_axis() + small_legend(keysize=.5)
+    idents = 'celltype', means = means, pvals = pvals, split.by = 'Experiment',
+    gene.family = 'chemokines', default_style = FALSE) + small_guide() + small_axis() + small_legend(keysize=.5)
 ```
 ![plot_cpdb](exampleImages/plot_cpdb_alternate2.png)
 
@@ -120,6 +110,56 @@ p <- plot_cpdb("B cell", "CD4T cell", kidneyimmune, "celltype", means, pvals,
 ```
 ![plot_cpdb](exampleImages/plotcpdb_custom.png)
 
+## combine_cpdb
+
+For the ```split.by``` option to work, the annotation in the meta file must be defined in the following format:
+```R
+{split.by}_{idents}
+```
+
+so to set up an example vector, it would be something like:
+```R
+annotation <- paste0(kidneyimmune$Experiment, '_', kidneyimmune$celltype)
+```
+
+The recommended way to use `split.by` is to prepare the data with `combine_cpdb` like in this example:
+
+```R
+# Assume you have 2 cellphonedb runs, one where it's just naive and the other is treated, you will end up with 2 cellphonedb out folders
+# remember, the celltype labels you provide to cellphonedb's meta.txt should already be like {split.by}_{idents}
+# so the two meta.txt should look like:
+
+# naive file
+# ATTAGTCGATCGTAGT-1    naive_CD4Tcell
+# ATTAGTGGATCGTAGT-1    naive_CD4Tcell
+# ATTAGTCGACCGTAGT-1    naive_CD8Tcell
+# ATTAGTCGATCGTAGT-1    naive_CD8Tcell
+# ATGAGTCGATCGTAGT-1    naive_Bcell
+# ATTAGTCGATCGTGGT-1    naive_Bcell
+
+# treated file
+# ATTAGTCAATCGTAGT-1    treated_CD4Tcell
+# ATTAGTGGATCGTAGT-1    treated_CD4Tcell
+# ATTAGTCGACCATAGT-1    treated_CD8Tcell
+# ATTAGTAGATCGTAGT-1    treated_CD8Tcell
+# ATGAGTCGATCGTAAT-1    treated_Bcell
+# ATTAGTCGATCGTGAT-1    treated_Bcell
+
+# one you have set that up correctly, you can then read in the files.
+naive_means <- read.delim("naive_out/means.txt", check.names = FALSE)
+naive_pvals <- read.delim("naive_out/pvalues.txt", check.names = FALSE)
+naive_decon <- read.delim("naive_out/deconvoluted.txt", check.names = FALSE)
+
+treated_means <- read.delim("treated_out/means.txt", check.names = FALSE)
+treated_pvals <- read.delim("treated_out/pvalues.txt", check.names = FALSE)
+treated_decon <- read.delim("treated_out/deconvoluted.txt", check.names = FALSE)
+
+means <- combine_cpdb(naive_means, treated_means)
+pvals <- combine_cpdb(naive_pvals, treated_pvals)
+decon <- combine_cpdb(naive_decon, treated_decon)
+
+plot_cpdb(...)
+```
 
 ### plot_cpdb2
 Generates a circos-style wire/arc/chord plot for cellphonedb results.
