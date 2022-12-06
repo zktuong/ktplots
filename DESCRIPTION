@@ -17,6 +17,7 @@ Imports:
 	viridis,
 	gtools,	
 	RColorBrewer,
+	purrr,
 	circlize,
 	ComplexHeatmap,
 	pheatmap
@@ -32,6 +33,7 @@ Depends:
 LazyData: true
 RoxygenNote: 7.1.2
 Collate: 
+    'combine_cpdb.R'
     'correlationSpot.R'
     'data.R'
     'geneDotPlot.R'
