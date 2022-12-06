@@ -161,7 +161,7 @@ decon <- combine_cpdb(naive_decon, treated_decon)
 plot_cpdb(...)
 ```
 
-### plot_cpdb2
+## plot_cpdb2
 Generates a circos-style wire/arc/chord plot for cellphonedb results.
 
 This function piggy-backs on the original `plot_cpdb` function and generates the results like this:
@@ -251,7 +251,7 @@ test <- plot_cpdb2(cell_type1 = "CD4_Tem|CD4_Tcm|CD4_Treg", # same usage style a
 ```
 ![plot_cpd2](exampleImages/plot_cpdb2.png)
 
-### plot_cpdb3
+## plot_cpdb3
 Generates a chord diagram inspired from [CellChat](https://github.com/sqjin/CellChat)'s way of showing the data!
 
 Usage is similar to `plot_cpdb2` but with reduced options. Additional kwargs are passed to `plot_cpdb`.
@@ -276,7 +276,7 @@ p
 ![plot_cpdb3](exampleImages/plot_cpdb3.png)
 
 
-### plot_cpdb4
+## plot_cpdb4
 New! Alternate way of showing the chord diagram for specific interactions!
 
 Usage is similar to `plot_cpdb3` but with additional required `interaction` option. Additional kwargs are passed to `plot_cpdb`.
@@ -323,7 +323,7 @@ plot_cpdb4(
 ![plot_cpdb42](exampleImages/plot_cpdb4_2.png)
 
 
-### plot_cpdb_heatmap
+## plot_cpdb_heatmap
 
 New! Ported the original heatmap plot to this pacakge as per the main cellphonedb repo. Uses `pheatmap` internally. Colours indicate the number of significant interactions.
 
@@ -336,7 +336,7 @@ plot_cpdb_heatmap(kidneyimmune, 'celltype', pvals2, cellheight = 10, cellwidth =
 
 ## Other useful functions
 
-### geneDotPlot
+## geneDotPlot
 Plotting gene expression dot plots heatmaps.
 ```R
 # Note, this conflicts with tidyr devel version
@@ -351,7 +351,7 @@ Hopefully you end up with something like this:
 ![geneDotPlot](exampleImages/geneDotPlot_example.png)
 
 
-### correlationSpot
+## correlationSpot
 Ever wanted to ask if your gene(s) and/or prediction(s) of interests correlate spatially in vissium data? Now you can!
 **disclaimer** It might be buggy.
 ```R
@@ -374,7 +374,7 @@ cowplot::plot_grid(pa, pb, p1, p2, ncol = 2)
 ![plot_cpdb](exampleImages/correlationSpot_example.png)
 
 
-### small_legend/small_guide/small_axis/small_grid/topright_legend/topleft_legend/bottomleft_legend/bottomright_legend
+## small_legend/small_guide/small_axis/small_grid/topright_legend/topleft_legend/bottomleft_legend/bottomright_legend
 As shown in the examples above, these are some functions to quickly adjust the size and position of ggplots.
 ```R
 # for example
@@ -387,12 +387,12 @@ g + g1
 
 
 
-### Citation
+## Citation
 If you find these functions useful, please consider leaving a star, citing this repository, and/or citing the following [DOI](https://doi.org/10.5281/zenodo.5717922):
 
-To cite a specific version of `ktplots`, please follow the links on the zenodo repository. e.g. v1.1.16:
+To cite a specific version of `ktplots`, please follow the links on the zenodo repository. e.g. v1.2.3:
 ```
-Zewen Kelvin Tuong. (2021). zktuong/ktplots: 1.1.16 (v1.1.16). Zenodo. https://doi.org/10.5281/zenodo.5717923
+Zewen Kelvin Tuong. (2021). zktuong/ktplots: 1.2.3 (v1.2.3). Zenodo. https://doi.org/10.5281/zenodo.5717922
 ```
 
 Thank you!
