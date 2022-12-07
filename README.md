@@ -38,16 +38,6 @@ Generates a dot plot after CellPhoneDB analysis via specifying the query celltyp
 
 The plotting is largely determined by the format of the meta file provided to CellPhoneDB analysis.
 
-For the ```split.by``` option to work, the annotation in the meta file must be defined in the following format:
-```R
-{split.by}_{idents}
-```
-
-so to set up an example vector, it would be something like:
-```R
-annotation <- paste0(kidneyimmune$Experiment, '_', kidneyimmune$celltype)
-```
-
 To run, you will need to load in the means.txt and pvals.txt from the analysis. If you are using results from cellphonedb `deg_analysis` mode from version >= 3, the `pvalues.txt` is `relevant_interactions.txt` and also add `degs_analysis = TRUE` into all the functions below. 
 ```R
 # pvals <- read.delim("pvalues.txt", check.names = FALSE)
@@ -67,34 +57,34 @@ small_axis(fontsize = 3) + small_grid() + small_guide() + small_legend(fontsize 
 You can also try specifying ```gene.family``` option which will grep some pre-determined genes.
 ```R
 plot_cpdb(cell_type1 = 'B cell', cell_type2 = 'CD4T cell', scdata = kidneyimmune,
-	idents = 'celltype', means = means, pvals = pvals, split.by = 'Experiment',
-	gene.family = 'chemokines') + small_guide() + small_axis() + small_legend(keysize=.5)
+    idents = 'celltype', means = means, pvals = pvals, split.by = 'Experiment',
+    gene.family = 'chemokines') + small_guide() + small_axis() + small_legend(keysize=.5)
 ```
 ![plot_cpdb](exampleImages/plot_cpdb_example1.png)
 ```R
 plot_cpdb(cell_type1 = 'B cell', cell_type2 = 'CD4T cell', scdata = kidneyimmune,
-	idents = 'celltype', means = means, pvals = pvals, split.by = 'Experiment',
-	gene.family = 'chemokines', col_option = "maroon", highlight = "blue") + small_guide() + small_axis() + small_legend(keysize=.5)
+    idents = 'celltype', means = means, pvals = pvals, split.by = 'Experiment',
+    gene.family = 'chemokines', col_option = "maroon", highlight = "blue") + small_guide() + small_axis() + small_legend(keysize=.5)
 ```
 ![plot_cpdb](exampleImages/plot_cpdb_example2.png)
 ```R
 plot_cpdb(cell_type1 = 'B cell', cell_type2 = 'CD4T cell', scdata = kidneyimmune,
-	idents = 'celltype', means = means, pvals = pvals, split.by = 'Experiment',
-	gene.family = 'chemokines', col_option = viridis::cividis(50)) + small_guide() + small_axis() + small_legend(keysize=.5)
+    idents = 'celltype', means = means, pvals = pvals, split.by = 'Experiment',
+    gene.family = 'chemokines', col_option = viridis::cividis(50)) + small_guide() + small_axis() + small_legend(keysize=.5)
 ```
 ![plot_cpdb](exampleImages/plot_cpdb_example3.png)
 ```R
 plot_cpdb(cell_type1 = 'B cell', cell_type2 = 'CD4T cell', scdata = kidneyimmune,
-	idents = 'celltype', means = means, pvals = pvals, split.by = 'Experiment',
-	gene.family = 'chemokines', noir = TRUE) + small_guide() + small_axis() + small_legend(keysize=.5)
+    idents = 'celltype', means = means, pvals = pvals, split.by = 'Experiment',
+    gene.family = 'chemokines', noir = TRUE) + small_guide() + small_axis() + small_legend(keysize=.5)
 ```
 ![plot_cpdb](exampleImages/plot_cpdb_example4.png)
 
 A new style to plot inspired from `squidpy.pl.ligrec` where significant interactions are shown as outline instead.
 ```R
 plot_cpdb(cell_type1 = 'B cell', cell_type2 = 'CD4T cell', scdata = kidneyimmune,
-	idents = 'celltype', means = means, pvals = pvals, split.by = 'Experiment',
-	gene.family = 'chemokines', default_style = FALSE) + small_guide() + small_axis() + small_legend(keysize=.5)
+    idents = 'celltype', means = means, pvals = pvals, split.by = 'Experiment',
+    gene.family = 'chemokines', default_style = FALSE) + small_guide() + small_axis() + small_legend(keysize=.5)
 ```
 ![plot_cpdb](exampleImages/plot_cpdb_alternate2.png)
 
@@ -120,8 +110,58 @@ p <- plot_cpdb("B cell", "CD4T cell", kidneyimmune, "celltype", means, pvals,
 ```
 ![plot_cpdb](exampleImages/plotcpdb_custom.png)
 
+## combine_cpdb
 
-### plot_cpdb2
+For the ```split.by``` option to work, the annotation in the meta file must be defined in the following format:
+```R
+{split.by}_{idents}
+```
+
+so to set up an example vector, it would be something like:
+```R
+annotation <- paste0(kidneyimmune$Experiment, '_', kidneyimmune$celltype)
+```
+
+The recommended way to use `split.by` is to prepare the data with `combine_cpdb` like in this example:
+
+```R
+# Assume you have 2 cellphonedb runs, one where it's just naive and the other is treated, you will end up with 2 cellphonedb out folders
+# remember, the celltype labels you provide to cellphonedb's meta.txt should already be like {split.by}_{idents}
+# so the two meta.txt should look like:
+
+# naive file
+# ATTAGTCGATCGTAGT-1    naive_CD4Tcell
+# ATTAGTGGATCGTAGT-1    naive_CD4Tcell
+# ATTAGTCGACCGTAGT-1    naive_CD8Tcell
+# ATTAGTCGATCGTAGT-1    naive_CD8Tcell
+# ATGAGTCGATCGTAGT-1    naive_Bcell
+# ATTAGTCGATCGTGGT-1    naive_Bcell
+
+# treated file
+# ATTAGTCAATCGTAGT-1    treated_CD4Tcell
+# ATTAGTGGATCGTAGT-1    treated_CD4Tcell
+# ATTAGTCGACCATAGT-1    treated_CD8Tcell
+# ATTAGTAGATCGTAGT-1    treated_CD8Tcell
+# ATGAGTCGATCGTAAT-1    treated_Bcell
+# ATTAGTCGATCGTGAT-1    treated_Bcell
+
+# one you have set that up correctly, you can then read in the files.
+naive_means <- read.delim("naive_out/means.txt", check.names = FALSE)
+naive_pvals <- read.delim("naive_out/pvalues.txt", check.names = FALSE)
+naive_decon <- read.delim("naive_out/deconvoluted.txt", check.names = FALSE)
+
+treated_means <- read.delim("treated_out/means.txt", check.names = FALSE)
+treated_pvals <- read.delim("treated_out/pvalues.txt", check.names = FALSE)
+treated_decon <- read.delim("treated_out/deconvoluted.txt", check.names = FALSE)
+
+means <- combine_cpdb(naive_means, treated_means)
+pvals <- combine_cpdb(naive_pvals, treated_pvals)
+decon <- combine_cpdb(naive_decon, treated_decon)
+
+plot_cpdb(...)
+```
+
+## plot_cpdb2
 Generates a circos-style wire/arc/chord plot for cellphonedb results.
 
 This function piggy-backs on the original `plot_cpdb` function and generates the results like this:
@@ -211,7 +251,7 @@ test <- plot_cpdb2(cell_type1 = "CD4_Tem|CD4_Tcm|CD4_Treg", # same usage style a
 ```
 ![plot_cpd2](exampleImages/plot_cpdb2.png)
 
-### plot_cpdb3
+## plot_cpdb3
 Generates a chord diagram inspired from [CellChat](https://github.com/sqjin/CellChat)'s way of showing the data!
 
 Usage is similar to `plot_cpdb2` but with reduced options. Additional kwargs are passed to `plot_cpdb`.
@@ -236,7 +276,7 @@ p
 ![plot_cpdb3](exampleImages/plot_cpdb3.png)
 
 
-### plot_cpdb4
+## plot_cpdb4
 New! Alternate way of showing the chord diagram for specific interactions!
 
 Usage is similar to `plot_cpdb3` but with additional required `interaction` option. Additional kwargs are passed to `plot_cpdb`.
@@ -283,7 +323,7 @@ plot_cpdb4(
 ![plot_cpdb42](exampleImages/plot_cpdb4_2.png)
 
 
-### plot_cpdb_heatmap
+## plot_cpdb_heatmap
 
 New! Ported the original heatmap plot to this pacakge as per the main cellphonedb repo. Uses `pheatmap` internally. Colours indicate the number of significant interactions.
 
@@ -296,7 +336,7 @@ plot_cpdb_heatmap(kidneyimmune, 'celltype', pvals2, cellheight = 10, cellwidth =
 
 ## Other useful functions
 
-### geneDotPlot
+## geneDotPlot
 Plotting gene expression dot plots heatmaps.
 ```R
 # Note, this conflicts with tidyr devel version
@@ -311,7 +351,7 @@ Hopefully you end up with something like this:
 ![geneDotPlot](exampleImages/geneDotPlot_example.png)
 
 
-### correlationSpot
+## correlationSpot
 Ever wanted to ask if your gene(s) and/or prediction(s) of interests correlate spatially in vissium data? Now you can!
 **disclaimer** It might be buggy.
 ```R
@@ -334,7 +374,7 @@ cowplot::plot_grid(pa, pb, p1, p2, ncol = 2)
 ![plot_cpdb](exampleImages/correlationSpot_example.png)
 
 
-### small_legend/small_guide/small_axis/small_grid/topright_legend/topleft_legend/bottomleft_legend/bottomright_legend
+## small_legend/small_guide/small_axis/small_grid/topright_legend/topleft_legend/bottomleft_legend/bottomright_legend
 As shown in the examples above, these are some functions to quickly adjust the size and position of ggplots.
 ```R
 # for example
@@ -347,12 +387,12 @@ g + g1
 
 
 
-### Citation
+## Citation
 If you find these functions useful, please consider leaving a star, citing this repository, and/or citing the following [DOI](https://doi.org/10.5281/zenodo.5717922):
 
-To cite a specific version of `ktplots`, please follow the links on the zenodo repository. e.g. v1.1.16:
+To cite a specific version of `ktplots`, please follow the links on the zenodo repository. e.g. v1.2.3:
 ```
-Zewen Kelvin Tuong. (2021). zktuong/ktplots: 1.1.16 (v1.1.16). Zenodo. https://doi.org/10.5281/zenodo.5717923
+Zewen Kelvin Tuong. (2021). zktuong/ktplots: 1.2.3 (v1.2.3). Zenodo. https://doi.org/10.5281/zenodo.5717922
 ```
 
 Thank you!

@@ -2,6 +2,11 @@ data(kidneyimmune)
 data(cpdb_output)
 data(cpdb_output2)
 
+test_that("combine_cpdb works 1", {
+    p <- combine_cpdb(decon, decon, decon)
+})
+
+
 test_that("plot_cpdb works 1", {
     p <- plot_cpdb("B cell", "CD4T cell", kidneyimmune, "celltype", means, pvals,
         split.by = "Experiment", genes = c("CXCL13", "CD274", "CXCR5"), verbose = TRUE)
