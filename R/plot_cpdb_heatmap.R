@@ -76,13 +76,14 @@ plot_cpdb_heatmap <- function(scdata, idents, pvals, log1p_transform = FALSE, sh
   colnames(all_intr) <- intr_pairs
   all_count <- reshape2::melt(all_intr)
   if (!degs_analysis){
-    all_count <- all_count[all_count$value < alpha, ]
+    all_count$significant <- all_count$value < alpha
   } else {
-    all_count <- all_count[all_count$value == 1, ]
+    all_count$significant <- all_count$value == 1
   }
-  count1x <- all_count[, 1, drop = FALSE] %>%
-    group_by_all() %>%
-    summarise(COUNT = n()) %>%
+
+  count1x <- all_count %>%
+    group_by(Var1) %>%
+    summarise(COUNT = sum(significant)) %>%
     as.data.frame
   tmp <- lapply(count1x[, 1], function(x) strsplit(as.character(x), "\\|"))
   tmp <- lapply(tmp, function(x) x[[1]])
