@@ -110,7 +110,7 @@ plot_cpdb_heatmap <- function(scdata, idents, pvals, log1p_transform = FALSE, sh
       main = main, treeheight_row = treeheight_row, family = family, color = col.heatmap,
       treeheight_col = treeheight_col, ...)
     if (return_tables) {
-      return(list(count_network = count_matrix, interaction_count = all_sum))
+      return(list(count_network = count_mat, interaction_count = all_sum))
     } else {
       return(p)
     }
