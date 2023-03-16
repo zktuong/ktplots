@@ -20,7 +20,7 @@ jobs:
       matrix:
         config:
           - { r-version: release, os: ubuntu-latest}
-          - { r-version: release, os: ubuntu-latest}
+          - { r-version: release, os: macos-latest}
     runs-on: ${{ matrix.config.os }}
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
