@@ -6,6 +6,9 @@
 \usage{
 combine_cpdb(...)
 }
+\arguments{
+\item{...}{multiple cellphonedb outputs.}
+}
 \value{
 combine results from multiple cellphonedb runs.
 }

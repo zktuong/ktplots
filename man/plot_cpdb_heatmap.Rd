@@ -28,6 +28,7 @@ plot_cpdb_heatmap(
   return_tables = FALSE,
   degs_analysis = FALSE,
   verbose = FALSE,
+  symmetrical = TRUE,
   ...
 )
 }
@@ -77,6 +78,8 @@ plot_cpdb_heatmap(
 \item{degs_analysis}{if is cellphonedb degs_analysis mode.}
 
 \item{verbose}{prints cat/print statements if TRUE.}
+
+\item{symmetrical}{whether or not to return as symmetrical matrix}
 
 \item{...}{passed to pheatmap::pheatmap.}
 }

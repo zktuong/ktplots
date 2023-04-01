@@ -1,6 +1,6 @@
 #' combine multiple results from cellphonedb.
 #'
-#' @param decons
+#' @param ... multiple cellphonedb outputs.
 #' @return combine results from multiple cellphonedb runs.
 #' @import dplyr
 #' @import purrr

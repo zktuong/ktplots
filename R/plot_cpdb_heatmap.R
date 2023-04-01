@@ -24,6 +24,7 @@
 #' @param return_tables whether or not to return the results as a table rather than the heatmap
 #' @param degs_analysis if is cellphonedb degs_analysis mode.
 #' @param verbose prints cat/print statements if TRUE.
+#' @param symmetrical whether or not to return as symmetrical matrix
 #' @param ... passed to pheatmap::pheatmap.
 #' @return pheatmap object of cellphone db output
 #' @examples
@@ -39,8 +40,8 @@ plot_cpdb_heatmap <- function(scdata, idents, pvals, log1p_transform = FALSE, sh
   show_colnames = TRUE, scale = "none", cluster_cols = TRUE, cluster_rows = TRUE,
   border_color = "white", fontsize_row = 11, fontsize_col = 11, family = "Arial",
   main = "", treeheight_col = 0, treeheight_row = 0, low_col = "dodgerblue4", mid_col = "peachpuff",
-  high_col = "deeppink4", alpha = 0.05, return_tables = FALSE, degs_analysis = FALSE, verbose = FALSE,
-  ...) {
+  high_col = "deeppink4", alpha = 0.05, return_tables = FALSE, degs_analysis = FALSE,
+  verbose = FALSE, symmetrical = TRUE, ...) {
   requireNamespace("reshape2")
   requireNamespace("grDevices")
   if (class(scdata) %in% c("SingleCellExperiment", "SummarizedExperiment")) {
@@ -75,7 +76,7 @@ plot_cpdb_heatmap <- function(scdata, idents, pvals, log1p_transform = FALSE, sh
   all_intr <- t(all_intr[, -c(1:11)])
   colnames(all_intr) <- intr_pairs
   all_count <- reshape2::melt(all_intr)
-  if (!degs_analysis){
+  if (!degs_analysis) {
     all_count$significant <- all_count$value < alpha
   } else {
     all_count$significant <- all_count$value == 1
@@ -84,7 +85,7 @@ plot_cpdb_heatmap <- function(scdata, idents, pvals, log1p_transform = FALSE, sh
   count1x <- all_count %>%
     group_by(Var1) %>%
     summarise(COUNT = sum(significant)) %>%
-    as.data.frame
+    as.data.frame()
   tmp <- lapply(count1x[, 1], function(x) strsplit(as.character(x), "\\|"))
   tmp <- lapply(tmp, function(x) x[[1]])
   tmp <- as.data.frame(do.call(rbind, tmp))
@@ -99,7 +100,11 @@ plot_cpdb_heatmap <- function(scdata, idents, pvals, log1p_transform = FALSE, sh
     all_sum <- rowSums(count_mat)
     all_sum <- cbind(names(all_sum), all_sum)
     col.heatmap <- (grDevices::colorRampPalette(c(low_col, mid_col, high_col)))(1000)
-
+    if (symmetrical) {
+      dcm <- diag(count_mat)
+      count_mat <- count_mat + t(count_mat)
+      diag(count_mat) <- dcm
+    }
     if (log1p_transform) {
       count_mat <- log1p(count_mat)
     }
@@ -114,9 +119,7 @@ plot_cpdb_heatmap <- function(scdata, idents, pvals, log1p_transform = FALSE, sh
     } else {
       return(p)
     }
-
   } else {
     stop("There are no significant results using p-value of: ", alpha, call. = FALSE)
   }
-
 }

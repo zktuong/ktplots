@@ -1,7 +1,7 @@
 Package: ktplots
 Title: Plot single-cell data dotplots
-Version: 1.2.3
-Authors@R: person("Kelvin", "Tuong", email = c("z.tuong@uq.edu.au", "zkt22@cam.ac.uk", "kt16@sanger.ac.uk"), role = c("aut", "cre"))
+Version: 1.2.4
+Authors@R: person("Kelvin", "Tuong", email = c("z.tuong@uq.edu.au"), role = c("aut", "cre"))
 Description: Plotting tools for scData.
 License: MIT
 Encoding: UTF-8
@@ -31,7 +31,7 @@ Suggests:
 Depends:
 	ggplot2
 LazyData: true
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.3
 Collate: 
     'combine_cpdb.R'
     'correlationSpot.R'
