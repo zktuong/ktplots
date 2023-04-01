@@ -41,7 +41,7 @@ plot_cpdb_heatmap <- function(scdata, idents, pvals, log1p_transform = FALSE, sh
   border_color = "white", fontsize_row = 11, fontsize_col = 11, family = "Arial",
   main = "", treeheight_col = 0, treeheight_row = 0, low_col = "dodgerblue4", mid_col = "peachpuff",
   high_col = "deeppink4", alpha = 0.05, return_tables = FALSE, degs_analysis = FALSE,
-  verbose = FALSE, symmetrical = FALSE, ...) {
+  verbose = FALSE, symmetrical = TRUE, ...) {
   requireNamespace("reshape2")
   requireNamespace("grDevices")
   if (class(scdata) %in% c("SingleCellExperiment", "SummarizedExperiment")) {
