@@ -28,7 +28,7 @@ plot_cpdb_heatmap(
   return_tables = FALSE,
   degs_analysis = FALSE,
   verbose = FALSE,
-  symmetrical = FALSE,
+  symmetrical = TRUE,
   ...
 )
 }

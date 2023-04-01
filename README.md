@@ -325,14 +325,35 @@ plot_cpdb4(
 
 ## plot_cpdb_heatmap
 
-New! Ported the original heatmap plot to this pacakge as per the main cellphonedb repo. Uses `pheatmap` internally. Colours indicate the number of significant interactions.
+New! Ported the original heatmap plot to this pacakge as per the main cellphonedb repo. Uses `pheatmap` internally. Colours indicate the number of significant interactions. The values for the `symmetrical=False` mode follow the direction of the L-R direction where it's always moleculeA:celltypeA -> moleculeB:celltypeB. For example,
+ 
+ - x axis -> y axis:
+    
+    A: MNPc(DC)
+    
+    B: NK cell 
+    
+    A -> B is 22 interactions
+ - y axis -> x axis:
+   
+    
+    A: NK cell
+    
+    B: MNPc(DC)
+    
+    A -> B is 20 interactions
 
 ```R
 plot_cpdb_heatmap(kidneyimmune, 'celltype', pvals2, cellheight = 10, cellwidth = 10)
 ```
 
-![plot_cpdb_heatmap](exampleImages/plot_cpdb_heatmap.png)
+![plot_cpdb_heatmap](exampleImages/plot_cpdb_heatmap2.png)
 
+```R
+plot_cpdb_heatmap(kidneyimmune, 'celltype', pvals2, cellheight = 10, cellwidth = 10, symmetrical = FALSE)
+```
+
+![plot_cpdb_heatmap](exampleImages/plot_cpdb_heatmap.png)
 
 ## Other useful functions
 
