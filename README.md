@@ -325,23 +325,7 @@ plot_cpdb4(
 
 ## plot_cpdb_heatmap
 
-New! Ported the original heatmap plot to this pacakge as per the main cellphonedb repo. Uses `pheatmap` internally. Colours indicate the number of significant interactions. The values for the `symmetrical=False` mode follow the direction of the L-R direction where it's always moleculeA:celltypeA -> moleculeB:celltypeB. For example,
- 
- - x axis -> y axis:
-    
-    A: MNPc(DC)
-    
-    B: NK cell 
-    
-    A -> B is 22 interactions
- - y axis -> x axis:
-   
-    
-    A: NK cell
-    
-    B: MNPc(DC)
-    
-    A -> B is 20 interactions
+Ported the original heatmap plot to this pacakge as per the main cellphonedb repo. Uses `pheatmap` internally. Colours indicate the number of significant interactions. 
 
 ```R
 plot_cpdb_heatmap(kidneyimmune, 'celltype', pvals2, cellheight = 10, cellwidth = 10)
@@ -354,6 +338,18 @@ plot_cpdb_heatmap(kidneyimmune, 'celltype', pvals2, cellheight = 10, cellwidth =
 ```
 
 ![plot_cpdb_heatmap](exampleImages/plot_cpdb_heatmap.png)
+
+The values for the `symmetrical=FALSE` mode follow the direction of the L-R direction where it's always moleculeA:celltypeA -> moleculeB:celltypeB.
+
+Therefore, if you trace on the `x-axis` for `celltype A` [MNPa(mono)] to `celltype B` [CD8T cell] on the `y-axis`:
+
+A -> B is 18 interactions
+
+Whereas if you trace on the `y-axis` for `celltype A` [MNPa(mono)] to `celltype B` [CD8T cell] on the `x-axis`:
+
+A -> B is 9 interactions
+
+`symmetrical=TRUE` mode will return 18+9 = 27
 
 ## Other useful functions
 

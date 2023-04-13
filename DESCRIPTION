@@ -1,6 +1,6 @@
 Package: ktplots
 Title: Plot single-cell data dotplots
-Version: 1.2.4
+Version: 1.2.5
 Authors@R: person("Kelvin", "Tuong", email = c("z.tuong@uq.edu.au"), role = c("aut", "cre"))
 Description: Plotting tools for scData.
 License: MIT
