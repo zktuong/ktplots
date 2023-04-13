@@ -31,23 +31,25 @@
 #' \donttest{
 #' data(kidneyimmune)
 #' data(cpdb_output2)
-#' plot_cpdb_heatmap(kidneyimmune, 'celltype', pvals2)
+#' plot_cpdb_heatmap(kidneyimmune, "celltype", pvals2)
 #' }
 #' @import pheatmap
 #' @export
 
-plot_cpdb_heatmap <- function(scdata, idents, pvals, log1p_transform = FALSE, show_rownames = TRUE,
-  show_colnames = TRUE, scale = "none", cluster_cols = TRUE, cluster_rows = TRUE,
-  border_color = "white", fontsize_row = 11, fontsize_col = 11, family = "Arial",
-  main = "", treeheight_col = 0, treeheight_row = 0, low_col = "dodgerblue4", mid_col = "peachpuff",
-  high_col = "deeppink4", alpha = 0.05, return_tables = FALSE, degs_analysis = FALSE,
-  verbose = FALSE, symmetrical = TRUE, ...) {
+plot_cpdb_heatmap <- function(
+    scdata, idents, pvals, log1p_transform = FALSE, show_rownames = TRUE,
+    show_colnames = TRUE, scale = "none", cluster_cols = TRUE, cluster_rows = TRUE,
+    border_color = "white", fontsize_row = 11, fontsize_col = 11, family = "Arial",
+    main = "", treeheight_col = 0, treeheight_row = 0, low_col = "dodgerblue4", mid_col = "peachpuff",
+    high_col = "deeppink4", alpha = 0.05, return_tables = FALSE, degs_analysis = FALSE,
+    verbose = FALSE, symmetrical = TRUE, ...) {
   requireNamespace("reshape2")
   requireNamespace("grDevices")
   if (class(scdata) %in% c("SingleCellExperiment", "SummarizedExperiment")) {
     if (verbose) {
       cat("data provided is a SingleCellExperiment/SummarizedExperiment object",
-        sep = "\n")
+        sep = "\n"
+      )
       cat("extracting expression matrix", sep = "\n")
     }
     requireNamespace("SummarizedExperiment")
@@ -96,26 +98,36 @@ plot_cpdb_heatmap <- function(scdata, idents, pvals, log1p_transform = FALSE, sh
   if (any(all_count$COUNT) > 0) {
     count_mat <- reshape2::acast(SOURCE ~ TARGET, data = all_count, value.var = "COUNT")
     count_mat[is.na(count_mat)] <- 0
-
-    all_sum <- rowSums(count_mat)
-    all_sum <- cbind(names(all_sum), all_sum)
     col.heatmap <- (grDevices::colorRampPalette(c(low_col, mid_col, high_col)))(1000)
     if (symmetrical) {
       dcm <- diag(count_mat)
       count_mat <- count_mat + t(count_mat)
       diag(count_mat) <- dcm
     }
+    
     if (log1p_transform) {
       count_mat <- log1p(count_mat)
     }
 
-    p <- pheatmap(count_mat, show_rownames = show_rownames, show_colnames = show_colnames,
+    p <- pheatmap(count_mat,
+      show_rownames = show_rownames, show_colnames = show_colnames,
       scale = scale, cluster_cols = cluster_cols, border_color = border_color,
       cluster_rows = cluster_rows, fontsize_row = fontsize_row, fontsize_col = fontsize_col,
       main = main, treeheight_row = treeheight_row, family = family, color = col.heatmap,
-      treeheight_col = treeheight_col, ...)
+      treeheight_col = treeheight_col, ...
+    )
     if (return_tables) {
-      return(list(count_network = count_mat, interaction_count = all_sum))
+      if (symmetrical) {
+        all_sum <- rowSums(count_mat)
+        all_sum <- data.frame(all_sum)
+        return(list(count_network = count_mat, interaction_count = all_sum))
+      } else {
+        count_mat <- t(count_mat) # so that the table output is the same layout as the plot
+        row_sum <- rowSums(count_mat)
+        col_sum <- colSums(count_mat)
+        all_sum <- data.frame(row_sum, col_sum)
+        return(list(count_network = count_mat, interaction_count = all_sum))
+      }
     } else {
       return(p)
     }

@@ -93,6 +93,6 @@ Plotting cellphonedb results as a heatmap
 \donttest{
 data(kidneyimmune)
 data(cpdb_output2)
-plot_cpdb_heatmap(kidneyimmune, 'celltype', pvals2)
+plot_cpdb_heatmap(kidneyimmune, "celltype", pvals2)
 }
 }
