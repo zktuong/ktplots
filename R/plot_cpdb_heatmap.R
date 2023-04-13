@@ -104,6 +104,7 @@ plot_cpdb_heatmap <- function(
       count_mat <- count_mat + t(count_mat)
       diag(count_mat) <- dcm
     }
+    
     if (log1p_transform) {
       count_mat <- log1p(count_mat)
     }
@@ -125,7 +126,7 @@ plot_cpdb_heatmap <- function(
         row_sum <- rowSums(count_mat)
         col_sum <- colSums(count_mat)
         all_sum <- data.frame(row_sum, col_sum)
-        return(list(count_network = t(count_mat), interaction_count = all_sum))
+        return(list(count_network = count_mat, interaction_count = all_sum))
       }
     } else {
       return(p)
