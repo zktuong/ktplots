@@ -571,7 +571,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
     df$x_stroke[!is.na(df$x_stroke)] <- 0
     df$x_stroke[is.na(df$x_stroke)] <- 2
     if (!is.null(exclude_interactions)) {
-        df <- df[!df$Var1 %in% c(exclude_interactions)]
+        df <- df[!df$Var1 %in% c(exclude_interactions),]
     }
     if (return_table) {
         return(df)
