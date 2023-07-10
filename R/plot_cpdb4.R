@@ -31,40 +31,51 @@
 #' @return Plotting cellphonedb results as a CellChat inspired chord diagram for specific interactions
 #' @examples
 #' \donttest{
+#'
 #' }
 #' @include utils.R
 #' @importFrom circlize circos.clear chordDiagram
 #' @importFrom grDevices recordPlot
 #' @export
 
-plot_cpdb4 <- function(interaction, cell_type1, cell_type2, scdata, idents, means,
+plot_cpdb4 <- function(
+    interaction, cell_type1, cell_type2, scdata, idents, means,
     pvals, deconvoluted, p.adjust.method = NULL, keep_significant_only = TRUE, split.by = NULL,
     standard_scale = TRUE, separator = NULL, gene_symbol_mapping = NULL, frac = 0.1,
     remove_self = TRUE, desiredInteractions = NULL, degs_analysis = FALSE, directional = 1,
     alpha = 0.5, edge_colors = NULL, grid_colors = NULL, grid_scale = 0.1, show_legend = TRUE,
     legend.pos.x = 20, legend.pos.y = 20, ...) {
     genes <- strsplit(interaction, "-")
-    genesx <- unlist(lapply(genes, function(g) c(paste(g, collapse = "-"), paste(rev(g),
-        collapse = "-"))))
+    genesx <- unlist(lapply(genes, function(g) {
+        c(paste(g, collapse = "-"), paste(rev(g),
+            collapse = "-"
+        ))
+    }))
     if (class(scdata) == "Seurat") {
         stop("Sorry not supported. Please use a SingleCellExperiment object.")
     }
     if (length(separator) > 0) {
-        sep = separator
+        sep <- separator
     } else {
-        sep = ">@<"
+        sep <- ">@<"
     }
-    lr_interactions = plot_cpdb(cell_type1 = ".", cell_type2 = ".", scdata = scdata,
+    lr_interactions <- plot_cpdb(
+        cell_type1 = ".", cell_type2 = ".", scdata = scdata,
         idents = idents, split.by = split.by, means = means, pvals = pvals, keep_significant_only = keep_significant_only,
         standard_scale = standard_scale, return_table = TRUE, degs_analysis = degs_analysis,
-        ...)
+        ...
+    )
     lr_interactions <- lr_interactions[lr_interactions$Var1 %in% genesx, ]
-    lr_interactions <- cbind(lr_interactions, do.call(rbind, strsplit(as.character(lr_interactions$group),
-        ">@<")))
-    vals1 = grep(paste0(c(cell_type1, cell_type2), collapse = "|"), lr_interactions$`1`,
-        value = TRUE)
-    vals2 = grep(paste0(c(cell_type1, cell_type2), collapse = "|"), lr_interactions$`2`,
-        value = TRUE)
+    lr_interactions <- cbind(lr_interactions, do.call(rbind, strsplit(
+        as.character(lr_interactions$group),
+        ">@<"
+    )))
+    vals1 <- grep(paste0(c(cell_type1, cell_type2), collapse = "|"), lr_interactions$`1`,
+        value = TRUE
+    )
+    vals2 <- grep(paste0(c(cell_type1, cell_type2), collapse = "|"), lr_interactions$`2`,
+        value = TRUE
+    )
     vals <- unique(c(vals1, vals2))
     lr_interactions[!((lr_interactions$`1` %in% vals) & (lr_interactions$`2` %in%
         vals)), 3] <- 0
@@ -72,26 +83,35 @@ plot_cpdb4 <- function(interaction, cell_type1, cell_type2, scdata, idents, mean
         vals)), 4] <- NA
     requireNamespace("SummarizedExperiment")
     requireNamespace("SingleCellExperiment")
-    subset_clusters <- unique(unlist(lapply(as.character(lr_interactions$group),
-        strsplit, sep)))
+    subset_clusters <- unique(unlist(lapply(
+        as.character(lr_interactions$group),
+        strsplit, sep
+    )))
     sce_subset <- scdata[, SummarizedExperiment::colData(scdata)[, idents] %in% subset_clusters]
-    interactions <- means[, c("interacting_pair", "gene_a", "gene_b", "partner_a",
-        "partner_b", "receptor_a", "receptor_b")]
+    interactions <- means[, c(
+        "interacting_pair", "gene_a", "gene_b", "partner_a",
+        "partner_b", "receptor_a", "receptor_b"
+    )]
     interactions$converted <- gsub("-", " ", interactions$interacting_pair)
     interactions$converted <- gsub("_", "-", interactions$converted)
-    interactions_subset <- interactions[interactions$converted %in% lr_interactions$Var1,
-        ]
-    tm0 <- do.call(c, lapply(as.list(interactions_subset$interacting_pair), strsplit,
-        "_"))
+    interactions_subset <- interactions[interactions$converted %in% lr_interactions$Var1, ]
+    tm0 <- do.call(c, lapply(
+        as.list(interactions_subset$interacting_pair), strsplit,
+        "_"
+    ))
     if (any(lapply(tm0, length) > 2)) {
         complex_id <- which(lapply(tm0, length) > 2)
-        interactions_subset_ = interactions_subset[complex_id, ]
-        simple_1 = interactions_subset_$interacting_pair[grep("complex:", interactions_subset_$partner_b)]
-        partner_1 = gsub("complex:", "", interactions_subset_$partner_b[grep("complex:",
-            interactions_subset_$partner_b)])
-        partner_2 = gsub("complex:", "", interactions_subset_$partner_a[grep("complex:",
-            interactions_subset_$partner_a)])
-        simple_2 = interactions_subset_$interacting_pair[grep("complex:", interactions_subset_$partner_a)]
+        interactions_subset_ <- interactions_subset[complex_id, ]
+        simple_1 <- interactions_subset_$interacting_pair[grep("complex:", interactions_subset_$partner_b)]
+        partner_1 <- gsub("complex:", "", interactions_subset_$partner_b[grep(
+            "complex:",
+            interactions_subset_$partner_b
+        )])
+        partner_2 <- gsub("complex:", "", interactions_subset_$partner_a[grep(
+            "complex:",
+            interactions_subset_$partner_a
+        )])
+        simple_2 <- interactions_subset_$interacting_pair[grep("complex:", interactions_subset_$partner_a)]
         for (i in seq_along(simple_1)) {
             simple_1[i] <- gsub(paste0(partner_1[i], "_|_", partner_1[i]), "", simple_1[i])
         }
@@ -103,22 +123,26 @@ plot_cpdb4 <- function(interaction, cell_type1, cell_type2, scdata, idents, mean
         for (i in seq_along(complex_id)) {
             tm0[[complex_id[i]]] <- tmplist[[i]]
         }
-        tm0 = data.frame(t(matrix(unlist(tm0), 2, length(unlist(tm0))/2)))
+        tm0 <- data.frame(t(matrix(unlist(tm0), 2, length(unlist(tm0)) / 2)))
         colnames(tm0) <- c("id_a", "id_b")
         interactions_subset <- cbind(interactions_subset, tm0)
-        dictionary <- interactions_subset[, c("gene_a", "gene_b", "partner_a", "partner_b",
-            "id_a", "id_b", "receptor_a", "receptor_b")]
+        dictionary <- interactions_subset[, c(
+            "gene_a", "gene_b", "partner_a", "partner_b",
+            "id_a", "id_b", "receptor_a", "receptor_b"
+        )]
     } else {
-        tm0 = data.frame(t(matrix(unlist(tm0), 2, length(unlist(tm0))/2)))
+        tm0 <- data.frame(t(matrix(unlist(tm0), 2, length(unlist(tm0)) / 2)))
         colnames(tm0) <- c("id_a", "id_b")
         interactions_subset <- cbind(interactions_subset, tm0)
-        dictionary <- interactions_subset[, c("gene_a", "gene_b", "partner_a", "partner_b",
-            "id_a", "id_b", "receptor_a", "receptor_b")]
+        dictionary <- interactions_subset[, c(
+            "gene_a", "gene_b", "partner_a", "partner_b",
+            "id_a", "id_b", "receptor_a", "receptor_b"
+        )]
     }
     # extract all the possible genes.
-    geneid = unique(c(interactions_subset$id_a, interactions_subset$id_b))
+    geneid <- unique(c(interactions_subset$id_a, interactions_subset$id_b))
     if (all(!geneid %in% row.names(sce_subset))) {
-        geneid = unique(c(interactions_subset$gene_a, interactions_subset$gene_b))
+        geneid <- unique(c(interactions_subset$gene_a, interactions_subset$gene_b))
     }
     sce_subset_tmp <- sce_subset[row.names(sce_subset) %in% geneid, ]
     if (dim(sce_subset_tmp)[1] == 0) {
@@ -135,10 +159,14 @@ plot_cpdb4 <- function(interaction, cell_type1, cell_type2, scdata, idents, mean
         }
         for (n in names(sce_list)) {
             for (x in unique(meta[, idents])) {
-                sce_list[[n]][[x]] <- sce_subset_tmp[, meta[, idents] == x & meta[,
-                  split.by] == n]
-                sce_list_alt[[n]][[x]] <- sce_subset[, meta[, idents] == x & meta[,
-                  split.by] == n]
+                sce_list[[n]][[x]] <- sce_subset_tmp[, meta[, idents] == x & meta[
+                    ,
+                    split.by
+                ] == n]
+                sce_list_alt[[n]][[x]] <- sce_subset[, meta[, idents] == x & meta[
+                    ,
+                    split.by
+                ] == n]
             }
         }
         sce_list2 <- lapply(sce_list, function(y) {
@@ -177,15 +205,14 @@ plot_cpdb4 <- function(interaction, cell_type1, cell_type2, scdata, idents, mean
     names(id_b_dict) <- dictionary$gene_b[keep_b]
     id_dict <- c(id_a_dict, id_b_dict)
     id_dict <- id_dict[!duplicated(names(id_dict))]
-    humanreadablename = c()
+    humanreadablename <- c()
     for (i in row.names(sce_list2)) {
-        humanreadablename = c(humanreadablename, as.character(unlist(id_dict[i])))
+        humanreadablename <- c(humanreadablename, as.character(unlist(id_dict[i])))
     }
     rownames(sce_list2) <- humanreadablename
     rownames(sce_list3) <- humanreadablename
-    decon_subset <- deconvoluted[deconvoluted$complex_name %in% .findComplex(interactions_subset),
-        ]
-        if (nrow(decon_subset) > 0) {
+    decon_subset <- deconvoluted[deconvoluted$complex_name %in% .findComplex(interactions_subset), ]
+    if (nrow(decon_subset) > 0) {
         # although multiple rows are returned, really it's the same value for
         # the same complex
         decon_subset <- split(decon_subset, decon_subset$complex_name)
@@ -234,16 +261,22 @@ plot_cpdb4 <- function(interaction, cell_type1, cell_type2, scdata, idents, mean
     # make a big fat edgelist
     if (!is.null(desiredInteractions)) {
         if (class(desiredInteractions) == "list") {
-            desiredInteractions_ <- c(desiredInteractions, lapply(desiredInteractions,
-                rev))
+            desiredInteractions_ <- c(desiredInteractions, lapply(
+                desiredInteractions,
+                rev
+            ))
             cell_type_grid <- as.data.frame(do.call(rbind, desiredInteractions_))
         } else if ((class(desiredInteractions) == "data.frame")) {
             cell_type_grid <- desiredInteractions
         }
-        cells_test = unique(unlist(desiredInteractions))
+        cells_test <- unique(unlist(desiredInteractions))
     } else {
-        cells_test <- tryCatch(unique(droplevels(meta[, idents])), error = function(e) unique(meta[,
-            idents]))
+        cells_test <- tryCatch(unique(droplevels(meta[, idents])), error = function(e) {
+            unique(meta[
+                ,
+                idents
+            ])
+        })
         cell_type_grid <- expand.grid(cells_test, cells_test)
     }
     if (remove_self) {
@@ -260,33 +293,37 @@ plot_cpdb4 <- function(interaction, cell_type1, cell_type2, scdata, idents, mean
     receptor_b <- interactions_subset$receptor_b
     producers <- as.character(cell_type_grid[, 1])
     receivers <- as.character(cell_type_grid[, 2])
-    barcodes = paste0(lr_interactions$Var2, sep, lr_interactions$Var1)
+    barcodes <- paste0(lr_interactions$Var2, sep, lr_interactions$Var1)
     dfx <- list()
     if (!is.null(split.by)) {
         for (i in unique(meta[, split.by])) {
-            dfx[[i]] <- .generateDf(ligand = ligand, sep = sep, receptor = receptor,
+            dfx[[i]] <- .generateDf(
+                ligand = ligand, sep = sep, receptor = receptor,
                 receptor_a = receptor_a, receptor_b = receptor_b, pair = pair, converted_pair = converted_pair,
                 producers = producers, receivers = receivers, cell_type_means = expr_df,
                 cell_type_fractions = fraction_df, sce = sce_subset, sce_alt = sce_list_alt,
-                gsm = gene_symbol_mapping, splitted = i)
+                gsm = gene_symbol_mapping, splitted = i
+            )
             dfx[[i]] <- dfx[[i]][dfx[[i]]$barcode %in% barcodes, ]
         }
     } else {
-        dfx[[1]] = .generateDf(ligand = ligand, sep = sep, receptor = receptor, receptor_a = receptor_a,
+        dfx[[1]] <- .generateDf(
+            ligand = ligand, sep = sep, receptor = receptor, receptor_a = receptor_a,
             receptor_b = receptor_b, pair = pair, converted_pair = converted_pair,
             producers = producers, receivers = receivers, cell_type_means = expr_df,
             cell_type_fractions = fraction_df, sce = sce_subset, sce_alt = sce_list_alt,
-            gsm = gene_symbol_mapping)
+            gsm = gene_symbol_mapping
+        )
         dfx[[1]] <- dfx[[1]][dfx[[1]]$barcode %in% barcodes, ]
     }
 
 
     chord_diagram <- function(tmp_dfx, lr_interactions, p.adjust_method, scaled,
-        alpha, directional, show_legend, edge_cols, grid_cols, legend.pos.x, legend.pos.y,
-        title, grid_scale) {
+                              alpha, directional, show_legend, edge_cols, grid_cols, legend.pos.x, legend.pos.y,
+                              title, grid_scale) {
         tmp_dfx <- .swap_ligand_receptor(tmp_dfx)
         unique_celltype <- unique(c(lr_interactions$`1`, lr_interactions$`2`))
-        na_df = data.frame(t(combn(unique_celltype, 2)))
+        na_df <- data.frame(t(combn(unique_celltype, 2)))
         colnames(na_df) <- c("producer_swap", "receiver_swap")
         if (scaled) {
             interactions_items <- lr_interactions$scaled_means
@@ -307,12 +344,14 @@ plot_cpdb4 <- function(interaction, cell_type1, cell_type2, scdata, idents, mean
         edge_color <- .scPalette(length(unique(tmp_dfx$pair_swap)))
         names(edge_color) <- unique(tmp_dfx$pair_swap)
         if (!is.null(edge_cols)) {
-            edge_color[names(edge_cols)] = edge_cols
+            edge_color[names(edge_cols)] <- edge_cols
         }
         if (!is.null(grid_cols)) {
             if (length(grid_cols) != length(unique(tmp_dfx$receiver_swap))) {
-                stop(paste0("Please provide ", length(unique(tmp_dfx$receiver_swap)),
-                  " to grid_colors."))
+                stop(paste0(
+                    "Please provide ", length(unique(tmp_dfx$receiver_swap)),
+                    " to grid_colors."
+                ))
             } else {
                 grid_color <- grid_cols
             }
@@ -322,11 +361,12 @@ plot_cpdb4 <- function(interaction, cell_type1, cell_type2, scdata, idents, mean
         if (is.null(grid_cols)) {
             names(grid_color) <- unique(tmp_dfx$receiver_swap)
         }
-        tmp_dfx$edge_color = edge_color[tmp_dfx$pair_swap]
+        tmp_dfx$edge_color <- edge_color[tmp_dfx$pair_swap]
         tmp_dfx$edge_color <- colorspace::adjust_transparency(tmp_dfx$edge_color,
-            alpha = alpha)
+            alpha = alpha
+        )
         tmp_dfx$edge_color[is.na(tmp_dfx$pval)] <- NA
-        tmp_dfx$grid_color = grid_color[tmp_dfx$receiver_swap]
+        tmp_dfx$grid_color <- grid_color[tmp_dfx$receiver_swap]
         tmp_dfx$grid_color[is.na(tmp_dfx$pval)] <- NA
         tmp_dfx <- tmp_dfx[!duplicated(tmp_dfx$barcode), ]
         # filter to non na
@@ -338,23 +378,29 @@ plot_cpdb4 <- function(interaction, cell_type1, cell_type2, scdata, idents, mean
         tmp_dfx <- rbind(tmp_dfx_not_na, emptydf)
         tmp_dfx$value[is.na(tmp_dfx$value)] <- grid_scale
         if (directional == 2) {
-            link.arr.type = "triangle"
+            link.arr.type <- "triangle"
         } else {
-            link.arr.type = "big.arrow"
+            link.arr.type <- "big.arrow"
         }
         cells <- unique(c(tmp_dfx$producer_swap, tmp_dfx$receiver_swap))
         names(cells) <- cells
         circos.clear()
-        chordDiagram(tmp_dfx[c("producer_swap", "receiver_swap", "value")], directional = directional,
+        chordDiagram(tmp_dfx[c("producer_swap", "receiver_swap", "value")],
+            directional = directional,
             direction.type = c("diffHeight", "arrows"), link.arr.type = link.arr.type,
             annotationTrack = c("name", "grid"), col = tmp_dfx$edge_color, grid.col = grid_color,
-            group = cells)
+            group = cells
+        )
         requireNamespace("ComplexHeatmap")
         if (show_legend) {
-            lgd <- ComplexHeatmap::Legend(at = names(edge_color), type = "grid",
-                legend_gp = grid::gpar(fill = edge_color), title = "interactions")
-            ComplexHeatmap::draw(lgd, x = unit(1, "npc") - unit(legend.pos.x, "mm"),
-                y = unit(legend.pos.y, "mm"), just = c("right", "bottom"))
+            lgd <- ComplexHeatmap::Legend(
+                at = names(edge_color), type = "grid",
+                legend_gp = grid::gpar(fill = edge_color), title = "interactions"
+            )
+            ComplexHeatmap::draw(lgd,
+                x = unit(1, "npc") - unit(legend.pos.x, "mm"),
+                y = unit(legend.pos.y, "mm"), just = c("right", "bottom")
+            )
         }
         title(main = title)
         circos.clear()
@@ -364,16 +410,26 @@ plot_cpdb4 <- function(interaction, cell_type1, cell_type2, scdata, idents, mean
     gl <- list()
     if (length(show_legend) > 1) {
         for (i in 1:length(dfx)) {
-            gl[[i]] <- tryCatch(chord_diagram(dfx[[i]], lr_interactions, p.adjust.method,
-                standard_scale, alpha, directional, show_legend[i], edge_colors,
-                grid_colors, legend.pos.x, legend.pos.y, names(dfx)[i], grid_scale),
-                error = function(e) return(NA))
+            gl[[i]] <- tryCatch(
+                chord_diagram(
+                    dfx[[i]], lr_interactions, p.adjust.method,
+                    standard_scale, alpha, directional, show_legend[i], edge_colors,
+                    grid_colors, legend.pos.x, legend.pos.y, names(dfx)[i], grid_scale
+                ),
+                error = function(e) {
+                    return(NA)
+                }
+            )
         }
     } else {
         for (i in 1:length(dfx)) {
-            gl[[i]] <- tryCatch(chord_diagram(dfx[[i]], lr_interactions, p.adjust.method,
+            gl[[i]] <- tryCatch(chord_diagram(
+                dfx[[i]], lr_interactions, p.adjust.method,
                 standard_scale, alpha, directional, show_legend, edge_colors, grid_colors,
-                legend.pos.x, legend.pos.y, names(dfx)[i], grid_scale), error = function(e) return(NA))
+                legend.pos.x, legend.pos.y, names(dfx)[i], grid_scale
+            ), error = function(e) {
+                return(NA)
+            })
         }
     }
     if (length(gl) > 1) {

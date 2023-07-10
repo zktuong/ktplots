@@ -7,10 +7,9 @@
 #' ktplots()
 #' }
 #' @export
-ktplots <- function()
-{
-	setwd("~/Documents/GitHub/ktplots")
-	requireNamespace('ktplots')
-	requireNamespace('roxygen2')
-	init_ktplots()
+ktplots <- function() {
+    setwd("~/Documents/GitHub/ktplots")
+    requireNamespace("ktplots")
+    requireNamespace("roxygen2")
+    init_ktplots()
 }
