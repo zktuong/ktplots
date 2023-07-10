@@ -20,8 +20,9 @@
 #' @param interaction_grouping default = NULL. dataframe specifying groupings of cellphonedb interactions. First column must be cellphonedb's interacting_pair column. second column is whatever grouping you want.
 #' @param edge_group_colors default = NULL. vector for colour mapping for edge groups. only used if split.by is specified.
 #' @param node_group_colors default = NULL. vector for colour mapping for node labels.
-#' @param degs_analysis if is cellphonedb degs_analysis mode. 
+#' @param degs_analysis if is cellphonedb degs_analysis mode.
 #' @param return_df whether to just return this as a data.frame rather than plotting iot
+#' @param plot_score_as_thickness logical. Whether to scale the thickness of the edges to the interaction score and scale alpha to -log10(significance). Default is TRUE. FALSE will be opposite behaviour
 #' @param ... passes arguments plot_cpdb
 #' @return Plotting cellphonedb results as a weird chord diagram
 #' @examples
@@ -37,7 +38,8 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
     p.adjust.method = NULL, keep_significant_only = TRUE, split.by = NULL, standard_scale = TRUE,
     separator = NULL, gene_symbol_mapping = NULL, frac = 0.1, remove_self = TRUE,
     desiredInteractions = NULL, interaction_grouping = NULL, edge_group_colors = NULL,
-    node_group_colors = NULL, degs_analysis = FALSE, return_df = FALSE, ...) {
+    node_group_colors = NULL, degs_analysis = FALSE, return_df = FALSE, plot_score_as_thickness = TRUE,
+    ...) {
     if (class(scdata) == "Seurat") {
         stop("Sorry not supported. Please use a SingleCellExperiment object.")
     }
@@ -393,35 +395,73 @@ plot_cpdb2 <- function(cell_type1, cell_type2, scdata, idents, means, pvals, dec
                 }
                 # plot the graph
                 if (edge_group) {
-                  pl <- ggraph(gr, layout = "dendrogram", circular = TRUE) + geom_conn_bundle(data = get_con(from = from,
-                    to = to, group = group, `-log10(sig)` = pval, interaction_score = interaction_score),
-                    aes(colour = group, alpha = interaction_score, width = `-log10(sig)`),
-                    tension = 0.5) + # scale_edge_width(range = c(1, 3)) + scale_edge_alpha(limits = c(0, 1)) +
-                  scale_edge_color_manual(values = edge_group_colors) + geom_node_point(pch = 19,
-                    aes(size = fraction, filter = leaf, color = celltype, alpha = type)) +
-                    theme_void() + coord_fixed() + scale_size_continuous(limits = c(0,
-                    1)) + scale_shape_manual(values = c(ligand = 19, receptor = 15)) +
-                    scale_color_manual(values = node_group_colors) + geom_text_repel(aes(x = x,
-                    y = y, label = label), segment.square = TRUE, segment.inflect = TRUE,
-                    segment.size = 0.2, force = 0.5, size = 2, force_pull = 0) +
-                  scale_alpha_manual(values = c(ligand = 0.5, receptor = 1)) + small_legend(keysize = 0.5) +
-                    ggtitle(input_group)
+                    if (plot_score_as_thickness) {
+                        pl <- ggraph(gr, layout = "dendrogram", circular = TRUE) +
+                            geom_conn_bundle(data = get_con(from = from, to = to,
+                                group = group, `-log10(sig)` = pval, interaction_score = interaction_score),
+                                aes(colour = group, alpha = `-log10(sig)`, width = interaction_score),
+                                tension = 0.5)  # + scale_edge_width(range = c(1, 3)) + scale_edge_alpha(limits = c(0, 1)) +
+                    } else {
+                        pl <- ggraph(gr, layout = "dendrogram", circular = TRUE) +
+                            geom_conn_bundle(data = get_con(from = from, to = to,
+                                group = group, `-log10(sig)` = pval, interaction_score = interaction_score),
+                                aes(colour = group, alpha = interaction_score, width = `-log10(sig)`),
+                                tension = 0.5)  # + scale_edge_width(range = c(1, 3)) + scale_edge_alpha(limits = c(0, 1)) +
+                    }
+                    p1 <- p1 + scale_edge_color_manual(values = edge_group_colors) +
+                        geom_node_point(pch = 19, aes(size = fraction, filter = leaf,
+                            color = celltype, alpha = type)) + theme_void() + coord_fixed() +
+                        scale_size_continuous(limits = c(0, 1)) + scale_shape_manual(values = c(ligand = 19,
+                        receptor = 15)) + scale_color_manual(values = node_group_colors) +
+                        geom_text_repel(aes(x = x, y = y, label = label), segment.square = TRUE,
+                            segment.inflect = TRUE, segment.size = 0.2, force = 0.5,
+                            size = 2, force_pull = 0) + scale_alpha_manual(values = c(ligand = 0.5,
+                        receptor = 1)) + small_legend(keysize = 0.5) + ggtitle(input_group)
                 } else {
-                  pl <- ggraph(gr, layout = "dendrogram", circular = TRUE) + geom_conn_bundle(data = get_con(from = from,
-                    to = to, `-log10(sig)` = pval, interaction_score = interaction_score),
-                    aes(alpha = interaction_score, width = `-log10(sig)`), tension = 0.5) +
-                    # scale_edge_width(range = c(1, 3)) + scale_edge_alpha(limits = c(0, 1)) +
-                  scale_edge_color_manual(values = edge_group_colors) + geom_node_point(pch = 19,
-                    aes(size = fraction, filter = leaf, color = celltype, alpha = type)) +
-                    theme_void() + coord_fixed() + scale_size_continuous(limits = c(0,
-                    1)) + scale_shape_manual(values = c(ligand = 19, receptor = 15)) +
-                    scale_color_manual(values = node_group_colors) + geom_text_repel(aes(x = x,
-                    y = y, label = label), segment.square = TRUE, segment.inflect = TRUE,
-                    segment.size = 0.2, force = 0.5, size = 2, force_pull = 0) +
-                    # geom_node_text(aes(x = x*1.15, y=y*1.15, filter = leaf, label=label, size
-                  # =0.01)) +
-                  scale_alpha_manual(values = c(ligand = 0.5, receptor = 1)) + small_legend(keysize = 0.5) +
-                    ggtitle(input_group)
+                    if (plot_score_as_thickness) {
+                        pl <- ggraph(gr, layout = "dendrogram", circular = TRUE) +
+                            geom_conn_bundle(data = get_con(from = from, to = to,
+                                `-log10(sig)` = pval, interaction_score = interaction_score),
+                                aes(alpha = `-log10(sig)`, width = interaction_score),
+                                tension = 0.5)
+                    } else {
+                        pl <- ggraph(gr, layout = "dendrogram", circular = TRUE) +
+                            geom_conn_bundle(data = get_con(from = from, to = to,
+                                `-log10(sig)` = pval, interaction_score = interaction_score),
+                                aes(alpha = interaction_score, width = `-log10(sig)`),
+                                tension = 0.5)
+                    }
+                    # scale_edge_width(range = c(1, 3)) +
+                    # scale_edge_alpha(limits = c(0, 1)) +
+                    p1 <- p1 + scale_edge_color_manual(values = edge_group_colors) +
+                        geom_node_point(pch = 19, aes(size = fraction, filter = leaf,
+                            color = celltype, alpha = type)) + theme_void() + coord_fixed() +
+                        scale_size_continuous(limits = c(0, 1)) + scale_shape_manual(values = c(ligand = 19,
+                        receptor = 15)) + scale_color_manual(values = node_group_colors) +
+                        geom_text_repel(aes(x = x, y = y, label = label), segment.square = TRUE,
+                            segment.inflect = TRUE, segment.size = 0.2, force = 0.5,
+                            size = 2, force_pull = 0) + # geom_node_text(aes(x = x*1.15, y=y*1.15, filter = leaf, label=label, size # =0.01)) + size
+                            size = 2, force_pull = 0) + # geom_node_text(aes(x = x*1.15, y=y*1.15, filter = leaf, label=label, size # =0.01)) + =
+                            size = 2, force_pull = 0) + # geom_node_text(aes(x = x*1.15, y=y*1.15, filter = leaf, label=label, size # =0.01)) + 2,
+                            size = 2, force_pull = 0) + # geom_node_text(aes(x = x*1.15, y=y*1.15, filter = leaf, label=label, size # =0.01)) + force_pull
+                            size = 2, force_pull = 0) + # geom_node_text(aes(x = x*1.15, y=y*1.15, filter = leaf, label=label, size # =0.01)) + =
+                            size = 2, force_pull = 0) + # geom_node_text(aes(x = x*1.15, y=y*1.15, filter = leaf, label=label, size # =0.01)) + 0)
+                            size = 2, force_pull = 0) + # geom_node_text(aes(x = x*1.15, y=y*1.15, filter = leaf, label=label, size # =0.01)) + +
+                            size = 2, force_pull = 0) + # geom_node_text(aes(x = x*1.15, y=y*1.15, filter = leaf, label=label, size # =0.01)) + #
+                            size = 2, force_pull = 0) + # geom_node_text(aes(x = x*1.15, y=y*1.15, filter = leaf, label=label, size # =0.01)) + geom_node_text(aes(x
+                            size = 2, force_pull = 0) + # geom_node_text(aes(x = x*1.15, y=y*1.15, filter = leaf, label=label, size # =0.01)) + =
+                            size = 2, force_pull = 0) + # geom_node_text(aes(x = x*1.15, y=y*1.15, filter = leaf, label=label, size # =0.01)) + x*1.15,
+                            size = 2, force_pull = 0) + # geom_node_text(aes(x = x*1.15, y=y*1.15, filter = leaf, label=label, size # =0.01)) + y=y*1.15,
+                            size = 2, force_pull = 0) + # geom_node_text(aes(x = x*1.15, y=y*1.15, filter = leaf, label=label, size # =0.01)) + filter
+                            size = 2, force_pull = 0) + # geom_node_text(aes(x = x*1.15, y=y*1.15, filter = leaf, label=label, size # =0.01)) + =
+                            size = 2, force_pull = 0) + # geom_node_text(aes(x = x*1.15, y=y*1.15, filter = leaf, label=label, size # =0.01)) + leaf,
+                            size = 2, force_pull = 0) + # geom_node_text(aes(x = x*1.15, y=y*1.15, filter = leaf, label=label, size # =0.01)) + label=label,
+                            size = 2, force_pull = 0) + # geom_node_text(aes(x = x*1.15, y=y*1.15, filter = leaf, label=label, size # =0.01)) + size
+                            size = 2, force_pull = 0) + # geom_node_text(aes(x = x*1.15, y=y*1.15, filter = leaf, label=label, size # =0.01)) + #
+                            size = 2, force_pull = 0) + # geom_node_text(aes(x = x*1.15, y=y*1.15, filter = leaf, label=label, size # =0.01)) + =0.01))
+                            size = 2, force_pull = 0) + # geom_node_text(aes(x = x*1.15, y=y*1.15, filter = leaf, label=label, size # =0.01)) + +
+                    scale_alpha_manual(values = c(ligand = 0.5, receptor = 1)) +
+                        small_legend(keysize = 0.5) + ggtitle(input_group)
                 }
                 return(pl)
             } else {
