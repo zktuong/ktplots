@@ -472,7 +472,7 @@ plot_cpdb2 <- function(
                                 tension = 0.5
                             ) # + scale_edge_width(range = c(1, 3)) + scale_edge_alpha(limits = c(0, 1)) +
                     }
-                    p1 <- p1 + scale_edge_color_manual(values = edge_group_colors) +
+                    pl <- pl + scale_edge_color_manual(values = edge_group_colors) +
                         geom_node_point(pch = 19, aes(
                             size = fraction, filter = leaf,
                             color = celltype, alpha = type
@@ -513,7 +513,7 @@ plot_cpdb2 <- function(
                     }
                     # scale_edge_width(range = c(1, 3)) +
                     # scale_edge_alpha(limits = c(0, 1)) +
-                    p1 <- p1 + scale_edge_color_manual(values = edge_group_colors) +
+                    pl <- pl + scale_edge_color_manual(values = edge_group_colors) +
                         geom_node_point(pch = 19, aes(
                             size = fraction, filter = leaf,
                             color = celltype, alpha = type
