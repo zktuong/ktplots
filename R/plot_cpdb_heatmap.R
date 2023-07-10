@@ -1,7 +1,5 @@
 #' Plotting cellphonedb results as a heatmap
 #'
-#' @param scdata single-cell data. can be seurat/summarizedexperiment object
-#' @param idents vector holding the idents for each cell or column name of scdata's metadata. MUST match cpdb's columns
 #' @param pvals object holding pvals.txt from cpdb output. Use relevant_interactions.txt if degs_analysis mode.
 #' @param degs_analysis if is cellphonedb degs_analysis mode.
 #' @param log1p_transform whether to log1p transform the matrix before plotting.
@@ -37,7 +35,7 @@
 #' @export
 
 plot_cpdb_heatmap <- function(
-    scdata, idents, pvals, log1p_transform = FALSE, show_rownames = TRUE,
+    pvals, log1p_transform = FALSE, show_rownames = TRUE,
     show_colnames = TRUE, scale = "none", cluster_cols = TRUE, cluster_rows = TRUE,
     border_color = "white", fontsize_row = 11, fontsize_col = 11, family = "Arial",
     main = "", treeheight_col = 0, treeheight_row = 0, low_col = "dodgerblue4", mid_col = "peachpuff",
@@ -45,33 +43,6 @@ plot_cpdb_heatmap <- function(
     verbose = FALSE, symmetrical = TRUE, ...) {
   requireNamespace("reshape2")
   requireNamespace("grDevices")
-  if (class(scdata) %in% c("SingleCellExperiment", "SummarizedExperiment")) {
-    if (verbose) {
-      cat("data provided is a SingleCellExperiment/SummarizedExperiment object",
-        sep = "\n"
-      )
-      cat("extracting expression matrix", sep = "\n")
-    }
-    requireNamespace("SummarizedExperiment")
-    requireNamespace("SingleCellExperiment")
-    # exp_mat <- SummarizedExperiment::assay(scdata)
-    meta <- SummarizedExperiment::colData(scdata)
-  } else if (class(scdata) == "Seurat") {
-    if (verbose) {
-      cat("data provided is a Seurat object", sep = "\n")
-      cat("extracting expression matrix", sep = "\n")
-    }
-    meta <- scdata@meta.data
-  }
-  if (length(idents) > 1) {
-    labels <- idents
-  } else {
-    labels <- meta[[idents]]
-  }
-  if (!is.factor(labels)) {
-    labels <- factor(labels)
-  }
-  labels <- droplevels(labels)
 
   all_intr <- pvals
   intr_pairs <- all_intr$interacting_pair
@@ -104,7 +75,7 @@ plot_cpdb_heatmap <- function(
       count_mat <- count_mat + t(count_mat)
       diag(count_mat) <- dcm
     }
-    
+
     if (log1p_transform) {
       count_mat <- log1p(count_mat)
     }
