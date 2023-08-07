@@ -45,8 +45,9 @@ plot_cpdb_heatmap <- function(
   requireNamespace("grDevices")
 
   all_intr <- pvals
+  col_start <- ifelse(colnames(all_intr)[13] == "classification", 14, 12)
   intr_pairs <- all_intr$interacting_pair
-  all_intr <- t(all_intr[, -c(1:11)])
+  all_intr <- t(all_intr[, -c(1:col_start - 1)])
   colnames(all_intr) <- intr_pairs
   all_count <- reshape2::melt(all_intr)
   if (!degs_analysis) {
@@ -54,7 +55,6 @@ plot_cpdb_heatmap <- function(
   } else {
     all_count$significant <- all_count$value == 1
   }
-
   count1x <- all_count %>%
     group_by(Var1) %>%
     summarise(COUNT = sum(significant)) %>%
@@ -81,11 +81,20 @@ plot_cpdb_heatmap <- function(
     }
 
     p <- pheatmap(count_mat,
-      show_rownames = show_rownames, show_colnames = show_colnames,
-      scale = scale, cluster_cols = cluster_cols, border_color = border_color,
-      cluster_rows = cluster_rows, fontsize_row = fontsize_row, fontsize_col = fontsize_col,
-      main = main, treeheight_row = treeheight_row, family = family, color = col.heatmap,
-      treeheight_col = treeheight_col, ...
+      show_rownames = show_rownames,
+      show_colnames = show_colnames,
+      scale = scale,
+      cluster_cols = cluster_cols,
+      border_color = border_color,
+      cluster_rows = cluster_rows,
+      fontsize_row = fontsize_row,
+      fontsize_col = fontsize_col,
+      main = main,
+      treeheight_row = treeheight_row,
+      family = family,
+      color = col.heatmap,
+      treeheight_col = treeheight_col,
+      ...
     )
     if (return_tables) {
       if (symmetrical) {

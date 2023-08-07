@@ -7,24 +7,20 @@
 #' @param means object holding means.txt from cpdb output
 #' @param pvals object holding pvals.txt from cpdb output. Use relevant_interactions.txt if degs_analysis mode.
 #' @param max_size max size of points.
-#' @param p.adjust.method correction method. p.adjust.methods of one of these options: c('holm', 'hochberg', 'hommel', 'bonferroni', 'BH', 'BY', 'fdr', 'none')
 #' @param keep_significant_only logical. Default is FALSE. Switch to TRUE if you only want to plot the significant hits from cpdb.
 #' @param split.by column name in the metadata/coldata table to split the spots by. Can only take columns with binary options. If specified, name to split by MUST be specified in the meta file provided to cpdb prior to analysis.
 #' @param gene.family default = NULL. some predefined group of genes. can take one (or several) of these default options: 'chemokines', 'Th1', 'Th2', 'Th17', 'Treg', 'costimulatory', 'coinhibitory', 'niche'. Also accepts name(s) of custom gene families.
 #' @param custom_gene_family default = NULL. If provided, will update the gene.family function with this custom entry. Both `gene.family` (name of the custom family) and `custom_gene_family` must be specified for this to work. Provide either a data.frame with column names as name of family and genes in rows or a named likes like : list("customfamily" = c("genea", "geneb", "genec"))
 #' @param genes default = NULL. can specify custom list of genes if gene.family is NULL
-#' @param scale logical. scale the expression to mean +/- SD. NULL defaults to TRUE.
 #' @param standard_scale logical. scale the expression to range from 0 to 1. NULL defaults to FALSE.
 #' @param cluster_rows logical. whether or not to cluster the rows.
 #' @param col_option specify plotting colours
 #' @param default_stlye default = TRUE. Show all mean values and trace significant interactions with `higlight` colour. If FALSE, significant interactions will be presented as a white ring.
-#' @param noir default = FALSE. makes it b/w
-#' @param highlight colour for highlighting p <0.05
+#' @param highlight_col colour for highlighting p <0.05
 #' @param highlight_size stroke size for highlight if p < 0.05. if NULL, scales to -log10(pval).
 #' @param separator separator to use to split between celltypes. Unless otherwise specified, the separator will be `>@<`. Make sure the idents and split.by doesn't overlap with this.
 #' @param special_character_search_pattern search pattern if the cell type names contains special character. NULL defaults to '/|:|\\?|\\*|\\+|[\\]|\\(|\\)'.
 #' @param degs_analysis if is cellphonedb degs_analysis mode.
-#' @param verbose prints cat/print statements if TRUE.
 #' @param return_table whether or not to return as a table rather than to plot.
 #' @param exclude_interactions if provided, the interactions will be removed from the output.
 #' @param ... passes arguments to grep for cell_type1 and cell_type2.
@@ -33,8 +29,8 @@
 #' \donttest{
 #' data(kidneyimmune)
 #' data(cpdb_output)
-#' plot_cpdb('B cell', 'CD4T cell', kidneyimmune, 'celltype', means, pvals, split.by = 'Experiment', genes = c('CXCL13', 'CD274', 'CXCR5'))
-#' plot_cpdb('B cell', 'CD4T cell', kidneyimmune, 'celltype', means, pvals, split.by = 'Experiment', gene.family = 'chemokines')
+#' plot_cpdb("B cell", "CD4T cell", kidneyimmune, "celltype", means, pvals, split.by = "Experiment", genes = c("CXCL13", "CD274", "CXCR5"))
+#' plot_cpdb("B cell", "CD4T cell", kidneyimmune, "celltype", means, pvals, split.by = "Experiment", gene.family = "chemokines")
 #' }
 #' @include utils.R
 #' @import viridis
@@ -42,70 +38,63 @@
 #' @import reshape2
 #' @export
 
-plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_size = 8,
-    p.adjust.method = NULL, keep_significant_only = FALSE, split.by = NULL, gene.family = NULL,
-    custom_gene_family = NULL, genes = NULL, scale = NULL, standard_scale = NULL, cluster_rows = TRUE,
-    col_option = viridis::viridis(50), default_style = TRUE, noir = FALSE, highlight = "red",
-    highlight_size = NULL, separator = NULL, special_character_search_pattern = NULL,
-    degs_analysis = FALSE, verbose = FALSE, return_table = FALSE, exclude_interactions = NULL,
+plot_cpdb <- function(
+    cell_type1,
+    cell_type2,
+    scdata,
+    idents,
+    means,
+    pvals,
+    max_size = 8,
+    keep_significant_only = FALSE,
+    split.by = NULL,
+    gene.family = NULL,
+    custom_gene_family = NULL,
+    genes = NULL,
+    standard_scale = TRUE,
+    cluster_rows = TRUE,
+    col_option = viridis::viridis(50),
+    default_style = TRUE,
+    highlight_col = "red",
+    highlight_size = NULL,
+    special_character_search_pattern = NULL,
+    degs_analysis = FALSE,
+    return_table = FALSE,
+    exclude_interactions = NULL,
     ...) {
+    requireNamespace("SingleCellExperiment")
     requireNamespace("grDevices")
-    if (class(scdata) %in% c("SingleCellExperiment", "SummarizedExperiment")) {
-        if (verbose) {
-            cat("data provided is a SingleCellExperiment/SummarizedExperiment object",
-                sep = "\n")
-            cat("extracting expression matrix", sep = "\n")
-        }
-        requireNamespace("SummarizedExperiment")
-        requireNamespace("SingleCellExperiment")
-        # exp_mat <- SummarizedExperiment::assay(scdata)
-        metadata <- SummarizedExperiment::colData(scdata)
-    } else if (class(scdata) == "Seurat") {
-        if (verbose) {
-            cat("data provided is a Seurat object", sep = "\n")
-            cat("extracting expression matrix", sep = "\n")
-        }
-        metadata <- scdata@meta.data
+    if (is.null(special_character_regex_special_character_regex_pattern)) {
+        special_character_regex_pattern <- DEFAULT_SPEC_PAT
     }
-    if (length(separator) > 0) {
-        sep = separator
-    } else {
-        sep = ">@<"
+    if (class(scdata) %in% c("SingleCellExperiment", "SummarizedExperiment")) {
+        metadata <- SingleCellExperiment::colData(scdata)
+    } else if (class(scdata) == "Seurat") {
+        metadata <- scdata@meta.data
     }
     means_mat <- means
     pvals_mat <- pvals
     rownames(means_mat) <- make.names(means_mat$interacting_pair, unique = TRUE)
     rownames(pvals_mat) <- make.names(pvals_mat$interacting_pair, unique = TRUE)
-    colnames(means_mat) <- gsub("\\|", sep, colnames(means_mat))
+    colnames(means_mat) <- gsub("\\|", DEFAULT_SEP, colnames(means_mat))
     rownames(means_mat) <- gsub("_", "-", rownames(means_mat))
     rownames(means_mat) <- gsub("[.]", " ", rownames(means_mat))
-    colnames(pvals_mat) <- gsub("\\|", sep, colnames(pvals_mat))
+    colnames(pvals_mat) <- gsub("\\|", DEFAULT_SEP, colnames(pvals_mat))
     rownames(pvals_mat) <- gsub("_", "-", rownames(pvals_mat))
     rownames(pvals_mat) <- gsub("[.]", " ", rownames(pvals_mat))
     if (degs_analysis) {
-        pvals_mat[, 12:ncol(pvals_mat)] <- 1 - pvals_mat[, 12:ncol(pvals_mat)]
+        col_start <- ifelse(colnames(pvals_mat)[13] == "classification", 14, 12)
+        pvals_mat[, col_start:ncol(pvals_mat)] <- 1 - pvals_mat[, col_start:ncol(pvals_mat)]
     }
-    if (length(p.adjust.method) > 0) {
-        pvals_tmp <- pvals[, 12:ncol(pvals)]
-        pvals_adj <- matrix(p.adjust(as.vector(as.matrix(pvals_tmp)), method = p.adjust.method),
-            ncol = ncol(pvals_tmp))
-        colnames(pvals_adj) <- colnames(pvals_tmp)
-        pvals <- cbind(pvals[, c(1:11)], pvals_adj)
-    }
-    if (is.null(special_character_search_pattern)) {
-        pattern <- "/|:|\\?|\\*|\\+|[\\]|\\(|\\)|\\/"
-    } else {
-        pattern <- special_character_search_pattern
-    }
-    cell_type1 <- .sub_pattern(cell_type1, pattern)
-    cell_type2 <- .sub_pattern(cell_type2, pattern)
+    cell_type1 <- .sub_pattern(cell_type = cell_type1, pattern = special_character_regex_pattern)
+    cell_type2 <- .sub_pattern(cell_type = cell_type2, pattern = special_character_regex_pattern)
     if (length(idents) > 1) {
-        ct1 = grep(cell_type1, idents, value = TRUE, ...)
-        ct2 = grep(cell_type2, idents, value = TRUE, ...)
+        ct1 <- grep(cell_type1, idents, value = TRUE, ...)
+        ct2 <- grep(cell_type2, idents, value = TRUE, ...)
         checklabels1 <- any(idents %in% c(ct1, ct2))
     } else {
-        ct1 = grep(cell_type1, metadata[[idents]], value = TRUE, ...)
-        ct2 = grep(cell_type2, metadata[[idents]], value = TRUE, ...)
+        ct1 <- grep(cell_type1, metadata[[idents]], value = TRUE, ...)
+        ct2 <- grep(cell_type2, metadata[[idents]], value = TRUE, ...)
         checklabels1 <- any(metadata[[idents]] %in% c(ct1, ct2))
     }
     if (!is.null(split.by)) {
@@ -122,13 +111,13 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
             # the purpose for this step is to allow for special characters to
             # be used in the celltype grepping
             if (length(groups) > 1) {
-                labels2 = gsub(paste0(paste0(groups, "_"), collapse = "|"), "", labels)
+                labels2 <- gsub(paste0(paste0(groups, "_"), collapse = "|"), "", labels)
             } else {
-                labels2 = gsub(paste0(groups, "_"), "", labels)
+                labels2 <- gsub(paste0(groups, "_"), "", labels)
             }
             # this returns the indices from the labels
-            ct1 = grep(cell_type1, labels2, value = TRUE, ...)
-            ct2 = grep(cell_type2, labels2, value = TRUE, ...)
+            ct1 <- grep(cell_type1, labels2, value = TRUE, ...)
+            ct2 <- grep(cell_type2, labels2, value = TRUE, ...)
         } else {
             if (length(idents) > 1) {
                 labels <- idents
@@ -137,8 +126,8 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
             }
             labels <- factor(labels)
             labels <- levels(labels)
-            ct1 = grep(cell_type1, labels, value = TRUE, ...)
-            ct2 = grep(cell_type2, labels, value = TRUE, ...)
+            ct1 <- grep(cell_type1, labels, value = TRUE, ...)
+            ct2 <- grep(cell_type2, labels, value = TRUE, ...)
         }
     } else {
         if (length(idents) > 1) {
@@ -148,13 +137,13 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
         }
         labels <- factor(labels)
         labels <- levels(labels)
-        ct1 = grep(cell_type1, labels, value = TRUE, ...)
-        ct2 = grep(cell_type2, labels, value = TRUE, ...)
-        ct1 = paste0(ct1, collapse = "|")
-        ct2 = paste0(ct2, collapse = "|")
+        ct1 <- grep(cell_type1, labels, value = TRUE, ...)
+        ct2 <- grep(cell_type2, labels, value = TRUE, ...)
+        ct1 <- paste0(ct1, collapse = "|")
+        ct2 <- paste0(ct2, collapse = "|")
     }
-    x1 = ct1[ct1 %in% ""]
-    x2 = ct2[ct2 %in% ""]
+    x1 <- ct1[ct1 %in% ""]
+    x2 <- ct2[ct2 %in% ""]
     if (length(x1) > 0) {
         ct1[ct1 %in% ""] <- NA
     }
@@ -173,7 +162,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
             if (checklabels2) {
                 checklabels2 <- any(idents %in% ct_2)
                 if (!checklabels2) {
-                  stop("Cannot find cell types.\nThe error is mismatch between cell_type2 and the single cell metadata (or idents provided).")
+                    stop("Cannot find cell types.\nThe error is mismatch between cell_type2 and the single cell metadata (or idents provided).")
                 }
             } else {
                 stop("Cannot find cell types.\nThe error is mismatch between cell_type1 and the single cell metadata (or idents provided).")
@@ -187,7 +176,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
             if (checklabels2) {
                 checklabels2 <- any(metadata[[idents]] %in% ct_2)
                 if (!checklabels2) {
-                  stop("Cannot find cell types.\nThe error is mismatch between cell_type2 and the single cell metadata (or idents provided).")
+                    stop("Cannot find cell types.\nThe error is mismatch between cell_type2 and the single cell metadata (or idents provided).")
                 }
             } else {
                 stop("Cannot find cell types.\nThe error is mismatch between cell_type1 and the single cell metadata (or idents provided).")
@@ -210,54 +199,40 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
             stop("Cannot find cell types. The error is mismatch between cell_type1 and the cpdb metadata.")
         }
     }
-    if (checklabels1 & checklabels2) {
-        if (verbose) {
-            cat("Found cell types in the input data provided. Proceeding with plotting.",
-                sep = "\n")
-        }
-    }
     if (is.null(gene.family) & is.null(genes)) {
-        if (verbose) {
-            cat("options genes or gene.family are not specified.\nusing entire cpdb output.\n")
-        }
         query <- grep("", means_mat$interacting_pair)
-        if (verbose) {
-            cat("for future reference, genes or gene.family can be specified, not both.\ngene.family can be one of the following:",
-                sep = "\n")
-            print(c("chemokines", "Th1", "Th2", "Th17", "Treg", "costimulatory",
-                "coinhibitory", "niche"))
-            cat("otherwise, please provide gene(s) as a vector in the genes option",
-                sep = "\n")
-        }
     }
     if (!is.null(gene.family) & !is.null(genes)) {
         stop("Please specify either genes or gene.family, not both")
-        if (verbose) {
-            cat("gene.family can be one of the following:", sep = "\n")
-            print(c("chemokines", "Th1", "Th2", "Th17", "Treg", "costimulatory",
-                "coinhibitory", "niche"))
-            cat("otherwise, please provide gene(s) as a vector in the genes option",
-                sep = "\n")
-        }
     }
     if (!is.null(gene.family) & is.null(genes)) {
         chemokines <- grep("^CXC|CCL|CCR|CX3|XCL|XCR", means_mat$interacting_pair)
-        th1 <- grep("IL2|IL12|IL18|IL27|IFNG|IL10|TNF$|TNF |LTA|LTB|STAT1|CCR5|CXCR3|IL12RB1|IFNGR1|TBX21|STAT4",
-            means_mat$interacting_pair)
+        th1 <- grep(
+            "IL2|IL12|IL18|IL27|IFNG|IL10|TNF$|TNF |LTA|LTB|STAT1|CCR5|CXCR3|IL12RB1|IFNGR1|TBX21|STAT4",
+            means_mat$interacting_pair
+        )
         th2 <- grep("IL4|IL5|IL25|IL10|IL13|AREG|STAT6|GATA3|IL4R", means_mat$interacting_pair)
-        th17 <- grep("IL21|IL22|IL24|IL26|IL17A|IL17A|IL17F|IL17RA|IL10|RORC|RORA|STAT3|CCR4|CCR6|IL23RA|TGFB",
-            means_mat$interacting_pair)
+        th17 <- grep(
+            "IL21|IL22|IL24|IL26|IL17A|IL17A|IL17F|IL17RA|IL10|RORC|RORA|STAT3|CCR4|CCR6|IL23RA|TGFB",
+            means_mat$interacting_pair
+        )
         treg <- grep("IL35|IL10|FOXP3|IL2RA|TGFB", means_mat$interacting_pair)
-        costimulatory <- grep("CD86|CD80|CD48|LILRB2|LILRB4|TNF|CD2|ICAM|SLAM|LT[AB]|NECTIN2|CD40|CD70|CD27|CD28|CD58|TSLP|PVR|CD44|CD55|CD[1-9]",
-            means_mat$interacting_pair)
-        coinhibitory <- grep("SIRP|CD47|ICOS|TIGIT|CTLA4|PDCD1|CD274|LAG3|HAVCR|VSIR",
-            means_mat$interacting_pair)
+        costimulatory <- grep(
+            "CD86|CD80|CD48|LILRB2|LILRB4|TNF|CD2|ICAM|SLAM|LT[AB]|NECTIN2|CD40|CD70|CD27|CD28|CD58|TSLP|PVR|CD44|CD55|CD[1-9]",
+            means_mat$interacting_pair
+        )
+        coinhibitory <- grep(
+            "SIRP|CD47|ICOS|TIGIT|CTLA4|PDCD1|CD274|LAG3|HAVCR|VSIR",
+            means_mat$interacting_pair
+        )
         niche <- grep("CSF", means_mat$interacting_pair)
-        query_group <- list(chemokines = chemokines, chemokine = chemokines, th1 = th1,
+        query_group <- list(
+            chemokines = chemokines, chemokine = chemokines, th1 = th1,
             th2 = th2, th17 = th17, treg = treg, costimulatory = costimulatory, coinhibitory = coinhibitory,
-            costimulation = costimulatory, coinhibition = coinhibitory, niche = niche)
+            costimulation = costimulatory, coinhibition = coinhibitory, niche = niche
+        )
 
-        if (!is.null(custom_gene_family)){
+        if (!is.null(custom_gene_family)) {
             cgf <- as.list(custom_gene_family)
             cgf <- lapply(cgf, function(x) grep(paste(x, collapse = "|"), means_mat$interacting_pair))
             query_group <- c(query_group, cgf)
@@ -271,11 +246,13 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
         } else {
             labels <- paste0(metadata[[split.by]], "_", metadata[[idents]])
         }
-        chk1 = class(metadata[[split.by]])
-        chk2 = class(metadata[[idents]])
+        chk1 <- class(metadata[[split.by]])
+        chk2 <- class(metadata[[idents]])
         if (chk1 == "factor" & chk2 == "factor") {
-            labels <- factor(labels, levels = paste0(levels(metadata[[split.by]]),
-                "_", rep(levels(metadata[[idents]]), each = length(levels(metadata[[split.by]])))))
+            labels <- factor(labels, levels = paste0(
+                levels(metadata[[split.by]]),
+                "_", rep(levels(metadata[[idents]]), each = length(levels(metadata[[split.by]])))
+            ))
         } else {
             labels <- factor(labels)
         }
@@ -286,23 +263,25 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
             # the purpose for this step is to allow for special characters to
             # be used in the celltype grepping
             if (length(groups) > 1) {
-                labels2 = gsub(paste0(paste0(groups, "_"), collapse = "|"), "", labels)
+                labels2 <- gsub(paste0(paste0(groups, "_"), collapse = "|"), "", labels)
             } else {
-                labels2 = gsub(paste0(groups, "_"), "", labels)
+                labels2 <- gsub(paste0(groups, "_"), "", labels)
             }
             # this returns the indices from the labels
-            ct1 = grep(cell_type1, labels2, ...)
-            ct2 = grep(cell_type2, labels2, ...)
+            ct1 <- grep(cell_type1, labels2, ...)
+            ct2 <- grep(cell_type2, labels2, ...)
             c_type1 <- as.list(labels[ct1])
             c_type2 <- as.list(labels[ct2])
-            c_type1 <- lapply(c_type1, .sub_pattern, pattern)
-            c_type2 <- lapply(c_type2, .sub_pattern, pattern)
+            c_type1 <- lapply(c_type1, .sub_pattern, pattern = special_character_regex_pattern)
+            c_type2 <- lapply(c_type2, .sub_pattern, pattern = special_character_regex_pattern)
             grp <- as.list(groups)
-            celltype = list()
+            celltype <- list()
             for (i in 1:length(c_type1)) {
-                celltype[[i]] <- .create_celltype_query(c_type1[[i]], c_type2, sep)
-                celltype[[i]] <- lapply(grp, .keep_interested_groups, celltype[[i]],
-                  sep)
+                celltype[[i]] <- .create_celltype_query(c_type1[[i]], c_type2, DEFAULT_SEP)
+                celltype[[i]] <- lapply(
+                    grp, .keep_interested_groups, celltype[[i]],
+                    DEFAULT_SEP
+                )
             }
             for (i in 1:length(celltype)) {
                 celltype[[i]] <- celltype[[i]][-which(celltype[[i]] == "")]
@@ -321,13 +300,13 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
             }
             labels <- factor(labels)
             labels <- levels(labels)
-            c_type1 = as.list(grep(cell_type1, labels, value = TRUE, ...))
-            c_type2 = as.list(grep(cell_type2, labels, value = TRUE, ...))
-            c_type1 <- lapply(c_type1, .sub_pattern, pattern)
-            c_type2 <- lapply(c_type2, .sub_pattern, pattern)
-            celltype = list()
+            c_type1 <- as.list(grep(cell_type1, labels, value = TRUE, ...))
+            c_type2 <- as.list(grep(cell_type2, labels, value = TRUE, ...))
+            c_type1 <- lapply(c_type1, .sub_pattern, pattern = special_character_regex_pattern)
+            c_type2 <- lapply(c_type2, .sub_pattern, pattern = special_character_regex_pattern)
+            celltype <- list()
             for (i in 1:length(c_type1)) {
-                celltype[[i]] <- .create_celltype_query(c_type1[[i]], c_type2, sep)
+                celltype[[i]] <- .create_celltype_query(c_type1[[i]], c_type2, DEFAULT_SEP)
             }
             cell_type <- do.call(paste0, list(celltype, collapse = "|"))
         }
@@ -339,69 +318,107 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
         }
         labels <- factor(labels)
         labels <- levels(labels)
-        c_type1 = as.list(grep(cell_type1, labels, value = TRUE))
-        c_type2 = as.list(grep(cell_type2, labels, value = TRUE))
-        c_type1 <- lapply(c_type1, .sub_pattern, pattern)
-        c_type2 <- lapply(c_type2, .sub_pattern, pattern)
-        celltype = list()
+        c_type1 <- as.list(grep(cell_type1, labels, value = TRUE))
+        c_type2 <- as.list(grep(cell_type2, labels, value = TRUE))
+        c_type1 <- lapply(c_type1, .sub_pattern, pattern = special_character_regex_pattern)
+        c_type2 <- lapply(c_type2, .sub_pattern, pattern = special_character_regex_pattern)
+        celltype <- list()
         for (i in 1:length(c_type1)) {
-            celltype[[i]] <- .create_celltype_query(c_type1[[i]], c_type2, sep)
+            celltype[[i]] <- .create_celltype_query(c_type1[[i]], c_type2, DEFAULT_SEP)
         }
         cell_type <- do.call(paste0, list(celltype, collapse = "|"))
     }
     if (!is.null(gene.family) & is.null(genes)) {
-        if (length(gene.family) == 1){
-            means_mat <- suppressWarnings(tryCatch(means_mat[query_group[[tolower(gene.family)]],
-                grep(cell_type, colnames(means_mat), useBytes = TRUE, ...), drop = FALSE],
+        if (length(gene.family) == 1) {
+            means_mat <- suppressWarnings(tryCatch(
+                means_mat[query_group[[tolower(gene.family)]],
+                    grep(cell_type, colnames(means_mat), useBytes = TRUE, ...),
+                    drop = FALSE
+                ],
                 error = function(e) {
-                    colidx <- lapply(celltype, function(z) grep(z, colnames(means_mat),
-                    useBytes = TRUE, ...))
+                    colidx <- lapply(celltype, function(z) {
+                        grep(z, colnames(means_mat),
+                            useBytes = TRUE, ...
+                        )
+                    })
                     colidx <- unique(do.call(c, colidx))
                     tmpm <- means_mat[query_group[[tolower(gene.family)]], colidx, drop = FALSE]
                     return(tmpm)
-                }))
-            pvals_mat <- suppressWarnings(tryCatch(pvals_mat[query_group[[tolower(gene.family)]],
-                grep(cell_type, colnames(pvals_mat), useBytes = TRUE, ...), drop = FALSE],
+                }
+            ))
+            pvals_mat <- suppressWarnings(tryCatch(
+                pvals_mat[query_group[[tolower(gene.family)]],
+                    grep(cell_type, colnames(pvals_mat), useBytes = TRUE, ...),
+                    drop = FALSE
+                ],
                 error = function(e) {
-                    colidx <- lapply(celltype, function(z) grep(z, colnames(pvals_mat),
-                    useBytes = TRUE, ...))
+                    colidx <- lapply(celltype, function(z) {
+                        grep(z, colnames(pvals_mat),
+                            useBytes = TRUE, ...
+                        )
+                    })
                     colidx <- unique(do.call(c, colidx))
                     tmpm <- pvals_mat[query_group[[tolower(gene.family)]], colidx, drop = FALSE]
                     return(tmpm)
-                }))
-        } else if (length(gene.family) > 1){
-            means_mat <- suppressWarnings(tryCatch(means_mat[unlist(query_group[c(tolower(gene.family))], use.names = FALSE),
-                grep(cell_type, colnames(means_mat), useBytes = TRUE, ...), drop = FALSE],
+                }
+            ))
+        } else if (length(gene.family) > 1) {
+            means_mat <- suppressWarnings(tryCatch(
+                means_mat[unlist(query_group[c(tolower(gene.family))], use.names = FALSE),
+                    grep(cell_type, colnames(means_mat), useBytes = TRUE, ...),
+                    drop = FALSE
+                ],
                 error = function(e) {
-                    colidx <- lapply(celltype, function(z) grep(z, colnames(means_mat),
-                    useBytes = TRUE, ...))
+                    colidx <- lapply(celltype, function(z) {
+                        grep(z, colnames(means_mat),
+                            useBytes = TRUE, ...
+                        )
+                    })
                     colidx <- unique(do.call(c, colidx))
                     tmpm <- means_mat[unlist(query_group[c(tolower(gene.family))], use.names = FALSE), colidx, drop = FALSE]
                     return(tmpm)
-                }))
-            pvals_mat <- suppressWarnings(tryCatch(pvals_mat[unlist(query_group[c(tolower(gene.family))], use.names = FALSE),
-                grep(cell_type, colnames(pvals_mat), useBytes = TRUE, ...), drop = FALSE],
+                }
+            ))
+            pvals_mat <- suppressWarnings(tryCatch(
+                pvals_mat[unlist(query_group[c(tolower(gene.family))], use.names = FALSE),
+                    grep(cell_type, colnames(pvals_mat), useBytes = TRUE, ...),
+                    drop = FALSE
+                ],
                 error = function(e) {
-                    colidx <- lapply(celltype, function(z) grep(z, colnames(pvals_mat),
-                    useBytes = TRUE, ...))
+                    colidx <- lapply(celltype, function(z) {
+                        grep(z, colnames(pvals_mat),
+                            useBytes = TRUE, ...
+                        )
+                    })
                     colidx <- unique(do.call(c, colidx))
                     tmpm <- pvals_mat[unlist(query_group[c(tolower(gene.family))], use.names = FALSE), colidx, drop = FALSE]
                     return(tmpm)
-                }))
-        }        
+                }
+            ))
+        }
     } else if (is.null(gene.family) & !is.null(genes) | is.null(gene.family) & is.null(genes)) {
         means_mat <- suppressWarnings(tryCatch(means_mat[query, grep(cell_type, colnames(means_mat),
-            useBytes = TRUE, ...), drop = FALSE], error = function(e) {
-            colidx <- lapply(celltype, function(z) grep(z, colnames(means_mat), useBytes = TRUE,
-                ...))
+            useBytes = TRUE, ...
+        ), drop = FALSE], error = function(e) {
+            colidx <- lapply(celltype, function(z) {
+                grep(z, colnames(means_mat),
+                    useBytes = TRUE,
+                    ...
+                )
+            })
             colidx <- unique(do.call(c, colidx))
             tmpm <- means_mat[query, colidx, drop = FALSE]
             return(tmpm)
         }))
         pvals_mat <- suppressWarnings(tryCatch(pvals_mat[query, grep(cell_type, colnames(pvals_mat),
-            useBytes = TRUE, ...), drop = FALSE], error = function(e) {
-            colidx <- lapply(celltype, function(z) grep(z, colnames(pvals_mat), useBytes = TRUE,
-                ...))
+            useBytes = TRUE, ...
+        ), drop = FALSE], error = function(e) {
+            colidx <- lapply(celltype, function(z) {
+                grep(z, colnames(pvals_mat),
+                    useBytes = TRUE,
+                    ...
+                )
+            })
             colidx <- unique(do.call(c, colidx))
             tmpm <- pvals_mat[query, colidx, drop = FALSE]
             return(tmpm)
@@ -441,43 +458,10 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
         }
     }
     # scaling
-    if (length(standard_scale) > 0) {
-        if (standard_scale) {
-            means_mat_ <- apply(means_mat, 1, range01)
-            means_mat_ <- t(means_mat_)
-        } else {
-            means_mat_ <- means_mat
-        }
-    }
-    if (ncol(means_mat) > 1) {
-        if (length(scale) < 1) {
-            if (length(standard_scale) > 0) {
-                if (standard_scale) {
-                  means_mat2 <- means_mat_
-                } else {
-                  means_mat2 <- means_mat
-                }
-            } else {
-                means_mat2 <- t(scale(t(means_mat)))
-            }
-        } else {
-            if (scale) {
-                if (length(standard_scale) > 0) {
-                  if (standard_scale) {
-                    means_mat2 <- means_mat_
-                  } else {
-                    means_mat2 <- t(scale(t(means_mat)))
-                  }
-                } else {
-                  means_mat2 <- t(scale(t(means_mat)))
-                }
-            } else {
-                means_mat2 <- means_mat
-            }
-        }
+    if (standard_scale) {
+        means_mat2 <- apply(means_mat, 1, range01)
+        means_mat2 <- t(means_mat2)
     } else {
-        standard_scale = FALSE
-        scale = FALSE
         means_mat2 <- means_mat
     }
     pvals_mat2 <- as.matrix(pvals_mat)
@@ -489,53 +473,31 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
     # remove rows that are entirely NA
     pvals_mat2 <- pvals_mat2[rowSums(is.na(means_mat2)) != ncol(means_mat2), , drop = FALSE]
     means_mat2 <- means_mat2[rowSums(is.na(means_mat2)) != ncol(means_mat2), , drop = FALSE]
-    if ((length(standard_scale) > 0 && standard_scale) | (length(scale) > 0 && scale) |
-        (length(scale) < 1 && length(standard_scale) < 1)) {
+    if (standard_scale) {
         df_means <- melt(means_mat2, value.name = "scaled_means")
     } else {
         df_means <- melt(means_mat2, value.name = "means")
     }
-    if (length(p.adjust.method) > 0) {
-        df_pvals <- melt(pvals_mat2, value.name = "pvals_adj")
-        df <- data.frame(cbind(df_means, pvals_adj = df_pvals$pvals_adj))
-        xp <- which(df$pvals_adj == 1)
-        if (length(xp) > 0) {
-            df$pvals_adj[which(df$pvals_adj == 1)] <- NA
-        }
-        if (keep_significant_only) {
-            # keep the entire row/ all the comparisons
-            df_ <- split(df, as.character(df$Var1))
-            anysig <- lapply(df_, function(x) {
-                keep <- any(x$pvals_adj < 0.05)
-                return(keep)
-            })
-            df_ <- df_[which(unlist(anysig))]
-            names(df_) <- NULL
-            df <- do.call(rbind, df_)
-        }
-        df$pvals_adj[which(df$pvals_adj == 0)] <- 0.001
-        df$pvals_adj[which(df$pvals_adj >= 0.05)] <- NA
-    } else {
-        df_pvals <- melt(pvals_mat2, value.name = "pvals")
-        df <- data.frame(cbind(df_means, pvals = df_pvals$pvals))
-        xp <- which(df$pvals == 1)
-        if (length(xp) > 0) {
-            df$pvals[which(df$pvals == 1)] <- NA
-        }
-        if (keep_significant_only) {
-            # keep the entire row/ all the comparisons
-            df_ <- split(df, as.character(df$Var1))
-            anysig <- lapply(df_, function(x) {
-                keep <- any(x$pvals < 0.05)
-                return(keep)
-            })
-            df_ <- df_[which(unlist(anysig))]
-            names(df_) <- NULL
-            df <- do.call(rbind, df_)
-        }
-        df$pvals[which(df$pvals == 0)] <- 0.001
-        df$pvals[which(df$pvals >= 0.05)] <- NA
+    df_pvals <- melt(pvals_mat2, value.name = "pvals")
+    df <- data.frame(cbind(df_means, pvals = df_pvals$pvals))
+    xp <- which(df$pvals == 1)
+    if (length(xp) > 0) {
+        df$pvals[which(df$pvals == 1)] <- NA
     }
+    if (keep_significant_only) {
+        # keep the entire row/ all the comparisons
+        df_ <- split(df, as.character(df$Var1))
+        anysig <- lapply(df_, function(x) {
+            keep <- any(x$pvals < 0.05)
+            return(keep)
+        })
+        df_ <- df_[which(unlist(anysig))]
+        names(df_) <- NULL
+        df <- do.call(rbind, df_)
+    }
+    df$pvals[which(df$pvals == 0)] <- 0.001
+    df$pvals[which(df$pvals >= 0.05)] <- NA
+
     if (!is.null(split.by)) {
         if (length(groups) > 0) {
             grp <- as.list(groups)
@@ -550,8 +512,7 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
         df$group <- df$Var2
     }
     if (keep_significant_only) {
-        if ((length(standard_scale) > 0 && standard_scale) | (length(scale) > 0 &&
-            scale) | (length(scale) < 1 && length(standard_scale) < 1)) {
+        if (standard_scale) {
             if (length(df$scaled_means) == 0) {
                 stop("No significant genes found and plotting will not proceed.")
             }
@@ -562,94 +523,70 @@ plot_cpdb <- function(cell_type1, cell_type2, scdata, idents, means, pvals, max_
         }
     }
 
-    df$Var2 <- gsub(sep, "-", df$Var2)
-    final_levels = unique(df$Var2)
+    df$Var2 <- gsub(DEFAULT_SEP, "-", df$Var2)
+    final_levels <- unique(df$Var2)
     df$Var2 <- factor(df$Var2, unique(df$Var2))
     df$x_means_ <- df[, colnames(df_means)[3]]
     df$x_means_[df[, colnames(df)[4]] < 0.05] <- NA
-    df$x_stroke = df$x_means_
+    df$x_stroke <- df$x_means_
     df$x_stroke[!is.na(df$x_stroke)] <- 0
     df$x_stroke[is.na(df$x_stroke)] <- 2
     if (!is.null(exclude_interactions)) {
-        df <- df[!df$Var1 %in% c(exclude_interactions),]
+        df <- df[!df$Var1 %in% c(exclude_interactions), ]
     }
     if (return_table) {
         return(df)
     } else {
         if (default_style) {
-            if ((length(standard_scale) > 0 && standard_scale) | (length(scale) >
-                0 && scale) | (length(scale) < 1 && length(standard_scale) < 1)) {
-                if (length(p.adjust.method) > 0 && p.adjust.method != "none") {
-                  g <- ggplot(df, aes(x = Var2, y = Var1, color = -log10(pvals_adj),
-                    fill = scaled_means, size = scaled_means))
-                } else {
-                  g <- ggplot(df, aes(x = Var2, y = Var1, color = -log10(pvals),
-                    fill = scaled_means, size = scaled_means))
-                }
+            if (standard_scale) {
+                g <- ggplot(df, aes(x = Var2, y = Var1, color = -log10(pvals), fill = scaled_means, size = scaled_means))
             } else {
-                if (length(p.adjust.method) > 0 && p.adjust.method != "none") {
-                  g <- ggplot(df, aes(x = Var2, y = Var1, color = -log10(pvals_adj),
-                    fill = means, size = means))
-                } else {
-                  g <- ggplot(df, aes(x = Var2, y = Var1, color = -log10(pvals),
-                    fill = means, size = means))
-                }
+                g <- ggplot(df, aes(x = Var2, y = Var1, color = -log10(pvals), fill = means, size = means))
             }
             if (!is.null(highlight_size)) {
                 g <- g + geom_point(pch = 21, na.rm = TRUE, stroke = highlight_size)
             } else {
-                if (length(p.adjust.method) > 0 && p.adjust.method != "none") {
-                  s = -log10(df$pvals_adj)
-                  s[is.na(s)] <- 0
-                  g <- g + geom_point(pch = 21, na.rm = TRUE, stroke = s)
-                } else {
-                  s = -log10(df$pvals)
-                  s[is.na(s)] <- 0
-                  g <- g + geom_point(pch = 21, na.rm = TRUE, stroke = s)
-                }
+                s <- -log10(df$pvals)
+                s[is.na(s)] <- 0
+                g <- g + geom_point(pch = 21, na.rm = TRUE, stroke = s)
             }
-            g <- g + theme_bw() + theme(axis.text.x = element_text(angle = 45, hjust = 0,
-                color = "#000000"), axis.text.y = element_text(color = "#000000"),
-                axis.ticks = element_blank(), axis.title.x = element_blank(), axis.title.y = element_blank()) +
-                scale_x_discrete(position = "top") + scale_color_gradientn(colors = highlight,
-                na.value = "white") + scale_radius(range = c(0, max_size))
-            if (noir) {
-                g <- g + scale_fill_gradient(low = "white", high = "#131313", na.value = "white")
+            g <- g +
+                theme_bw() +
+                theme(axis.text.x = element_text(angle = 45, hjust = 0, color = "#000000"), axis.text.y = element_text(color = "#000000")) +
+                scale_x_discrete(position = "top") +
+                scale_color_gradientn(colors = highlight_col, na.value = "white") + scale_radius(range = c(0, max_size))
+            if (length(col_option) == 1) {
+                g <- g + scale_fill_gradientn(colors = grDevices::colorRampPalette(c("white", col_option))(100), na.value = "white")
             } else {
-                if (length(col_option) == 1) {
-                  g <- g + scale_fill_gradientn(colors = grDevices::colorRampPalette(c("white",
-                    col_option))(100), na.value = "white")
-                } else {
-                  g <- g + scale_fill_gradientn(colors = c("white", grDevices::colorRampPalette(col_option)(99)),
-                    na.value = "white")
-                }
+                g <- g + scale_fill_gradientn(colors = c("white", grDevices::colorRampPalette(col_option)(99)), na.value = "white")
             }
         } else {
-            if ((length(standard_scale) > 0 && standard_scale) | (length(scale) >
-                0 && scale) | (length(scale) < 1 && length(standard_scale) < 1)) {
+            if (standard_scale) {
                 g <- ggplot(df, aes(x = Var2, y = Var1, size = scaled_means, color = scaled_means))
-                df2 <- df %>%
-                  filter(is.na(x_means_))
+                df2 <- df %>% dplyr::filter(is.na(x_means_))
                 g <- g + geom_point(pch = 16, na.rm = TRUE)
-                g <- g + geom_point(data = df2, aes(x = Var2, y = Var1, size = scaled_means,
-                  fill = x_means_, stroke = x_stroke), pch = 21, na.rm = TRUE)
+                g <- g + geom_point(data = df2, aes(x = Var2, y = Var1, size = scaled_means, fill = x_means_, stroke = x_stroke), pch = 21, na.rm = TRUE)
             } else {
                 g <- ggplot(df, aes(x = Var2, y = Var1, size = means, color = means))
-                df2 <- df %>%
-                  filter(is.na(x_means_))
+                df2 <- df %>% dplyr::filter(is.na(x_means_))
                 g <- g + geom_point(pch = 16, na.rm = TRUE)
-                g <- g + geom_point(data = df2, aes(x = Var2, y = Var1, size = scaled_means,
-                  fill = x_means_, stroke = x_stroke), pch = 21, na.rm = TRUE)
+                g <- g + geom_point(data = df2, aes(x = Var2, y = Var1, size = scaled_means, fill = x_means_, stroke = x_stroke), pch = 21, na.rm = TRUE)
             }
-            g <- g + theme_bw() + scale_fill_gradientn(colors = col_option, na.value = "white",
-                guide = FALSE) + scale_colour_gradientn(colors = col_option) + theme(axis.text.x = element_text(angle = 45,
-                hjust = 0, color = "#000000"), axis.text.y = element_text(color = "#000000"),
-                axis.ticks = element_blank(), axis.title.x = element_blank(), axis.title.y = element_blank()) +
+            g <- g + theme_bw() + scale_fill_gradientn(
+                colors = col_option, na.value = "white",
+                guide = FALSE
+            ) + scale_colour_gradientn(colors = col_option) + theme(
+                axis.text.x = element_text(
+                    angle = 45,
+                    hjust = 0, color = "#000000"
+                ), axis.text.y = element_text(color = "#000000"),
+                axis.ticks = element_blank(), axis.title.x = element_blank(), axis.title.y = element_blank()
+            ) +
                 scale_x_discrete(position = "top") + scale_radius(range = c(0, max_size))
         }
         if (!is.null(gene.family) & is.null(genes)) {
-            if (length(gene.family) > 1){
-                gene.family <- paste(gene.family, collapse = ', ')
+            if (length(gene.family) > 1) {
+                gene.family <- paste(gene.family, collapse = ", ")
             }
             g <- g + ggtitle(gene.family)
         }
