@@ -15,7 +15,7 @@
 #' @param standard_scale logical. scale the expression to range from 0 to 1. NULL defaults to FALSE.
 #' @param cluster_rows logical. whether or not to cluster the rows.
 #' @param col_option specify plotting colours
-#' @param default_stlye default = TRUE. Show all mean values and trace significant interactions with `higlight` colour. If FALSE, significant interactions will be presented as a white ring.
+#' @param default_style default = TRUE. Show all mean values and trace significant interactions with `higlight` colour. If FALSE, significant interactions will be presented as a white ring.
 #' @param highlight_col colour for highlighting p <0.05
 #' @param highlight_size stroke size for highlight if p < 0.05. if NULL, scales to -log10(pval).
 #' @param special_character_regex_pattern search pattern if the cell type names contains special character. NULL defaults to '/|:|\\?|\\*|\\+|[\\]|\\(|\\)'.
@@ -79,171 +79,28 @@ plot_cpdb <- function(
     }
     cell_type1 <- .sub_pattern(cell_type = cell_type1, pattern = special_character_regex_pattern)
     cell_type2 <- .sub_pattern(cell_type = cell_type2, pattern = special_character_regex_pattern)
-    if (length(idents) > 1) {
-        ct1 <- grep(cell_type1, idents, value = TRUE, ...)
-        ct2 <- grep(cell_type2, idents, value = TRUE, ...)
-        checklabels1 <- any(idents %in% c(ct1, ct2))
-    } else {
-        ct1 <- grep(cell_type1, metadata[[idents]], value = TRUE, ...)
-        ct2 <- grep(cell_type2, metadata[[idents]], value = TRUE, ...)
-        checklabels1 <- any(metadata[[idents]] %in% c(ct1, ct2))
-    }
-    if (!is.null(split.by)) {
-        if (length(idents) > 1) {
-            labels <- paste0(metadata[[split.by]], "_", idents)
-        } else {
-            labels <- paste0(metadata[[split.by]], "_", metadata[[idents]])
-        }
-        labels <- factor(labels)
-        labels <- levels(labels)
-        groups <- factor(metadata[[split.by]])
-        groups <- levels(groups)
-        if (length(groups) > 0) {
-            # the purpose for this step is to allow for special characters to
-            # be used in the celltype grepping
-            if (length(groups) > 1) {
-                labels2 <- gsub(paste0(paste0(groups, "_"), collapse = "|"), "", labels)
-            } else {
-                labels2 <- gsub(paste0(groups, "_"), "", labels)
+    if (is.null(genes)) {
+        if (!is.null(gene_family)) {
+            query_group <- .prep_query_group(means = means_mat, custom_gene_family = custom_gene_family)
+            if (any(!gene_family %in% names(query_group))) {
+                stop(paste("gene_family needs to be one of the following:", paste(names(query_group), collapse = ", ")))
             }
-            # this returns the indices from the labels
-            ct1 <- grep(cell_type1, labels2, value = TRUE, ...)
-            ct2 <- grep(cell_type2, labels2, value = TRUE, ...)
+            query <- unique(do.call(c, query_group[tolower(gene_family)]))
         } else {
-            if (length(idents) > 1) {
-                labels <- idents
-            } else {
-                labels <- metadata[[idents]]
-            }
-            labels <- factor(labels)
-            labels <- levels(labels)
-            ct1 <- grep(cell_type1, labels, value = TRUE, ...)
-            ct2 <- grep(cell_type2, labels, value = TRUE, ...)
+            query <- grep("", means_mat$interacting_pair, value = TRUE)
         }
     } else {
-        if (length(idents) > 1) {
-            labels <- idents
+        if (!is.null(gene_family)) {
+            stop("Please specify either genes or gene_family, not both.")
         } else {
-            labels <- metadata[[idents]]
-        }
-        labels <- factor(labels)
-        labels <- levels(labels)
-        ct1 <- grep(cell_type1, labels, value = TRUE, ...)
-        ct2 <- grep(cell_type2, labels, value = TRUE, ...)
-        ct1 <- paste0(ct1, collapse = "|")
-        ct2 <- paste0(ct2, collapse = "|")
-    }
-    x1 <- ct1[ct1 %in% ""]
-    x2 <- ct2[ct2 %in% ""]
-    if (length(x1) > 0) {
-        ct1[ct1 %in% ""] <- NA
-    }
-    if (length(x2) > 0) {
-        ct2[ct2 %in% ""] <- NA
-    }
-    checklabels2 <- any(colnames(means_mat) %in% c(ct1, ct2))
-    if (!checklabels1) {
-        if (length(idents) > 1) {
-            # relatively relaxed criteria to allow for the program to continue
-            options(warn = -1)
-            ct_1 <- grep(cell_type1, idents, value = TRUE, ...)
-            ct_2 <- grep(cell_type2, idents, value = TRUE, ...)
-            options(warn = 0)
-            checklabels2 <- any(idents %in% ct_1)
-            if (checklabels2) {
-                checklabels2 <- any(idents %in% ct_2)
-                if (!checklabels2) {
-                    stop("Cannot find cell types.\nThe error is mismatch between cell_type2 and the single cell metadata (or idents provided).")
-                }
-            } else {
-                stop("Cannot find cell types.\nThe error is mismatch between cell_type1 and the single cell metadata (or idents provided).")
-            }
-        } else {
-            options(warn = -1)
-            ct_1 <- grep(cell_type1, metadata[[idents]], value = TRUE, ...)
-            ct_2 <- grep(cell_type2, metadata[[idents]], value = TRUE, ...)
-            options(warn = 0)
-            checklabels2 <- any(metadata[[idents]] %in% ct_1)
-            if (checklabels2) {
-                checklabels2 <- any(metadata[[idents]] %in% ct_2)
-                if (!checklabels2) {
-                    stop("Cannot find cell types.\nThe error is mismatch between cell_type2 and the single cell metadata (or idents provided).")
-                }
-            } else {
-                stop("Cannot find cell types.\nThe error is mismatch between cell_type1 and the single cell metadata (or idents provided).")
-            }
+            query <- grep(paste(genes, collapse = "|"), means_mat$interacting_pair, value = TRUE)
         }
     }
-    if (!checklabels2) {
-        # relatively relaxed criteria to allow for the program to continue
-        options(warn = -1)
-        ct_1 <- grep(cell_type1, colnames(means_mat), value = TRUE)
-        ct_2 <- grep(cell_type2, colnames(means_mat), value = TRUE)
-        options(warn = 0)
-        checklabels2 <- any(colnames(means_mat) %in% ct_1)
-        if (checklabels2) {
-            checklabels2 <- any(colnames(means_mat) %in% ct_2)
-            if (!checklabels2) {
-                stop("Cannot find cell types. The error is mismatch between cell_type2 and the cpdb metadata.")
-            }
-        } else {
-            stop("Cannot find cell types. The error is mismatch between cell_type1 and the cpdb metadata.")
-        }
-    }
-    if (is.null(gene.family) & is.null(genes)) {
-        query <- grep("", means_mat$interacting_pair)
-    }
-    if (!is.null(gene.family) & !is.null(genes)) {
-        stop("Please specify either genes or gene.family, not both")
-    }
-    if (!is.null(gene.family) & is.null(genes)) {
-        chemokines <- grep("^CXC|CCL|CCR|CX3|XCL|XCR", means_mat$interacting_pair)
-        th1 <- grep(
-            "IL2|IL12|IL18|IL27|IFNG|IL10|TNF$|TNF |LTA|LTB|STAT1|CCR5|CXCR3|IL12RB1|IFNGR1|TBX21|STAT4",
-            means_mat$interacting_pair
-        )
-        th2 <- grep("IL4|IL5|IL25|IL10|IL13|AREG|STAT6|GATA3|IL4R", means_mat$interacting_pair)
-        th17 <- grep(
-            "IL21|IL22|IL24|IL26|IL17A|IL17A|IL17F|IL17RA|IL10|RORC|RORA|STAT3|CCR4|CCR6|IL23RA|TGFB",
-            means_mat$interacting_pair
-        )
-        treg <- grep("IL35|IL10|FOXP3|IL2RA|TGFB", means_mat$interacting_pair)
-        costimulatory <- grep(
-            "CD86|CD80|CD48|LILRB2|LILRB4|TNF|CD2|ICAM|SLAM|LT[AB]|NECTIN2|CD40|CD70|CD27|CD28|CD58|TSLP|PVR|CD44|CD55|CD[1-9]",
-            means_mat$interacting_pair
-        )
-        coinhibitory <- grep(
-            "SIRP|CD47|ICOS|TIGIT|CTLA4|PDCD1|CD274|LAG3|HAVCR|VSIR",
-            means_mat$interacting_pair
-        )
-        niche <- grep("CSF", means_mat$interacting_pair)
-        query_group <- list(
-            chemokines = chemokines, chemokine = chemokines, th1 = th1,
-            th2 = th2, th17 = th17, treg = treg, costimulatory = costimulatory, coinhibitory = coinhibitory,
-            costimulation = costimulatory, coinhibition = coinhibitory, niche = niche
-        )
-
-        if (!is.null(custom_gene_family)) {
-            cgf <- as.list(custom_gene_family)
-            cgf <- lapply(cgf, function(x) grep(paste(x, collapse = "|"), means_mat$interacting_pair))
-            query_group <- c(query_group, cgf)
-        }
-    } else if (is.null(gene.family) & !is.null(genes)) {
-        query <- grep(paste(genes, collapse = "|"), means_mat$interacting_pair)
-    }
+    # prepare the cell_type query
     if (!is.null(split.by)) {
-        if (length(idents) > 1) {
-            labels <- paste0(metadata[[split.by]], "_", idents)
-        } else {
-            labels <- paste0(metadata[[split.by]], "_", metadata[[idents]])
-        }
-        chk1 <- class(metadata[[split.by]])
-        chk2 <- class(metadata[[idents]])
-        if (chk1 == "factor" & chk2 == "factor") {
-            labels <- factor(labels, levels = paste0(
-                levels(metadata[[split.by]]),
-                "_", rep(levels(metadata[[idents]]), each = length(levels(metadata[[split.by]])))
-            ))
+        labels <- paste0(metadata[[split.by]], "_", metadata[[idents]])
+        if (is.factor(metadata[[split.by]]) & is.factor(metadata[[idents]])) {
+            labels <- factor(labels, levels = paste0(levels(metadata[[split.by]]), "_", rep(levels(metadata[[idents]]), each = length(levels(metadata[[split.by]])))))
         } else {
             labels <- factor(labels)
         }
@@ -268,11 +125,8 @@ plot_cpdb <- function(
             grp <- as.list(groups)
             celltype <- list()
             for (i in 1:length(c_type1)) {
-                celltype[[i]] <- .create_celltype_query(c_type1[[i]], c_type2, DEFAULT_SEP)
-                celltype[[i]] <- lapply(
-                    grp, .keep_interested_groups, celltype[[i]],
-                    DEFAULT_SEP
-                )
+                celltype[[i]] <- .create_celltype_query(ctype1 = c_type1[[i]], ctype2 = c_type2, sep = DEFAULT_SEP)
+                celltype[[i]] <- lapply(grp, .keep_interested_groups, ct = celltype[[i]], sep = DEFAULT_SEP)
             }
             for (i in 1:length(celltype)) {
                 celltype[[i]] <- celltype[[i]][-which(celltype[[i]] == "")]
@@ -284,11 +138,7 @@ plot_cpdb <- function(
             }
             cell_type <- do.call(paste0, list(celltype, collapse = "|"))
         } else {
-            if (length(idents) > 1) {
-                labels <- idents
-            } else {
-                labels <- metadata[[idents]]
-            }
+            labels <- metadata[[idents]]
             labels <- factor(labels)
             labels <- levels(labels)
             c_type1 <- as.list(grep(cell_type1, labels, value = TRUE, ...))
@@ -297,16 +147,12 @@ plot_cpdb <- function(
             c_type2 <- lapply(c_type2, .sub_pattern, pattern = special_character_regex_pattern)
             celltype <- list()
             for (i in 1:length(c_type1)) {
-                celltype[[i]] <- .create_celltype_query(c_type1[[i]], c_type2, DEFAULT_SEP)
+                celltype[[i]] <- .create_celltype_query(ctype1 = c_type1[[i]], ctype2 = c_type2, sep = DEFAULT_SEP)
             }
             cell_type <- do.call(paste0, list(celltype, collapse = "|"))
         }
     } else {
-        if (length(idents) > 1) {
-            labels <- idents
-        } else {
-            labels <- metadata[[idents]]
-        }
+        labels <- metadata[[idents]]
         labels <- factor(labels)
         labels <- levels(labels)
         c_type1 <- as.list(grep(cell_type1, labels, value = TRUE))
@@ -315,105 +161,21 @@ plot_cpdb <- function(
         c_type2 <- lapply(c_type2, .sub_pattern, pattern = special_character_regex_pattern)
         celltype <- list()
         for (i in 1:length(c_type1)) {
-            celltype[[i]] <- .create_celltype_query(c_type1[[i]], c_type2, DEFAULT_SEP)
+            celltype[[i]] <- .create_celltype_query(ctype1 = c_type1[[i]], ctype2 = c_type2, sep = DEFAULT_SEP)
         }
         cell_type <- do.call(paste0, list(celltype, collapse = "|"))
     }
     if (!is.null(gene.family) & is.null(genes)) {
         if (length(gene.family) == 1) {
-            means_mat <- suppressWarnings(tryCatch(
-                means_mat[query_group[[tolower(gene.family)]],
-                    grep(cell_type, colnames(means_mat), useBytes = TRUE, ...),
-                    drop = FALSE
-                ],
-                error = function(e) {
-                    colidx <- lapply(celltype, function(z) {
-                        grep(z, colnames(means_mat),
-                            useBytes = TRUE, ...
-                        )
-                    })
-                    colidx <- unique(do.call(c, colidx))
-                    tmpm <- means_mat[query_group[[tolower(gene.family)]], colidx, drop = FALSE]
-                    return(tmpm)
-                }
-            ))
-            pvals_mat <- suppressWarnings(tryCatch(
-                pvals_mat[query_group[[tolower(gene.family)]],
-                    grep(cell_type, colnames(pvals_mat), useBytes = TRUE, ...),
-                    drop = FALSE
-                ],
-                error = function(e) {
-                    colidx <- lapply(celltype, function(z) {
-                        grep(z, colnames(pvals_mat),
-                            useBytes = TRUE, ...
-                        )
-                    })
-                    colidx <- unique(do.call(c, colidx))
-                    tmpm <- pvals_mat[query_group[[tolower(gene.family)]], colidx, drop = FALSE]
-                    return(tmpm)
-                }
-            ))
+            means_mat <- .prep_data_querygroup_celltype1(.data = means_mat, .query_group = query_group, .gene.family = gene.family, .cell_type = cell_type, .celltype = celltype, ...)
+            pvals_mat <- .prep_data_querygroup_celltype1(.data = pvals_mat, .query_group = query_group, .gene.family = gene.family, .cell_type = cell_type, .celltype = celltype, ...)
         } else if (length(gene.family) > 1) {
-            means_mat <- suppressWarnings(tryCatch(
-                means_mat[unlist(query_group[c(tolower(gene.family))], use.names = FALSE),
-                    grep(cell_type, colnames(means_mat), useBytes = TRUE, ...),
-                    drop = FALSE
-                ],
-                error = function(e) {
-                    colidx <- lapply(celltype, function(z) {
-                        grep(z, colnames(means_mat),
-                            useBytes = TRUE, ...
-                        )
-                    })
-                    colidx <- unique(do.call(c, colidx))
-                    tmpm <- means_mat[unlist(query_group[c(tolower(gene.family))], use.names = FALSE), colidx, drop = FALSE]
-                    return(tmpm)
-                }
-            ))
-            pvals_mat <- suppressWarnings(tryCatch(
-                pvals_mat[unlist(query_group[c(tolower(gene.family))], use.names = FALSE),
-                    grep(cell_type, colnames(pvals_mat), useBytes = TRUE, ...),
-                    drop = FALSE
-                ],
-                error = function(e) {
-                    colidx <- lapply(celltype, function(z) {
-                        grep(z, colnames(pvals_mat),
-                            useBytes = TRUE, ...
-                        )
-                    })
-                    colidx <- unique(do.call(c, colidx))
-                    tmpm <- pvals_mat[unlist(query_group[c(tolower(gene.family))], use.names = FALSE), colidx, drop = FALSE]
-                    return(tmpm)
-                }
-            ))
+            means_mat <- .prep_data_querygroup_celltype2(.data = means_mat, .query_group = query_group, .gene.family = gene.family, .cell_type = cell_type, .celltype = celltype, ...)
+            pvals_mat <- .prep_data_querygroup_celltype2(.data = pvals_mat, .query_group = query_group, .gene.family = gene.family, .cell_type = cell_type, .celltype = celltype, ...)
         }
     } else if (is.null(gene.family) & !is.null(genes) | is.null(gene.family) & is.null(genes)) {
-        means_mat <- suppressWarnings(tryCatch(means_mat[query, grep(cell_type, colnames(means_mat),
-            useBytes = TRUE, ...
-        ), drop = FALSE], error = function(e) {
-            colidx <- lapply(celltype, function(z) {
-                grep(z, colnames(means_mat),
-                    useBytes = TRUE,
-                    ...
-                )
-            })
-            colidx <- unique(do.call(c, colidx))
-            tmpm <- means_mat[query, colidx, drop = FALSE]
-            return(tmpm)
-        }))
-        pvals_mat <- suppressWarnings(tryCatch(pvals_mat[query, grep(cell_type, colnames(pvals_mat),
-            useBytes = TRUE, ...
-        ), drop = FALSE], error = function(e) {
-            colidx <- lapply(celltype, function(z) {
-                grep(z, colnames(pvals_mat),
-                    useBytes = TRUE,
-                    ...
-                )
-            })
-            colidx <- unique(do.call(c, colidx))
-            tmpm <- pvals_mat[query, colidx, drop = FALSE]
-            return(tmpm)
-        }))
+        means_mat <- .prep_data_query_celltype(.data = means_mat, .query = query_group, .cell_type = cell_type, .celltype = celltype, ...)
+        pvals_mat <- .prep_data_query_celltype(.data = pvals_mat, .query = query_group, .cell_type = cell_type, .celltype = celltype, ...)
     }
     if (length(means_mat) == 0) {
         stop("Please check your options for split.by and your celltypes.")
@@ -513,7 +275,6 @@ plot_cpdb <- function(
             }
         }
     }
-
     df$Var2 <- gsub(DEFAULT_SEP, "-", df$Var2)
     final_levels <- unique(df$Var2)
     df$Var2 <- factor(df$Var2, unique(df$Var2))
@@ -525,14 +286,19 @@ plot_cpdb <- function(
     if (!is.null(exclude_interactions)) {
         df <- df[!df$Var1 %in% c(exclude_interactions), ]
     }
+    df$significant <- ifelse(df$pvals < 0.05, "yes", NA)
+    if (all(is.na(df$significant))) {
+        df$significant <- "no"
+        highlight_col <- "#ffffff"
+    }
     if (return_table) {
         return(df)
     } else {
         if (default_style) {
             if (standard_scale) {
-                g <- ggplot(df, aes(x = Var2, y = Var1, color = -log10(pvals), fill = scaled_means, size = scaled_means))
+                g <- ggplot(df, aes(x = Var2, y = Var1, color = significant, fill = scaled_means, size = scaled_means))
             } else {
-                g <- ggplot(df, aes(x = Var2, y = Var1, color = -log10(pvals), fill = means, size = means))
+                g <- ggplot(df, aes(x = Var2, y = Var1, color = significant, fill = means, size = means))
             }
             if (!is.null(highlight_size)) {
                 g <- g + geom_point(pch = 21, na.rm = TRUE, stroke = highlight_size)
