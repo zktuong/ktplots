@@ -8,42 +8,42 @@ test_that("combine_cpdb works 1", {
 
 
 test_that("plot_cpdb works 1", {
-    p <- plot_cpdb(cell_type1 = "B cell", cell_type2 = "CD4T cell", scdata = kidneyimmune, idents = "celltype", means = means, pvals = pvals, split.by = "Experiment", genes = c("CXCL13", "CD274", "CXCR5"))
+    p <- plot_cpdb(cell_type1 = "B cell", cell_type2 = "CD4T cell", scdata = kidneyimmune, idents = "celltype", means = means, pvals = pvals, split.by = "Experiment", genes = c("CXCL13", "CD274", "CXCR5"), keep_significant_only = FALSE)
     expect_true(is.ggplot(p))
 })
 
 test_that("plot_cpdb works 2", {
-    p <- plot_cpdb(cell_type1 = "B cell", cell_type2 = "CD4T cell", scdata = kidneyimmune, idents = "celltype", means = means, pvals = pvals, split.by = "Experiment", gene.family = "chemokines")
+    p <- plot_cpdb(cell_type1 = "B cell", cell_type2 = "CD4T cell", scdata = kidneyimmune, idents = "celltype", means = means, pvals = pvals, split.by = "Experiment", gene.family = "chemokines", keep_significant_only = FALSE)
     expect_true(is.ggplot(p))
 })
 
 test_that("plot_cpdb works 3", {
-    p <- plot_cpdb(cell_type1 = "B cell", cell_type2 = "CD4T cell", scdata = kidneyimmune, idents = "celltype", means = means, pvals = pvals, split.by = "Experiment", gene.family = "chemokines", default_style = FALSE)
+    p <- plot_cpdb(cell_type1 = "B cell", cell_type2 = "CD4T cell", scdata = kidneyimmune, idents = "celltype", means = means, pvals = pvals, split.by = "Experiment", gene.family = "chemokines", default_style = FALSE, keep_significant_only = FALSE)
     expect_true(is.ggplot(p))
 })
 
 test_that("plot_cpdb works 4", {
-    p <- plot_cpdb(cell_type1 = "B cell", cell_type2 = "CD4T cell", scdata = kidneyimmune, idents = "celltype", means = means, pvals = pvals, split.by = "Experiment", gene.family = "chemokines")
+    p <- plot_cpdb(cell_type1 = "B cell", cell_type2 = "CD4T cell", scdata = kidneyimmune, idents = "celltype", means = means, pvals = pvals, split.by = "Experiment", gene.family = "chemokines", keep_significant_only = FALSE)
     expect_true(is.ggplot(p))
 })
 
 test_that("plot_cpdb works 5", {
-    p <- plot_cpdb(cell_type1 = "B cell", cell_type2 = "CD4T cell", scdata = kidneyimmune, idents = "celltype", means = means, pvals = pvals, split.by = "Experiment", gene.family = "chemokines", default_style = FALSE)
+    p <- plot_cpdb(cell_type1 = "B cell", cell_type2 = "CD4T cell", scdata = kidneyimmune, idents = "celltype", means = means, pvals = pvals, split.by = "Experiment", gene.family = "chemokines", default_style = FALSE, keep_significant_only = FALSE)
     expect_true(is.ggplot(p))
 })
 
 test_that("plot_cpdb works 6", {
-    p <- plot_cpdb(cell_type1 = "B cell", cell_type2 = "CD4T cell", scdata = kidneyimmune, idents = "celltype", means = means2, pvals = pvals2, gene.family = "custom_family", custom_gene_family = list(custom_family = c("CXCL13", "CD274", "CXCR5")))
+    p <- plot_cpdb(cell_type1 = "B cell", cell_type2 = "CD4T cell", scdata = kidneyimmune, idents = "celltype", means = means2, pvals = pvals2, gene.family = "custom_family", custom_gene_family = list(custom_family = c("CXCL13", "CD274", "CXCR5")), keep_significant_only = FALSE)
     expect_true(is.ggplot(p))
 })
 
 test_that("plot_cpdb works 7", {
-    p <- plot_cpdb(cell_type1 = "B cell", cell_type2 = "CD4T cell", scdata = kidneyimmune, idents = "celltype", means = means2, pvals = pvals2, gene.family = "custom_family", custom_gene_family = data.frame(custom_family = c("CXCL13", "CD274", "CXCR5")))
+    p <- plot_cpdb(cell_type1 = "B cell", cell_type2 = "CD4T cell", scdata = kidneyimmune, idents = "celltype", means = means2, pvals = pvals2, gene.family = "custom_family", custom_gene_family = data.frame(custom_family = c("CXCL13", "CD274", "CXCR5")), keep_significant_only = FALSE)
     expect_true(is.ggplot(p))
 })
 
 test_that("plot_cpdb works 8", {
-    p <- plot_cpdb(cell_type1 = "B cell", cell_type2 = "CD4T cell", scdata = kidneyimmune, idents = "celltype", means = means2, pvals = pvals2, gene.family = c("chemokines", "th1"))
+    p <- plot_cpdb(cell_type1 = "B cell", cell_type2 = "CD4T cell", scdata = kidneyimmune, idents = "celltype", means = means2, pvals = pvals2, gene.family = c("chemokines", "th1"), keep_significant_only = FALSE)
     expect_true(is.ggplot(p))
 })
 
@@ -82,7 +82,7 @@ test_that("weird characters are ok", {
     newpvals <- cbind(pvals[, 1:11], pvals_df)
 
     # plot_cpdb
-    p <- plot_cpdb(cell_type1 = "TRC+", cell_type2 = "LTi-Like ILC3", scdata = kidneyimmune, idents = "celltype", means = newmeans, pvals = newpvals, genes = c("LTB", "LTBR", "KITL", "KIT", "CCR6"))
+    p <- plot_cpdb(cell_type1 = "TRC+", cell_type2 = "LTi-Like ILC3", scdata = kidneyimmune, idents = "celltype", means = newmeans, pvals = newpvals, genes = c("LTB", "LTBR", "KITL", "KIT", "CCR6"), keep_significant_only = FALSE)
     expect_true(is.ggplot(p))
 })
 
