@@ -93,5 +93,6 @@ Plotting cellphonedb results as a chord diagram
 }
 \examples{
 \donttest{
+
 }
 }

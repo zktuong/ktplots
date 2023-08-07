@@ -5,8 +5,6 @@
 \title{Plotting cellphonedb results as a heatmap}
 \usage{
 plot_cpdb_heatmap(
-  scdata,
-  idents,
   pvals,
   log1p_transform = FALSE,
   show_rownames = TRUE,
@@ -33,10 +31,6 @@ plot_cpdb_heatmap(
 )
 }
 \arguments{
-\item{scdata}{single-cell data. can be seurat/summarizedexperiment object}
-
-\item{idents}{vector holding the idents for each cell or column name of scdata's metadata. MUST match cpdb's columns}
-
 \item{pvals}{object holding pvals.txt from cpdb output. Use relevant_interactions.txt if degs_analysis mode.}
 
 \item{log1p_transform}{whether to log1p transform the matrix before plotting.}

@@ -26,6 +26,7 @@ plot_cpdb2(
   node_group_colors = NULL,
   degs_analysis = FALSE,
   return_df = FALSE,
+  plot_score_as_thickness = TRUE,
   ...
 )
 }
@@ -72,6 +73,8 @@ plot_cpdb2(
 
 \item{return_df}{whether to just return this as a data.frame rather than plotting iot}
 
+\item{plot_score_as_thickness}{logical. Whether to scale the thickness of the edges to the interaction score and scale alpha to -log10(significance). Default is TRUE. FALSE will be opposite behaviour}
+
 \item{...}{passes arguments plot_cpdb}
 
 \item{scale}{logical. scale the expression to mean +/- SD. NULL defaults to TRUE.}
@@ -84,5 +87,6 @@ Plotting cellphonedb results
 }
 \examples{
 \donttest{
+
 }
 }

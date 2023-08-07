@@ -99,5 +99,6 @@ Plotting select interactions from cellphonedb results as a chord diagram
 }
 \examples{
 \donttest{
+
 }
 }
