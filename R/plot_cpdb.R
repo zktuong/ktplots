@@ -300,48 +300,70 @@ plot_cpdb <- function(
             } else {
                 g <- ggplot(df, aes(x = Var2, y = Var1, color = significant, fill = means, size = means))
             }
-            if (!is.null(highlight_size)) {
-                g <- g + geom_point(pch = 21, na.rm = TRUE, stroke = highlight_size)
+        } else {
+            if (all(df$significant == "no")) {
+                if (standard_scale) {
+                    g <- ggplot(df, aes(x = Var2, y = Var1, color = significant, fill = scaled_means, size = scaled_means))
+                } else {
+                    g <- ggplot(df, aes(x = Var2, y = Var1, color = significant, fill = means, size = means))
+                }
+                default_style <- TRUE
             } else {
-                s <- -log10(df$pvals)
-                s[is.na(s)] <- 0
-                g <- g + geom_point(pch = 21, na.rm = TRUE, stroke = s)
+                highlight_col <- "#FFFFFF" # enforce this
+                if (standard_scale) {
+                    if (!is.null(highlight_size)) {
+                        g <- ggplot(df, aes(x = Var2, y = Var1, fill = significant, colour = scaled_means, size = scaled_means, stroke = highlight_size))
+                    } else {
+                        g <- ggplot(df, aes(x = Var2, y = Var1, fill = significant, colour = scaled_means, size = scaled_means, stroke = x_stroke))
+                    }
+                } else {
+                    if (!is.null(highlight_size)) {
+                        g <- ggplot(df, aes(x = Var2, y = Var1, fill = significant, colour = means, size = means, stroke = highlight_size))
+                    } else {
+                        g <- ggplot(df, aes(x = Var2, y = Var1, fill = significant, colour = means, size = means, stroke = x_stroke))
+                    }
+                }
             }
-            g <- g +
-                theme_bw() +
-                theme(axis.text.x = element_text(angle = 45, hjust = 0, color = "#000000"), axis.text.y = element_text(color = "#000000")) +
-                scale_x_discrete(position = "top") +
-                scale_color_gradientn(colors = highlight_col, na.value = "white") + scale_radius(range = c(0, max_size))
+        }
+        g <- g + geom_point(pch = 21, na.rm = TRUE) +
+            theme_bw() +
+            theme(axis.text.x = element_text(angle = 45, hjust = 0, color = "#000000"), axis.text.y = element_text(color = "#000000")) +
+            scale_x_discrete(position = "top") +
+            scale_color_gradientn(colors = highlight_col, na.value = "white") +
+            scale_size_continuous(range = c(0, max_size), aesthetics = "size") +
+            scale_size_continuous(range = c(0, max_highlight_size), aesthetics = "stroke")
+        if (default_style) {
+            g <- g + scale_colour_manual(values = highlight_col, na.translate = FALSE) +
+                guides(fill = guide_colourbar(barwidth = 4, label = TRUE, ticks = TRUE, draw.ulim = TRUE, draw.llim = TRUE, order = 1), size = guide_legend(reverse = TRUE, order = 2), stroke = guide_legend(reverse = TRUE, order = 3))
             if (length(col_option) == 1) {
                 g <- g + scale_fill_gradientn(colors = grDevices::colorRampPalette(c("white", col_option))(100), na.value = "white")
             } else {
                 g <- g + scale_fill_gradientn(colors = c("white", grDevices::colorRampPalette(col_option)(99)), na.value = "white")
             }
         } else {
+            g <- g + scale_fill_manual(values = highlight_col, na.translate = FALSE) +
+                guides(colour = guide_colourbar(barwidth = 4, label = TRUE, ticks = TRUE, draw.ulim = TRUE, draw.llim = TRUE, order = 1), size = guide_legend(reverse = TRUE, order = 2), stroke = guide_legend(reverse = TRUE, order = 3))
+
+            df2 <- df
             if (standard_scale) {
-                g <- ggplot(df, aes(x = Var2, y = Var1, size = scaled_means, color = scaled_means))
-                df2 <- df %>% dplyr::filter(is.na(x_means_))
-                g <- g + geom_point(pch = 16, na.rm = TRUE)
-                g <- g + geom_point(data = df2, aes(x = Var2, y = Var1, size = scaled_means, fill = x_means_, stroke = x_stroke), pch = 21, na.rm = TRUE)
+                df2$scaled_means[df$pvals < 0.05] <- NA
+                g <- g + geom_point(aes(x = Var2, y = Var1, colour = scaled_means, size = scaled_means), data = df2, inherit_aes = FALSE, na_rm = TRUE)
             } else {
-                g <- ggplot(df, aes(x = Var2, y = Var1, size = means, color = means))
-                df2 <- df %>% dplyr::filter(is.na(x_means_))
-                g <- g + geom_point(pch = 16, na.rm = TRUE)
-                g <- g + geom_point(data = df2, aes(x = Var2, y = Var1, size = scaled_means, fill = x_means_, stroke = x_stroke), pch = 21, na.rm = TRUE)
+                df2$means[df$pvals < 0.05] <- NA
+                g <- g + geom_point(aes(x = Var2, y = Var1, colour = means, size = means), data = df2, inherit_aes = FALSE, na_rm = TRUE)
             }
-            g <- g + theme_bw() + scale_fill_gradientn(
-                colors = col_option, na.value = "white",
-                guide = FALSE
-            ) + scale_colour_gradientn(colors = col_option) + theme(
-                axis.text.x = element_text(
-                    angle = 45,
-                    hjust = 0, color = "#000000"
-                ), axis.text.y = element_text(color = "#000000"),
-                axis.ticks = element_blank(), axis.title.x = element_blank(), axis.title.y = element_blank()
-            ) +
-                scale_x_discrete(position = "top") + scale_radius(range = c(0, max_size))
+            if (length(col_option) == 1) {
+                g <- g + scale_colour_gradientn(colors = grDevices::colorRampPalette(c("white", col_option))(100), na.value = "white")
+            } else {
+                g <- g + scale_colour_gradientn(colors = c("white", grDevices::colorRampPalette(col_option)(99)), na.value = "white")
+            }
         }
-        if (!is.null(gene.family) & is.null(genes)) {
+        if (!is.null(highlight_size)) {
+            g <- g + guides(stroke = "none")
+        }
+        if (title != "") {
+            g <- g + ggtitle(title)
+        } else if (!is.null(gene.family) & is.null(genes)) {
             if (length(gene.family) > 1) {
                 gene.family <- paste(gene.family, collapse = ", ")
             }
