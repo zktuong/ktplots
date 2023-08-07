@@ -174,8 +174,8 @@ plot_cpdb <- function(
             pvals_mat <- .prep_data_querygroup_celltype2(.data = pvals_mat, .query_group = query_group, .gene.family = gene.family, .cell_type = cell_type, .celltype = celltype, ...)
         }
     } else if (is.null(gene.family) & !is.null(genes) | is.null(gene.family) & is.null(genes)) {
-        means_mat <- .prep_data_query_celltype(.data = means_mat, .query = query_group, .cell_type = cell_type, .celltype = celltype, ...)
-        pvals_mat <- .prep_data_query_celltype(.data = pvals_mat, .query = query_group, .cell_type = cell_type, .celltype = celltype, ...)
+        means_mat <- .prep_data_query_celltype(.data = means_mat, .query = query, .cell_type = cell_type, .celltype = celltype, ...)
+        pvals_mat <- .prep_data_query_celltype(.data = pvals_mat, .query = query, .cell_type = cell_type, .celltype = celltype, ...)
     }
     if (length(means_mat) == 0) {
         stop("Please check your options for split.by and your celltypes.")
