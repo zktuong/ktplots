@@ -1,6 +1,42 @@
 DEFAULT_SEP <- ">@<"
 DEFAULT_SPEC_PAT <- "/|:|\\?|\\*|\\+|[\\]|\\(|\\)|\\/"
 
+
+.prep_table <- function(data) {
+    dat <- data
+    rownames(dat) <- make.names(dat$interacting_pair, unique = TRUE)
+    colnames(dat) <- gsub("\\|", DEFAULT_SEP, colnames(dat))
+    rownames(dat) <- gsub("_", "-", rownames(dat))
+    rownames(dat) <- gsub("[.]", " ", rownames(dat))
+    return(dat)
+}
+
+.set_x_stroke <- function(df, isnull, stroke) {
+    for (i in seq_len(nrow(df))) {
+        if (isnull) {
+            nullstatus <- is.na(df[i, "x_stroke"])
+        } else {
+            nullstatus <- !is.na(df[i, "x_stroke"])
+        }
+        if (nullstatus) {
+            df[i, "x_stroke"] <- stroke
+        }
+    }
+    return(df)
+}
+
+.filter_interaction_and_celltype <- function(data, genes, celltype_pairs) {
+    filtered_data <- data[data$interacting_pair %in% genes, celltype_pairs, drop = FALSE]
+    return(filtered_data)
+}
+
+.ensure_factor <- function(meta, key) {
+    if (!is.factor(meta[[key]])) {
+        meta[[key]] <- factor(meta[[key]])
+    }
+    return(meta)
+}
+
 .sub_pattern <- function(cell_type, pattern) {
     cell_type_tmp <- unlist(strsplit(cell_type, "*"))
     if (any(grepl(pattern, cell_type_tmp))) {

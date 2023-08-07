@@ -72,16 +72,8 @@ plot_cpdb <- function(
     } else if (class(scdata) == "Seurat") {
         metadata <- scdata@meta.data
     }
-    means_mat <- means
-    pvals_mat <- pvals
-    rownames(means_mat) <- make.names(means_mat$interacting_pair, unique = TRUE)
-    rownames(pvals_mat) <- make.names(pvals_mat$interacting_pair, unique = TRUE)
-    colnames(means_mat) <- gsub("\\|", DEFAULT_SEP, colnames(means_mat))
-    rownames(means_mat) <- gsub("_", "-", rownames(means_mat))
-    rownames(means_mat) <- gsub("[.]", " ", rownames(means_mat))
-    colnames(pvals_mat) <- gsub("\\|", DEFAULT_SEP, colnames(pvals_mat))
-    rownames(pvals_mat) <- gsub("_", "-", rownames(pvals_mat))
-    rownames(pvals_mat) <- gsub("[.]", " ", rownames(pvals_mat))
+    means_mat <- .prep_table(means)
+    pvals_mat <- .prep_table(pvals)
     if (degs_analysis) {
         col_start <- ifelse(colnames(pvals_mat)[13] == "classification", 14, 12)
         pvals_mat[, col_start:ncol(pvals_mat)] <- 1 - pvals_mat[, col_start:ncol(pvals_mat)]
