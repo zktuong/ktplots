@@ -57,14 +57,14 @@ plot_cpdb <- function(
     default_style = TRUE,
     highlight_col = "red",
     highlight_size = NULL,
-    special_character_search_pattern = NULL,
+    special_character_regex_pattern = NULL,
     degs_analysis = FALSE,
     return_table = FALSE,
     exclude_interactions = NULL,
     ...) {
     requireNamespace("SingleCellExperiment")
     requireNamespace("grDevices")
-    if (is.null(special_character_regex_special_character_regex_pattern)) {
+    if (is.null(special_character_regex_pattern)) {
         special_character_regex_pattern <- DEFAULT_SPEC_PAT
     }
     if (class(scdata) %in% c("SingleCellExperiment", "SummarizedExperiment")) {
