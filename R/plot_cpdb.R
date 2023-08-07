@@ -81,7 +81,7 @@ plot_cpdb <- function(
     cell_type2 <- .sub_pattern(cell_type = cell_type2, pattern = special_character_regex_pattern)
     if (is.null(genes)) {
         if (!is.null(gene.family)) {
-            query_group <- .prep_query_group(means = means_mat, custom_gene_family = custom_gene_family)
+            query_group <- .prep_query_group(data = means_mat, custom_gene_family = custom_gene_family)
             if (any(!gene.family %in% names(query_group))) {
                 stop(paste("gene_family needs to be one of the following:", paste(names(query_group), collapse = ", ")))
             }
