@@ -78,8 +78,8 @@ small_axis <- function(fontsize = 4, linethickness = 0.1, ...) {
         axis.text = element_text(size = fontsize),
         axis.text.x = element_text(size = fontsize),
         axis.text.y = element_text(size = fontsize),
-        axis.line = element_line(size = linethickness),
-        axis.ticks = element_line(size = linethickness), ...
+        axis.line = element_line(linewidth = linethickness),
+        axis.ticks = element_line(linewidth = linethickness), ...
     )
     return(axis)
 }
@@ -93,7 +93,7 @@ small_axis <- function(fontsize = 4, linethickness = 0.1, ...) {
 #' }
 #' @export
 small_grid <- function(linethickness = 0.1, panelthickness = .3, ...) {
-    grid <- theme(panel.grid = element_line(size = linethickness), panel.border = element_rect(size = panelthickness), ...)
+    grid <- theme(panel.grid = element_line(linewidth = linethickness), panel.border = element_rect(linewidth = panelthickness), ...)
     return(grid)
 }
 
