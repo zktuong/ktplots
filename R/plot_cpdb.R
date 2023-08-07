@@ -18,8 +18,7 @@
 #' @param default_stlye default = TRUE. Show all mean values and trace significant interactions with `higlight` colour. If FALSE, significant interactions will be presented as a white ring.
 #' @param highlight_col colour for highlighting p <0.05
 #' @param highlight_size stroke size for highlight if p < 0.05. if NULL, scales to -log10(pval).
-#' @param separator separator to use to split between celltypes. Unless otherwise specified, the separator will be `>@<`. Make sure the idents and split.by doesn't overlap with this.
-#' @param special_character_search_pattern search pattern if the cell type names contains special character. NULL defaults to '/|:|\\?|\\*|\\+|[\\]|\\(|\\)'.
+#' @param special_character_regex_pattern search pattern if the cell type names contains special character. NULL defaults to '/|:|\\?|\\*|\\+|[\\]|\\(|\\)'.
 #' @param degs_analysis if is cellphonedb degs_analysis mode.
 #' @param return_table whether or not to return as a table rather than to plot.
 #' @param exclude_interactions if provided, the interactions will be removed from the output.
