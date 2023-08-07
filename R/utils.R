@@ -25,16 +25,29 @@ DEFAULT_SPEC_PAT <- "/|:|\\?|\\*|\\+|[\\]|\\(|\\)|\\/"
     return(df)
 }
 
-.filter_interaction_and_celltype <- function(data, genes, celltype_pairs) {
-    filtered_data <- data[data$interacting_pair %in% genes, celltype_pairs, drop = FALSE]
-    return(filtered_data)
-}
-
-.ensure_factor <- function(meta, key) {
-    if (!is.factor(meta[[key]])) {
-        meta[[key]] <- factor(meta[[key]])
+.prep_query_group <- function(means, custom_gene_family = NULL) {
+    chemokines <- grep("^CXC|CCL|CCR|CX3|XCL|XCR", means$interacting_pair, value = TRUE)
+    th1 <- grep("IL2|IL12|IL18|IL27|IFNG|IL10|TNF$|TNF |LTA|LTB|STAT1|CCR5|CXCR3|IL12RB1|IFNGR1|TBX21|STAT4", means$interacting_pair, value = TRUE)
+    th2 <- grep("IL4|IL5|IL25|IL10|IL13|AREG|STAT6|GATA3|IL4R", means$interacting_pair, value = TRUE)
+    th17 <- grep("IL21|IL22|IL24|IL26|IL17A|IL17A|IL17F|IL17RA|IL10|RORC|RORA|STAT3|CCR4|CCR6|IL23RA|TGFB", means$interacting_pair, value = TRUE)
+    treg <- grep("IL35|IL10|FOXP3|IL2RA|TGFB", means$interacting_pair, value = TRUE)
+    costimulatory <- grep("CD86|CD80|CD48|LILRB2|LILRB4|TNF|CD2|ICAM|SLAM|LT[AB]|NECTIN2|CD40|CD70|CD27|CD28|CD58|TSLP|PVR|CD44|CD55|CD[1-9]", means$interacting_pair, value = TRUE)
+    coinhibitory <- grep("SIRP|CD47|ICOS|TIGIT|CTLA4|PDCD1|CD274|LAG3|HAVCR|VSIR", means$interacting_pair, value = TRUE)
+    query_group <- list(
+        chemokines = chemokines,
+        th1 = th1,
+        th2 = th2,
+        th17 = th17,
+        treg = treg,
+        costimulatory = costimulatory,
+        coinhibitory = coinhibitory
+    )
+    if (!is.null(custom_gene_family)) {
+        cgf <- as.list(custom_gene_family)
+        cgf <- lapply(cgf, function(x) grep(paste(x, collapse = "|"), means_mat$interacting_pair))
+        query_group <- c(query_group, cgf)
     }
-    return(meta)
+    return(query_group)
 }
 
 .sub_pattern <- function(cell_type, pattern) {
@@ -53,6 +66,58 @@ DEFAULT_SPEC_PAT <- "/|:|\\?|\\*|\\+|[\\]|\\(|\\)|\\/"
     hues <- seq(15, 375, length = n + 1)
     hcl(h = hues, l = 65, c = 100)[1:n]
 }
+
+.prep_data_querygroup_celltype1 <- function(.data, .query_group, .gene.family, .cell_type, .celltype, ...) {
+    dat <- suppressWarnings(tryCatch(.data[.query_group[[tolower(.gene.family)]], grep(.cell_type, colnames(.data), useBytes = TRUE, ...), drop = FALSE],
+        error = function(e) {
+            colidx <- lapply(.celltype, function(z) {
+                grep(z, colnames(.data), useBytes = TRUE, ...)
+            })
+            colidx <- unique(do.call(c, colidx))
+            tmpm <- .data[.query_group[[tolower(.gene.family)]], colidx, drop = FALSE]
+            return(tmpm)
+        }
+    ))
+    return(dat)
+}
+
+.prep_data_querygroup_celltype2 <- function(.data, .query_group, .gene.family, .cell_type, .celltype, ...) {
+    dat <- suppressWarnings(tryCatch(
+        .data[unlist(.query_group[c(tolower(.gene.family))], use.names = FALSE),
+            grep(.cell_type, colnames(.data), useBytes = TRUE, ...),
+            drop = FALSE
+        ],
+        error = function(e) {
+            colidx <- lapply(.celltype, function(z) {
+                grep(z, colnames(.data),
+                    useBytes = TRUE, ...
+                )
+            })
+            colidx <- unique(do.call(c, colidx))
+            tmpm <- .data[unlist(.query_group[c(tolower(.gene.family))], use.names = FALSE), colidx, drop = FALSE]
+            return(tmpm)
+        }
+    ))
+    return(dat)
+}
+
+.prep_data_query_celltype <- function(.data, .query, .cell_type, .celltype, ...) {
+    dat <- suppressWarnings(tryCatch(.data[.query, grep(.cell_type, colnames(.data), useBytes = TRUE, ...), drop = FALSE],
+        error = function(e) {
+            colidx <- lapply(.celltype, function(z) {
+                grep(z, colnames(.data),
+                    useBytes = TRUE,
+                    ...
+                )
+            })
+            colidx <- unique(do.call(c, colidx))
+            tmpm <- .data[.query, colidx, drop = FALSE]
+            return(tmpm)
+        }
+    ))
+    return(dat)
+}
+
 
 .create_celltype_query <- function(ctype1, ctype2, sep) {
     ct1 <- list()
