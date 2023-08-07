@@ -44,7 +44,7 @@ DEFAULT_SPEC_PAT <- "/|:|\\?|\\*|\\+|[\\]|\\(|\\)|\\/"
     )
     if (!is.null(custom_gene_family)) {
         cgf <- as.list(custom_gene_family)
-        cgf <- lapply(cgf, function(x) grep(paste(x, collapse = "|"), means_mat$interacting_pair))
+        cgf <- lapply(cgf, function(x) grep(paste(x, collapse = "|"), means$interacting_pair))
         query_group <- c(query_group, cgf)
     }
     return(query_group)
