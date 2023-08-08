@@ -25,29 +25,44 @@ DEFAULT_SPEC_PAT <- "/|:|\\?|\\*|\\+|[\\]|\\(|\\)|\\/"
     return(df)
 }
 
-.prep_query_group <- function(data, custom_gene_family = NULL) {
-    chemokines <- grep("^CXC|CCL|CCR|CX3|XCL|XCR", data$interacting_pair, value = TRUE)
-    th1 <- grep("IL2|IL12|IL18|IL27|IFNG|IL10|TNF$|TNF |LTA|LTB|STAT1|CCR5|CXCR3|IL12RB1|IFNGR1|TBX21|STAT4", data$interacting_pair, value = TRUE)
-    th2 <- grep("IL4|IL5|IL25|IL10|IL13|AREG|STAT6|GATA3|IL4R", data$interacting_pair, value = TRUE)
-    th17 <- grep("IL21|IL22|IL24|IL26|IL17A|IL17A|IL17F|IL17RA|IL10|RORC|RORA|STAT3|CCR4|CCR6|IL23RA|TGFB", data$interacting_pair, value = TRUE)
-    treg <- grep("IL35|IL10|FOXP3|IL2RA|TGFB", data$interacting_pair, value = TRUE)
-    costimulatory <- grep("CD86|CD80|CD48|LILRB2|LILRB4|TNF|CD2|ICAM|SLAM|LT[AB]|NECTIN2|CD40|CD70|CD27|CD28|CD58|TSLP|PVR|CD44|CD55|CD[1-9]", data$interacting_pair, value = TRUE)
-    coinhibitory <- grep("SIRP|CD47|ICOS|TIGIT|CTLA4|PDCD1|CD274|LAG3|HAVCR|VSIR", data$interacting_pair, value = TRUE)
-    query_group <- list(
-        chemokines = chemokines,
-        th1 = th1,
-        th2 = th2,
-        th17 = th17,
-        treg = treg,
-        costimulatory = costimulatory,
-        coinhibitory = coinhibitory
-    )
-    if (!is.null(custom_gene_family)) {
-        cgf <- as.list(custom_gene_family)
-        cgf <- lapply(cgf, function(x) grep(paste(x, collapse = "|"), data$interacting_pair))
-        query_group <- c(query_group, cgf)
+.prep_query_group <- function(data, genes = NULL, gene.family = NULL, custom_gene_family = NULL) {
+    if (is.null(gene.family) & is.null(genes)) {
+        query_group <- NULL
+        query <- grep("", data$interacting_pair)
+    } else if (!is.null(gene.family) & !is.null(genes)) {
+        stop("Please specify either genes or gene.family, not both")
+    } else if (!is.null(gene.family) & is.null(genes)) {
+        chemokines <- grep("^CXC|CCL|CCR|CX3|XCL|XCR", data$interacting_pair)
+        th1 <- grep("IL2|IL12|IL18|IL27|IFNG|IL10|TNF$|TNF |LTA|LTB|STAT1|CCR5|CXCR3|IL12RB1|IFNGR1|TBX21|STAT4", data$interacting_pair)
+        th2 <- grep("IL4|IL5|IL25|IL10|IL13|AREG|STAT6|GATA3|IL4R", data$interacting_pair)
+        th17 <- grep("IL21|IL22|IL24|IL26|IL17A|IL17A|IL17F|IL17RA|IL10|RORC|RORA|STAT3|CCR4|CCR6|IL23RA|TGFB", data$interacting_pair)
+        treg <- grep("IL35|IL10|FOXP3|IL2RA|TGFB", data$interacting_pair)
+        costimulatory <- grep("CD86|CD80|CD48|LILRB2|LILRB4|TNF|CD2|ICAM|SLAM|LT[AB]|NECTIN2|CD40|CD70|CD27|CD28|CD58|TSLP|PVR|CD44|CD55|CD[1-9]", data$interacting_pair)
+        coinhibitory <- grep("SIRP|CD47|ICOS|TIGIT|CTLA4|PDCD1|CD274|LAG3|HAVCR|VSIR", data$interacting_pair)
+        query_group <- list(
+            chemokines = chemokines,
+            chemokine = chemokines,
+            th1 = th1,
+            th2 = th2,
+            th17 = th17,
+            treg = treg,
+            costimulatory = costimulatory,
+            coinhibitory = coinhibitory,
+            costimulation = costimulatory,
+            coinhibition = coinhibitory
+        )
+        if (!is.null(custom_gene_family)) {
+            cgf <- as.list(custom_gene_family)
+            cgf <- lapply(cgf, function(x) grep(paste(x, collapse = "|"), data$interacting_pair))
+            query_group <- c(query_group, cgf)
+        }
+        query <- NULL
+    } else if (is.null(gene.family) & !is.null(genes)) {
+        query_group <- NULL
+        query <- grep(paste(genes, collapse = "|"), data$interacting_pair)
     }
-    return(query_group)
+    out <- list("query_group" = query_group, "query" = query)
+    return(out)
 }
 
 .sub_pattern <- function(cell_type, pattern) {
