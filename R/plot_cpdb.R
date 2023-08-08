@@ -330,8 +330,8 @@ plot_cpdb <- function(
             theme(axis.text.x = element_text(angle = 45, hjust = 0, color = "#000000"), axis.text.y = element_text(color = "#000000")) +
             scale_x_discrete(position = "top") +
             scale_color_gradientn(colors = highlight_col, na.value = "white") +
-            scale_size_continuous(range = c(0, max_size), aesthetics = "size") +
-            scale_size_continuous(range = c(0, max_highlight_size), aesthetics = "stroke")
+            scale_radius(range = c(0, max_size)) +
+            scale_linewidth(range = c(0, max_highlight_size))
         if (default_style) {
             g <- g + scale_colour_manual(values = highlight_col, na.translate = FALSE) +
                 guides(fill = guide_colourbar(barwidth = 4, label = TRUE, ticks = TRUE, draw.ulim = TRUE, draw.llim = TRUE, order = 1), size = guide_legend(reverse = TRUE, order = 2), stroke = guide_legend(reverse = TRUE, order = 3))
