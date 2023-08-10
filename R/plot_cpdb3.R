@@ -304,88 +304,11 @@ plot_cpdb3 <- function(
         )
         dfx[[1]] <- dfx[[1]][dfx[[1]]$barcode %in% barcodes, ]
     }
-    chord_diagram <- function(tmp_dfx, lr_interactions, p.adjust_method, scaled,
-                              alpha, directional, show_legend, edge_cols, grid_cols, legend.pos.x, legend.pos.y,
-                              title) {
-        tmp_dfx <- .swap_ligand_receptor(tmp_dfx)
-        if (scaled) {
-            interactions_items <- lr_interactions$scaled_means
-        } else {
-            interactions_items <- lr_interactions$means
-        }
-        names(interactions_items) <- paste0(lr_interactions$Var2, sep, lr_interactions$Var1)
-        if (!is.null(p.adjust_method)) {
-            pvals_items <- lr_interactions$pvals_adj
-        } else {
-            pvals_items <- lr_interactions$pvals
-        }
-        names(pvals_items) <- paste0(lr_interactions$Var2, sep, lr_interactions$Var1)
-        interactions_items[is.na(pvals_items)] <- 1
-        tmp_dfx$pair_swap <- gsub("_", " - ", tmp_dfx$pair_swap)
-        tmp_dfx$value <- interactions_items[tmp_dfx$barcode]
-        tmp_dfx$pval <- pvals_items[tmp_dfx$barcode]
-        edge_color <- .scPalette(length(unique(tmp_dfx$pair_swap)))
-        names(edge_color) <- unique(tmp_dfx$pair_swap)
-        if (!is.null(edge_cols)) {
-            edge_color[names(edge_cols)] <- edge_cols
-        }
-        if (!is.null(grid_cols)) {
-            if (length(grid_cols) != length(unique(tmp_dfx$receiver_swap))) {
-                stop(paste0(
-                    "Please provide ", length(unique(tmp_dfx$receiver_swap)),
-                    " to grid_colors."
-                ))
-            } else {
-                grid_color <- grid_cols
-            }
-        } else {
-            grid_color <- .scPalette(length(unique(tmp_dfx$receiver_swap)))
-        }
-        if (is.null(grid_cols)) {
-            names(grid_color) <- unique(tmp_dfx$receiver_swap)
-        }
-        tmp_dfx$edge_color <- edge_color[tmp_dfx$pair_swap]
-        tmp_dfx$edge_color <- colorspace::adjust_transparency(tmp_dfx$edge_color,
-            alpha = alpha
-        )
-        tmp_dfx$edge_color[is.na(tmp_dfx$pval)] <- NA
-        tmp_dfx$grid_color <- grid_color[tmp_dfx$receiver_swap]
-        tmp_dfx$grid_color[is.na(tmp_dfx$pval)] <- NA
-        tmp_dfx <- tmp_dfx[!duplicated(tmp_dfx$barcode), ]
-        if (directional == 2) {
-            link.arr.type <- "triangle"
-        } else {
-            link.arr.type <- "big.arrow"
-        }
-        cells <- unique(c(tmp_dfx$producer_swap, tmp_dfx$receiver_swap))
-        names(cells) <- cells
-        circos.clear()
-        chordDiagram(tmp_dfx[c("producer_swap", "receiver_swap", "value")],
-            directional = directional,
-            direction.type = c("diffHeight", "arrows"), link.arr.type = link.arr.type,
-            annotationTrack = c("name", "grid"), col = tmp_dfx$edge_color, grid.col = grid_color,
-            group = cells
-        )
-        requireNamespace("ComplexHeatmap")
-        if (show_legend) {
-            lgd <- ComplexHeatmap::Legend(
-                at = names(edge_color), type = "grid",
-                legend_gp = grid::gpar(fill = edge_color), title = "interactions"
-            )
-            ComplexHeatmap::draw(lgd,
-                x = unit(1, "npc") - unit(legend.pos.x, "mm"),
-                y = unit(legend.pos.y, "mm"), just = c("right", "bottom")
-            )
-        }
-        title(main = title)
-        circos.clear()
-        gg <- recordPlot()
-        return(gg)
-    }
+
     gl <- list()
     if (length(show_legend) > 1) {
         for (i in 1:length(dfx)) {
-            gl[[i]] <- tryCatch(chord_diagram(
+            gl[[i]] <- tryCatch(.chord_diagram3(
                 dfx[[i]], lr_interactions, p.adjust.method,
                 standard_scale, alpha, directional, show_legend[i], edge_colors,
                 grid_colors, legend.pos.x, legend.pos.y, names(dfx)[i]
@@ -395,7 +318,7 @@ plot_cpdb3 <- function(
         }
     } else {
         for (i in 1:length(dfx)) {
-            gl[[i]] <- tryCatch(chord_diagram(
+            gl[[i]] <- tryCatch(.chord_diagram3(
                 dfx[[i]], lr_interactions, p.adjust.method,
                 standard_scale, alpha, directional, show_legend, edge_colors, grid_colors,
                 legend.pos.x, legend.pos.y, names(dfx)[i]

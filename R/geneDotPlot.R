@@ -226,6 +226,7 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
 
     # subset the plotting objects
     doplot <- function(obj, group. = NULL, file_name = filename, file_path = filepath, dim_w = w, dim_h = h, limits. = col_limits, do.plot = save.plot, scale. = scale, standard_scale. = standard_scale) {
+        requireNamespace("scales")
         if (is.null(group.)) {
             if ((length(scale.) > 0 && scale.) | (length(scale.) < 1 && length(standard_scale.) < 1) | (length(standard_scale.) > 0 && standard_scale.)) {
                 g <- ggplot(obj, aes(x = 0, y = gene, size = pct, colour = scale.mean))
@@ -310,6 +311,7 @@ geneDotPlot <- function(scdata, idents, genes, split.by = NULL, pct.threshold = 
     }
 
     fillplot <- function(obj, group. = NULL, file_name = filename, file_path = filepath, dim_w = w, dim_h = h, limits. = col_limits, do.plot = save.plot, scale. = scale, standard_scale. = standard_scale, outline_col. = outline_col, outline_size. = outline_size) {
+        requireNamespace("scales")
         if (is.null(group.)) {
             if ((length(scale.) > 0 && scale.) | (length(scale.) < 1 && length(standard_scale.) < 1) | (length(standard_scale.) > 0 && standard_scale.)) {
                 g <- ggplot(obj, aes(x = 0, y = gene, size = pct, fill = scale.mean))

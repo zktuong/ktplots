@@ -18,6 +18,7 @@
 #' @param default_style default = TRUE. Show all mean values and trace significant interactions with `higlight` colour. If FALSE, significant interactions will be presented as a white ring.
 #' @param highlight_col colour for highlighting p <0.05
 #' @param highlight_size stroke size for highlight if p < 0.05. if NULL, scales to -log10(pval).
+#' @param max_highlight_size
 #' @param special_character_regex_pattern search pattern if the cell type names contains special character. NULL defaults to '/|:|\\?|\\*|\\+|[\\]|\\(|\\)'.
 #' @param degs_analysis if is cellphonedb degs_analysis mode.
 #' @param return_table whether or not to return as a table rather than to plot.
@@ -56,6 +57,7 @@ plot_cpdb <- function(
     default_style = TRUE,
     highlight_col = "red",
     highlight_size = NULL,
+    max_highlight_size = 2,
     special_character_regex_pattern = NULL,
     degs_analysis = FALSE,
     return_table = FALSE,
@@ -190,8 +192,9 @@ plot_cpdb <- function(
     }
     if (cluster_rows) {
         if (nrow(means_mat) > 2) {
-            d <- dist(as.data.frame(means_mat))
-            h <- hclust(d)
+            requireNamespace("stats")
+            d <- stats::dist(as.data.frame(means_mat))
+            h <- stats::hclust(d)
             means_mat <- means_mat[h$order, , drop = FALSE]
             pvals_mat <- pvals_mat[h$order, , drop = FALSE]
         }
