@@ -1,6 +1,7 @@
 data(kidneyimmune)
 data(cpdb_output)
 data(cpdb_output2)
+data(cpdb_output_v5)
 
 test_that("combine_cpdb works 1", {
     p <- combine_cpdb(decon, decon, decon)
@@ -134,4 +135,80 @@ test_that("plot_cpdb4 works 3", {
 test_that("plot_cpdb_heatmap works", {
     p <- plot_cpdb_heatmap(pvals2)
     expect_that(class(p), equals("pheatmap"))
+})
+
+test_that("plot_cpdb v5 1", {
+    p <- plot_cpdb(
+        scdata = sce_v5,
+        cell_type1 = "PV MYH11|PV STEAP4|PV MMPP11",
+        cell_type2 = "EVT_1|EVT_2|GC|iEVT|eEVT|VCT_CCC",
+        means = means_v5,
+        pvals = relevant_interactions_v5,
+        celltype_key = "cell_labels",
+        genes = c("TGFB2", "CSF1R"),
+        max_size = 6,
+        highlight_size = 0.75,
+        degs_analysis = TRUE,
+        standard_scale = TRUE,
+        interaction_scores = interaction_scores_v5,
+        scale_alpha_by_interaction_scores = TRUE,
+        min_interaction_score = 20
+    )
+    expect_true(is.ggplot(p))
+})
+
+test_that("plot_cpdb v5 2", {
+    p <- plot_cpdb(
+        scdata = sce_v5,
+        cell_type1 = "PV MYH11|PV STEAP4|PV MMPP11",
+        cell_type2 = "EVT_1|EVT_2|GC|iEVT|eEVT|VCT_CCC",
+        means = means_v5,
+        pvals = relevant_interactions_v5,
+        celltype_key = "cell_labels",
+        genes = c("TGFB2", "CSF1R"),
+        max_size = 6,
+        highlight_size = 0.75,
+        degs_analysis = TRUE,
+        standard_scale = TRUE,
+        cellsign = cellsign_v5,
+        scale_alpha_by_interaction_scores = TRUE
+    )
+    expect_true(is.ggplot(p))
+})
+
+test_that("plot_cpdb v5 3", {
+    p <- plot_cpdb(
+        scdata = sce_v5,
+        cell_type1 = "PV MYH11|PV STEAP4|PV MMPP11",
+        cell_type2 = "EVT_1|EVT_2|GC|iEVT|eEVT|VCT_CCC",
+        means = means_v5,
+        pvals = relevant_interactions_v5,
+        celltype_key = "cell_labels",
+        max_size = 6,
+        highlight_size = 0.75,
+        degs_analysis = TRUE,
+        standard_scale = TRUE,
+        cellsign = cellsign_v5,
+        scale_alpha_by_cellsign = TRUE,
+        filter_by_cellsign = TRUE
+    )
+    expect_true(is.ggplot(p))
+})
+
+test_that("plot_cpdb v5 4", {
+    p <- plot_cpdb(
+        scdata = sce_v5,
+        cell_type1 = "PV MYH11|PV STEAP4|PV MMPP11",
+        cell_type2 = "EVT_1|EVT_2|GC|iEVT|eEVT|VCT_CCC",
+        means = means_v5,
+        pvals = relevant_interactions_v5,
+        celltype_key = "cell_labels",
+        max_size = 6,
+        highlight_size = 0.75,
+        degs_analysis = TRUE,
+        standard_scale = TRUE,
+        cellsign = cellsign_v5,
+        scale_alpha_by_cellsign = TRUE
+    )
+    expect_true(is.ggplot(p))
 })

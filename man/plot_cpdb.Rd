@@ -11,6 +11,8 @@ plot_cpdb(
   celltype_key,
   means,
   pvals,
+  interaction_scores = NULL,
+  cellsign = NULL,
   max_size = 8,
   keep_significant_only = TRUE,
   splitby_key = NULL,
@@ -28,6 +30,10 @@ plot_cpdb(
   degs_analysis = FALSE,
   return_table = FALSE,
   exclude_interactions = NULL,
+  min_interaction_score = 0,
+  scale_alpha_by_interaction_scores = FALSE,
+  scale_alpha_by_cellsign = FALSE,
+  filter_by_cellsign = FALSE,
   title = "",
   ...
 )
@@ -44,6 +50,10 @@ plot_cpdb(
 \item{means}{Data frame corresponding to `means.txt` from CellPhoneDB.}
 
 \item{pvals}{Data frame corresponding to `pvalues.txt` or `relevant_interactions.txt` from CellPhoneDB.}
+
+\item{interaction_scores}{Data frame corresponding to `interaction_scores.txt` from CellPhoneDB version 5 onwards.}
+
+\item{cellsign}{Data frame corresponding to `CellSign.txt` from CellPhoneDB version 5 onwards.}
 
 \item{max_size}{max size of points.}
 
@@ -79,6 +89,14 @@ plot_cpdb(
 
 \item{exclude_interactions}{if provided, the interactions will be removed from the output.}
 
+\item{min_interaction_score}{Filtering the interactions shown by including only those above the given interaction score.}
+
+\item{scale_alpha_by_interaction_scores}{Whether or not to filter values by the interaction score.}
+
+\item{scale_alpha_by_cellsign}{Whether or not to filter the transparency of interactions by the cellsign.}
+
+\item{filter_by_cellsign}{Filter out interactions with a 0 value cellsign.}
+
 \item{...}{passes arguments to grep for cell_type1 and cell_type2.}
 }
 \value{
@@ -91,7 +109,7 @@ Plotting CellPhoneDB results
 \donttest{
 data(kidneyimmune)
 data(cpdb_output)
-plot_cpdb(kidneyimmune, 'B cell', 'CD4T cell', 'celltype', means, pvals, splitby_key = 'Experiment', genes = c('CXCL13', 'CD274', 'CXCR5'))
-plot_cpdb(kidneyimmune, 'B cell', 'CD4T cell', 'celltype', means, pvals, splitby_key = 'Experiment', gene_family = 'chemokines')
+plot_cpdb(kidneyimmune, "B cell", "CD4T cell", "celltype", means, pvals, splitby_key = "Experiment", genes = c("CXCL13", "CD274", "CXCR5"))
+plot_cpdb(kidneyimmune, "B cell", "CD4T cell", "celltype", means, pvals, splitby_key = "Experiment", gene_family = "chemokines")
 }
 }
