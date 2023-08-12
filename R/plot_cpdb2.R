@@ -35,7 +35,7 @@
 plot_cpdb2 <- function(
     cell_type1, cell_type2, scdata, idents, means, pvals, deconvoluted,
     keep_significant_only = TRUE, split.by = NULL, standard_scale = TRUE,
-    separator = NULL, gene_symbol_mapping = NULL, frac = 0.1, remove_self = TRUE,
+    gene_symbol_mapping = NULL, frac = 0.1, remove_self = TRUE,
     desiredInteractions = NULL, interaction_grouping = NULL, edge_group_colors = NULL,
     node_group_colors = NULL, degs_analysis = FALSE, return_df = FALSE, plot_score_as_thickness = TRUE,
     ...) {
@@ -268,6 +268,7 @@ plot_cpdb2 <- function(
         })
         cell_type_grid <- expand.grid(cells_test, cells_test)
     }
+
     if (remove_self) {
         rm_idx <- which(cell_type_grid[, 1] == cell_type_grid[, 2])
         if (length(rm_idx) > 0) {
@@ -323,9 +324,9 @@ plot_cpdb2 <- function(
             if (!is.null(split.by)) {
                 if (nrow(dfx[[i]]) > 0 & nrow(df0[[i]]) > 0) {
                     gl[[i]] <- .constructGraph(
-                        names(dfx)[i], DEFAULT_SEP, dfx[[i]], df0[[i]],
-                        cells_test, interactions_subset, lr_interactions, edge_group,
-                        edge_group_colors, node_group_colors
+                        input_group = names(dfx)[i], sep = DEFAULT_SEP, el = dfx[[i]], el0 = df0[[i]],
+                        unique_id = cells_test, interactions_df = interactions_subset, plot_cpdb_out = lr_interactions, edge_group = edge_group,
+                        edge_group_colors = edge_group_colors, node_group_color = node_group_colors, plot_score_as_thickness=plot_score_as_thickness
                     )
                 } else {
                     gl[[i]] <- NA
@@ -334,9 +335,7 @@ plot_cpdb2 <- function(
             } else {
                 if (nrow(dfx[[i]]) > 0 & nrow(df0[[i]]) > 0) {
                     gl[[i]] <- .constructGraph(
-                        NULL, DEFAULT_SEP, dfx[[i]], df0[[i]], cells_test,
-                        interactions_subset, lr_interactions, edge_group, edge_group_colors,
-                        node_group_colors
+                        input_group = NULL, sep = DEFAULT_SEP, el = dfx[[i]], el0 = df0[[i]], unique_id = cells_test, interactions_df = interactions_subset, plot_cpdb_out = lr_interactions, edge_group = edge_group, edge_group_colors = edge_group_colors, node_group_color = node_group_colors, plot_score_as_thickness=plot_score_as_thickness
                     )
                 } else {
                     gl[[i]] <- NA

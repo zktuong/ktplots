@@ -76,7 +76,7 @@ plot_cpdb_heatmap <- function(
       diag(count_mat) <- dcm
     }
 
-    if (log1p_transform) {
+    if (log1p_transform == TRUE) {
       count_mat <- log1p(count_mat)
     }
 

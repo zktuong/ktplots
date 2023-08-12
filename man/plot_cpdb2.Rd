@@ -15,7 +15,6 @@ plot_cpdb2(
   keep_significant_only = TRUE,
   split.by = NULL,
   standard_scale = TRUE,
-  separator = NULL,
   gene_symbol_mapping = NULL,
   frac = 0.1,
   remove_self = TRUE,

@@ -450,7 +450,7 @@ DEFAULT_SPEC_PAT <- "/|:|\\?|\\*|\\+|[\\]|\\(|\\)|\\/"
 }
 
 .constructGraph <- function(input_group, sep, el, el0, unique_id, interactions_df,
-                            plot_cpdb_out, edge_group = FALSE, edge_group_colors = NULL, node_group_colors = NULL) {
+                            plot_cpdb_out, edge_group = FALSE, edge_group_colors = NULL, node_group_colors = NULL, plot_score_as_thickness=TRUE) {
     requireNamespace("igraph")
     celltypes <- unique(c(as.character(el$producer), as.character(el$receiver)))
     el1 <- data.frame(
@@ -555,13 +555,14 @@ DEFAULT_SPEC_PAT <- "/|:|\\?|\\*|\\+|[\\]|\\(|\\)|\\/"
             expression$cell_mol
         )]
         df$vertices$celltype <- ""
-        for (x in cells_test) {
+        for (x in unique_id) {
             idx <- grepl(paste0(x, sep), df$vertices$name)
             df$vertices$celltype[idx] <- x
         }
         df$vertices$label <- df$vertices$name
         df$vertices$label[!df$vertices$name %in% c(el0$from, el0$to)] <- ""
-        gr <- graph_from_data_frame(df$edges, directed = TRUE, vertices = df$vertices)
+        requireNamespace("igraph")
+        gr <- igraph::graph_from_data_frame(df$edges, directed = TRUE, vertices = df$vertices)
         for (x in unique_id) {
             igraph::V(gr)$label <- gsub(paste0(x, sep), "", igraph::V(gr)$label)
         }
