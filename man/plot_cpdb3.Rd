@@ -12,11 +12,9 @@ plot_cpdb3(
   means,
   pvals,
   deconvoluted,
-  p.adjust.method = NULL,
   keep_significant_only = TRUE,
   split.by = NULL,
   standard_scale = TRUE,
-  separator = NULL,
   gene_symbol_mapping = NULL,
   frac = 0.1,
   remove_self = TRUE,
@@ -47,15 +45,11 @@ plot_cpdb3(
 
 \item{deconvoluted}{object holding deconvoluted.txt from cpdb output}
 
-\item{p.adjust.method}{correction method. p.adjust.methods of one of these options: c('holm', 'hochberg', 'hommel', 'bonferroni', 'BH', 'BY', 'fdr', 'none')}
-
 \item{keep_significant_only}{logical. Default is FALSE. Switch to TRUE if you only want to plot the significant hits from cpdb.}
 
 \item{split.by}{column name in the metadata/coldata table to split the spots by. Can only take columns with binary options. If specified, name to split by MUST be specified in the meta file provided to cpdb prior to analysis.}
 
 \item{standard_scale}{logical. scale the expression to range from 0 to 1. Default is TRUE}
-
-\item{separator}{default = NULL. separator to use to split between celltypes. Unless otherwise specified, the separator will be `>@<`. Make sure the idents and split.by doesn't overlap with this.}
 
 \item{gene_symbol_mapping}{default = NULL.column name for rowData in sce holding the actual gene symbols if row names aren't gene symbols}
 
@@ -82,8 +76,6 @@ plot_cpdb3(
 \item{legend.pos.y}{y position of legend}
 
 \item{...}{passes arguments plot_cpdb}
-
-\item{scale}{logical. scale the expression to mean +/- SD. NULL defaults to TRUE.}
 }
 \value{
 Plotting cellphonedb results as a CellChat inspired chord diagram

@@ -664,7 +664,7 @@ DEFAULT_SPEC_PAT <- "/|:|\\?|\\*|\\+|[\\]|\\(|\\)|\\/"
     }
 }
 
-.chord_diagram4 <- function(tmp_dfx, lr_interactions, p.adjust_method, scaled,
+.chord_diagram4 <- function(tmp_dfx, lr_interactions, scaled, sep,
                             alpha, directional, show_legend, edge_cols, grid_cols, legend.pos.x, legend.pos.y,
                             title, grid_scale) {
     tmp_dfx <- .swap_ligand_receptor(tmp_dfx)
@@ -677,11 +677,7 @@ DEFAULT_SPEC_PAT <- "/|:|\\?|\\*|\\+|[\\]|\\(|\\)|\\/"
         interactions_items <- lr_interactions$means
     }
     names(interactions_items) <- paste0(lr_interactions$Var2, sep, lr_interactions$Var1)
-    if (!is.null(p.adjust_method)) {
-        pvals_items <- lr_interactions$pvals_adj
-    } else {
-        pvals_items <- lr_interactions$pvals
-    }
+    pvals_items <- lr_interactions$pvals
     names(pvals_items) <- paste0(lr_interactions$Var2, sep, lr_interactions$Var1)
     interactions_items[is.na(pvals_items)] <- 1
     tmp_dfx$pair_swap <- gsub("_", " - ", tmp_dfx$pair_swap)
@@ -738,6 +734,7 @@ DEFAULT_SPEC_PAT <- "/|:|\\?|\\*|\\+|[\\]|\\(|\\)|\\/"
         annotationTrack = c("name", "grid"), col = tmp_dfx$edge_color, grid.col = grid_color,
         group = cells
     )
+    requireNamespace("grid")
     requireNamespace("ComplexHeatmap")
     if (show_legend) {
         lgd <- ComplexHeatmap::Legend(
@@ -745,8 +742,8 @@ DEFAULT_SPEC_PAT <- "/|:|\\?|\\*|\\+|[\\]|\\(|\\)|\\/"
             legend_gp = grid::gpar(fill = edge_color), title = "interactions"
         )
         ComplexHeatmap::draw(lgd,
-            x = unit(1, "npc") - unit(legend.pos.x, "mm"),
-            y = unit(legend.pos.y, "mm"), just = c("right", "bottom")
+            x = grid::unit(1, "npc") - grid::unit(legend.pos.x, "mm"),
+            y = grid::unit(legend.pos.y, "mm"), just = c("right", "bottom")
         )
     }
     requireNamespace("graphics")
@@ -756,7 +753,7 @@ DEFAULT_SPEC_PAT <- "/|:|\\?|\\*|\\+|[\\]|\\(|\\)|\\/"
     return(gg)
 }
 
-.chord_diagram3 <- function(tmp_dfx, lr_interactions, p.adjust_method, scaled,
+.chord_diagram3 <- function(tmp_dfx, lr_interactions, scaled, sep,
                             alpha, directional, show_legend, edge_cols, grid_cols, legend.pos.x, legend.pos.y,
                             title) {
     tmp_dfx <- .swap_ligand_receptor(tmp_dfx)
@@ -766,11 +763,7 @@ DEFAULT_SPEC_PAT <- "/|:|\\?|\\*|\\+|[\\]|\\(|\\)|\\/"
         interactions_items <- lr_interactions$means
     }
     names(interactions_items) <- paste0(lr_interactions$Var2, sep, lr_interactions$Var1)
-    if (!is.null(p.adjust_method)) {
-        pvals_items <- lr_interactions$pvals_adj
-    } else {
-        pvals_items <- lr_interactions$pvals
-    }
+    pvals_items <- lr_interactions$pvals
     names(pvals_items) <- paste0(lr_interactions$Var2, sep, lr_interactions$Var1)
     interactions_items[is.na(pvals_items)] <- 1
     tmp_dfx$pair_swap <- gsub("_", " - ", tmp_dfx$pair_swap)
@@ -819,6 +812,7 @@ DEFAULT_SPEC_PAT <- "/|:|\\?|\\*|\\+|[\\]|\\(|\\)|\\/"
         annotationTrack = c("name", "grid"), col = tmp_dfx$edge_color, grid.col = grid_color,
         group = cells
     )
+    requireNamespace("grid")
     requireNamespace("ComplexHeatmap")
     if (show_legend) {
         lgd <- ComplexHeatmap::Legend(
@@ -826,8 +820,8 @@ DEFAULT_SPEC_PAT <- "/|:|\\?|\\*|\\+|[\\]|\\(|\\)|\\/"
             legend_gp = grid::gpar(fill = edge_color), title = "interactions"
         )
         ComplexHeatmap::draw(lgd,
-            x = unit(1, "npc") - unit(legend.pos.x, "mm"),
-            y = unit(legend.pos.y, "mm"), just = c("right", "bottom")
+            x = grid::unit(1, "npc") - grid::unit(legend.pos.x, "mm"),
+            y = grid::unit(legend.pos.y, "mm"), just = c("right", "bottom")
         )
     }
     requireNamespace("graphics")

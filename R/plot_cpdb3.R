@@ -7,12 +7,9 @@
 #' @param means object holding means.txt from cpdb output
 #' @param pvals object holding pvals.txt from cpdb output
 #' @param deconvoluted object holding deconvoluted.txt from cpdb output
-#' @param p.adjust.method correction method. p.adjust.methods of one of these options: c('holm', 'hochberg', 'hommel', 'bonferroni', 'BH', 'BY', 'fdr', 'none')
 #' @param keep_significant_only logical. Default is FALSE. Switch to TRUE if you only want to plot the significant hits from cpdb.
 #' @param split.by column name in the metadata/coldata table to split the spots by. Can only take columns with binary options. If specified, name to split by MUST be specified in the meta file provided to cpdb prior to analysis.
-#' @param scale logical. scale the expression to mean +/- SD. NULL defaults to TRUE.
 #' @param standard_scale logical. scale the expression to range from 0 to 1. Default is TRUE
-#' @param separator default = NULL. separator to use to split between celltypes. Unless otherwise specified, the separator will be `>@<`. Make sure the idents and split.by doesn't overlap with this.
 #' @param gene_symbol_mapping default = NULL.column name for rowData in sce holding the actual gene symbols if row names aren't gene symbols
 #' @param frac default = 0.1. Minimum fraction of celtypes expressing a gene in order to keep the interaction. Gene must be expressesd >= `frac` in either of the pair of celltypes in order to keep.
 #' @param remove_self default = TRUE. Remove self-self arcs.
@@ -38,18 +35,13 @@
 
 plot_cpdb3 <- function(
     cell_type1, cell_type2, scdata, idents, means, pvals, deconvoluted,
-    p.adjust.method = NULL, keep_significant_only = TRUE, split.by = NULL, standard_scale = TRUE,
-    separator = NULL, gene_symbol_mapping = NULL, frac = 0.1, remove_self = TRUE,
+    keep_significant_only = TRUE, split.by = NULL, standard_scale = TRUE,
+    gene_symbol_mapping = NULL, frac = 0.1, remove_self = TRUE,
     desiredInteractions = NULL, degs_analysis = FALSE, directional = 1, alpha = 0.5,
     edge_colors = NULL, grid_colors = NULL, show_legend = TRUE, legend.pos.x = 20,
     legend.pos.y = 20, ...) {
     if (class(scdata) == "Seurat") {
         stop("Sorry not supported. Please use a SingleCellExperiment object.")
-    }
-    if (length(separator) > 0) {
-        sep <- separator
-    } else {
-        sep <- ">@<"
     }
     lr_interactions <- plot_cpdb(
         cell_type1 = cell_type1, cell_type2 = cell_type2,
@@ -73,7 +65,7 @@ plot_cpdb3 <- function(
     }
     subset_clusters <- unique(unlist(lapply(
         as.character(lr_interactions$group),
-        strsplit, sep
+        strsplit, DEFAULT_SEP
     )))
     sce_subset <- scdata[, SummarizedExperiment::colData(scdata)[, idents] %in% subset_clusters]
     interactions <- means[, c(
@@ -281,12 +273,12 @@ plot_cpdb3 <- function(
     receptor_b <- interactions_subset$receptor_b
     producers <- as.character(cell_type_grid[, 1])
     receivers <- as.character(cell_type_grid[, 2])
-    barcodes <- paste0(lr_interactions$Var2, sep, lr_interactions$Var1)
+    barcodes <- paste0(lr_interactions$Var2, DEFAULT_SEP, lr_interactions$Var1)
     dfx <- list()
     if (!is.null(split.by)) {
         for (i in unique(meta[, split.by])) {
             dfx[[i]] <- .generateDf(
-                ligand = ligand, sep = sep, receptor = receptor,
+                ligand = ligand, sep = DEFAULT_SEP, receptor = receptor,
                 receptor_a = receptor_a, receptor_b = receptor_b, pair = pair, converted_pair = converted_pair,
                 producers = producers, receivers = receivers, cell_type_means = expr_df,
                 cell_type_fractions = fraction_df, sce = sce_subset, sce_alt = sce_list_alt,
@@ -296,7 +288,7 @@ plot_cpdb3 <- function(
         }
     } else {
         dfx[[1]] <- .generateDf(
-            ligand = ligand, sep = sep, receptor = receptor, receptor_a = receptor_a,
+            ligand = ligand, sep = DEFAULT_SEP, receptor = receptor, receptor_a = receptor_a,
             receptor_b = receptor_b, pair = pair, converted_pair = converted_pair,
             producers = producers, receivers = receivers, cell_type_means = expr_df,
             cell_type_fractions = fraction_df, sce = sce_subset, sce_alt = sce_list_alt,
@@ -308,10 +300,10 @@ plot_cpdb3 <- function(
     gl <- list()
     if (length(show_legend) > 1) {
         for (i in 1:length(dfx)) {
-            gl[[i]] <- tryCatch(.chord_diagram3(
-                dfx[[i]], lr_interactions, p.adjust.method,
-                standard_scale, alpha, directional, show_legend[i], edge_colors,
-                grid_colors, legend.pos.x, legend.pos.y, names(dfx)[i]
+            gl[[i]] <- tryCatch(.chord_diagram3(                
+                tmp_df=dfx[[i]], lr_interaction=lr_interactions,
+                scaled=standard_scale, sep=DEFAULT_SEP, alpha=alpha, directional=directional, show_legend=show_legend[i], edge_cols=edge_colors,
+                grid_cols=grid_colors, legend.pos.x=legend.pos.x, legend.pos.y=legend.pos.y, title=names(dfx)[i]
             ), error = function(e) {
                 return(NA)
             })
@@ -319,9 +311,9 @@ plot_cpdb3 <- function(
     } else {
         for (i in 1:length(dfx)) {
             gl[[i]] <- tryCatch(.chord_diagram3(
-                dfx[[i]], lr_interactions, p.adjust.method,
-                standard_scale, alpha, directional, show_legend, edge_colors, grid_colors,
-                legend.pos.x, legend.pos.y, names(dfx)[i]
+                tmp_dfx=dfx[[i]], lr_interaction=lr_interactions,
+                scaled=standard_scale, sep=DEFAULT_SEP, alpha=alpha, directional=directional, show_legend=show_legend, edge_cols=edge_colors, grid_cols=grid_colors,
+                legend.pos.x=legend.pos.x, legend.pos.y=legend.pos.y, title=names(dfx)[i]
             ), error = function(e) {
                 return(NA)
             })
