@@ -1,9 +1,9 @@
 ---
-title: "Introduction to ktplots"
+title: "Plotting CellPhoneDB results"
 output: rmarkdown::html_vignette
 date: "`r Sys.Date()`"
 vignette: >
-  %\VignetteIndexEntry{Introduction to ktplots}
+  %\VignetteIndexEntry{Plotting CellPhoneDB results}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
