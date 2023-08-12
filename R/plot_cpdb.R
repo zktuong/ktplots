@@ -64,7 +64,11 @@ plot_cpdb <- function(
         metadata <- scdata@meta.data
     }
     means_mat <- .prep_table(means)
-    pvals_mat <- .prep_table(pvals)
+    if (deg_analysis) {
+        pvals_mat <- .prep_table(pvals, switch = TRUE)
+    } else {
+        pvals_mat <- .prep_table(pvals)
+    }
     if (!is.null(interaction_scores)) {
         interaction_scores_mat <- .prep_table(interaction_scores)
     } else if (!is.null(cellsign)) {
@@ -303,15 +307,18 @@ plot_cpdb <- function(
         means_mat2[which(means_mat == 0)] <- NA
     }
     # remove rows that are entirely NA
-    pvals_mat2 <- pvals_mat2[rowSums(is.na(means_mat2)) != ncol(means_mat2), , drop = FALSE]
-    means_mat2 <- means_mat2[rowSums(is.na(means_mat2)) != ncol(means_mat2), , drop = FALSE]
-    if (!is.null(interaction_scores)) {
-        interaction_scores_mat2 <- interaction_scores_mat2[rowSums(is.na(means_mat2)) !=
-            ncol(means_mat2), , drop = FALSE]
-    } else if (!is.null(cellsign)) {
-        cellsign_mat2 <- cellsign_mat2[rowSums(is.na(means_mat2)) != ncol(means_mat2), ,
-            drop = FALSE
-        ]
+    whichnotnas <- which(rowSums(is.na(means_mat2)) != ncol(means_mat2))
+    if (length(whichnotnas) > 0) {
+        pvals_mat2 <- pvals_mat2[whichnotnas, , drop = FALSE]
+        means_mat2 <- means_mat2[whichnotnas, , drop = FALSE]
+        if (!is.null(interaction_scores)) {
+            interaction_scores_mat2 <- interaction_scores_mat2[whichnotnas, , drop = FALSE]
+        } else if (!is.null(cellsign)) {
+            cs_nas <- rownames(cellsign_mat2) %in% rownames(means_mat2)
+            if (any(cs_nas)) {
+                cellsign_mat2 <- cellsign_mat2[cs_nas, , drop = FALSE]
+            }
+        }
     }
     requireNamespace("reshape2")
     if (standard_scale) {
@@ -345,7 +352,7 @@ plot_cpdb <- function(
             keep <- any(x$pvals < 0.05)
             return(keep)
         })
-        df_ <- df_[which(unlist(anysig))]
+        df_ <- df_[which(unlist(anysig) == TRUE)]
         names(df_) <- NULL
         df <- do.call(rbind, df_)
     }
