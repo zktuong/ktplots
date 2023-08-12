@@ -13,6 +13,12 @@
 \alias{sig_means2}
 \alias{covid_cpdb_meta}
 \alias{covid_sample_metadata}
+\alias{means_v5}
+\alias{sce_v5}
+\alias{relevant_interactions_v5}
+\alias{decon_v5}
+\alias{cellsign_v5}
+\alias{interaction_scores_v5}
 \title{kidneyimmune}
 \format{
 A SingleCellExperiment object with the following slots filled
@@ -52,6 +58,18 @@ An object of class \code{data.frame} with 837 rows and 156 columns.
 An object of class \code{data.frame} with 12 rows and 3 columns.
 
 An object of class \code{data.frame} with 12 rows and 2 columns.
+
+data after CellPhoneDB v5 analysis
+
+An object of class \code{SingleCellExperiment} with 1000 rows and 3312 columns.
+
+An object of class \code{data.frame} with 419 rows and 85 columns.
+
+An object of class \code{data.frame} with 6825 rows and 49 columns.
+
+An object of class \code{data.frame} with 9 rows and 85 columns.
+
+An object of class \code{data.frame} with 2440 rows and 94 columns.
 }
 \source{
 \url{https://www.kidneycellatlas.org/}
@@ -78,6 +96,18 @@ sig_means2
 covid_cpdb_meta
 
 covid_sample_metadata
+
+data(cpdb_output_v5)
+
+sce_v5
+
+relevant_interactions_v5
+
+decon_v5
+
+cellsign_v5
+
+interaction_scores_v5
 }
 \description{
 kidneyimmune - A small set of demo data from Stewart et al. 2019 Science. See \url{https://www.kidneycellatlas.org/}
@@ -101,10 +131,23 @@ sig_means2 - Dataframe of CellPhoneDB output significant_means.txt file
 covid_cpdb_meta - Example dataframe to use for cpdb_meta option in compare_cpdb
 
 covid_sample_metadata - Example dataframe to use for sample_metadata option in compare_cpdb
+
+cpdb_output_v5 - Dataframe of CellPhoneDB output means.txt file
+
+sce_v5 - A small dummy singlecelldata for cellphonedb v5
+
+relevant_interactions_v5 - Dataframe of CellPhoneDB output relevant_interactions.txt file
+
+decon_v5 - Dataframe of CellPhoneDB output deconvoluted.txt file
+
+cellsign_v5 - Dataframe of CellPhoneDB output CellSign.txt file
+
+interaction_scores_v5 - Dataframe of CellPhoneDB output interaction_scores.txt file
 }
 \examples{
 data(kidneyimmune)
 data(cpdb_output)
 data(cpdb_output)
+data(cpdb_output_v5)
 }
 \keyword{datasets}

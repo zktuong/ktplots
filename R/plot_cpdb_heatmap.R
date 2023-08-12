@@ -1,8 +1,8 @@
-#' Plotting cellphonedb results as a heatmap
-#'
-#' @param pvals object holding pvals.txt from cpdb output. Use relevant_interactions.txt if degs_analysis mode.
-#' @param degs_analysis if is cellphonedb degs_analysis mode.
-#' @param log1p_transform whether to log1p transform the matrix before plotting.
+#' Plotting CellPhoneDB results as a heatmap
+
+#' @param pvals Dataframe corresponding to `pvalues.txt` or `relevant_interactions.txt` from CellPhoneDB.
+#' @param degs_analysis Whether `CellPhoneDB` was run in `deg_analysis` mode
+#' @param log1p_transform Whether to log1p transform the output.
 #' @param show_rownames whether to show row names.
 #' @param show_colnames whether to show column names.
 #' @param scale scaling mode for pheatmap.
@@ -20,8 +20,6 @@
 #' @param high_col high colour for heatmap.
 #' @param alpha pvalue threshold to trim.
 #' @param return_tables whether or not to return the results as a table rather than the heatmap
-#' @param degs_analysis if is cellphonedb degs_analysis mode.
-#' @param verbose prints cat/print statements if TRUE.
 #' @param symmetrical whether or not to return as symmetrical matrix
 #' @param ... passed to pheatmap::pheatmap.
 #' @return pheatmap object of cellphone db output
@@ -34,13 +32,12 @@
 #' @import pheatmap
 #' @export
 
-plot_cpdb_heatmap <- function(
-    pvals, log1p_transform = FALSE, show_rownames = TRUE,
-    show_colnames = TRUE, scale = "none", cluster_cols = TRUE, cluster_rows = TRUE,
-    border_color = "white", fontsize_row = 11, fontsize_col = 11, family = "Arial",
-    main = "", treeheight_col = 0, treeheight_row = 0, low_col = "dodgerblue4", mid_col = "peachpuff",
-    high_col = "deeppink4", alpha = 0.05, return_tables = FALSE, degs_analysis = FALSE,
-    verbose = FALSE, symmetrical = TRUE, ...) {
+plot_cpdb_heatmap <- function(pvals, degs_analysis = FALSE, log1p_transform = FALSE,
+  show_rownames = TRUE, show_colnames = TRUE, scale = "none", cluster_cols = TRUE,
+  cluster_rows = TRUE, border_color = "white", fontsize_row = 11, fontsize_col = 11,
+  family = "Arial", main = "", treeheight_col = 0, treeheight_row = 0, low_col = "dodgerblue4",
+  mid_col = "peachpuff", high_col = "deeppink4", alpha = 0.05, return_tables = FALSE,
+  symmetrical = TRUE, ...) {
   requireNamespace("reshape2")
   requireNamespace("grDevices")
 
@@ -80,29 +77,18 @@ plot_cpdb_heatmap <- function(
       count_mat <- log1p(count_mat)
     }
 
-    p <- pheatmap(count_mat,
-      show_rownames = show_rownames,
-      show_colnames = show_colnames,
-      scale = scale,
-      cluster_cols = cluster_cols,
-      border_color = border_color,
-      cluster_rows = cluster_rows,
-      fontsize_row = fontsize_row,
-      fontsize_col = fontsize_col,
-      main = main,
-      treeheight_row = treeheight_row,
-      family = family,
-      color = col.heatmap,
-      treeheight_col = treeheight_col,
-      ...
-    )
+    p <- pheatmap(count_mat, show_rownames = show_rownames, show_colnames = show_colnames,
+      scale = scale, cluster_cols = cluster_cols, border_color = border_color,
+      cluster_rows = cluster_rows, fontsize_row = fontsize_row, fontsize_col = fontsize_col,
+      main = main, treeheight_row = treeheight_row, family = family, color = col.heatmap,
+      treeheight_col = treeheight_col, ...)
     if (return_tables) {
       if (symmetrical) {
         all_sum <- rowSums(count_mat)
         all_sum <- data.frame(all_sum)
         return(list(count_network = count_mat, interaction_count = all_sum))
       } else {
-        count_mat <- t(count_mat) # so that the table output is the same layout as the plot
+        count_mat <- t(count_mat)  # so that the table output is the same layout as the plot
         row_sum <- rowSums(count_mat)
         col_sum <- colSums(count_mat)
         all_sum <- data.frame(row_sum, col_sum)

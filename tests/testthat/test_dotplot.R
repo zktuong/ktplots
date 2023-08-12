@@ -3,8 +3,8 @@ data(kidneyimmune)
 test_that("geneDotPlot works", {
     p <- geneDotPlot(kidneyimmune,
         genes = c("CD68", "CD80", "CD86", "CD74", "CD2", "CD5"),
-        idents = "celltype",
-        split.by = "Project",
+        celltype_key = "celltype",
+        splitby_key = "Project",
         standard_scale = TRUE
     ) + theme(strip.text.x = element_text(angle = 45, hjust = 0))
     expect_true(is.ggplot(p))
@@ -13,8 +13,8 @@ test_that("geneDotPlot works", {
 test_that("test fill works", {
     p <- geneDotPlot(kidneyimmune,
         genes = c("CD68", "CD80", "CD86", "CD74", "CD2", "CD5"),
-        idents = "celltype",
-        split.by = "Project",
+        celltype_key = "celltype",
+        splitby_key = "Project",
         standard_scale = TRUE,
         fill = TRUE
     ) + theme(strip.text.x = element_text(angle = 45, hjust = 0))
@@ -24,7 +24,7 @@ test_that("test fill works", {
 test_that("test no split", {
     p <- geneDotPlot(kidneyimmune,
         genes = c("CD68", "CD80", "CD86", "CD74", "CD2", "CD5"),
-        idents = "celltype",
+        celltype_key = "celltype",
         standard_scale = TRUE,
         fill = TRUE
     ) + theme(strip.text.x = element_text(angle = 45, hjust = 0))
@@ -34,7 +34,7 @@ test_that("test no split", {
 test_that("test no scale1", {
     p <- geneDotPlot(kidneyimmune,
         genes = c("CD68", "CD80", "CD86", "CD74", "CD2", "CD5"),
-        idents = "celltype",
+        celltype_key = "celltype",
         standard_scale = FALSE,
         fill = TRUE
     ) + theme(strip.text.x = element_text(angle = 45, hjust = 0))
@@ -44,7 +44,7 @@ test_that("test no scale1", {
 test_that("test no scale2", {
     p <- geneDotPlot(kidneyimmune,
         genes = c("CD68", "CD80", "CD86", "CD74", "CD2", "CD5"),
-        idents = "celltype",
+        celltype_key = "celltype",
         scale = FALSE,
         standard_scale = FALSE,
         fill = TRUE
@@ -55,7 +55,7 @@ test_that("test no scale2", {
 test_that("test scale3", {
     p <- geneDotPlot(kidneyimmune,
         genes = c("CD68", "CD80", "CD86", "CD74", "CD2", "CD5"),
-        idents = "celltype"
+        celltype_key = "celltype"
     ) + theme(strip.text.x = element_text(angle = 45, hjust = 0))
     expect_true(is.ggplot(p))
 })

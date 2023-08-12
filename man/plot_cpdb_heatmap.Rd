@@ -2,10 +2,11 @@
 % Please edit documentation in R/plot_cpdb_heatmap.R
 \name{plot_cpdb_heatmap}
 \alias{plot_cpdb_heatmap}
-\title{Plotting cellphonedb results as a heatmap}
+\title{Plotting CellPhoneDB results as a heatmap}
 \usage{
 plot_cpdb_heatmap(
   pvals,
+  degs_analysis = FALSE,
   log1p_transform = FALSE,
   show_rownames = TRUE,
   show_colnames = TRUE,
@@ -24,16 +25,16 @@ plot_cpdb_heatmap(
   high_col = "deeppink4",
   alpha = 0.05,
   return_tables = FALSE,
-  degs_analysis = FALSE,
-  verbose = FALSE,
   symmetrical = TRUE,
   ...
 )
 }
 \arguments{
-\item{pvals}{object holding pvals.txt from cpdb output. Use relevant_interactions.txt if degs_analysis mode.}
+\item{pvals}{Dataframe corresponding to `pvalues.txt` or `relevant_interactions.txt` from CellPhoneDB.}
 
-\item{log1p_transform}{whether to log1p transform the matrix before plotting.}
+\item{degs_analysis}{Whether `CellPhoneDB` was run in `deg_analysis` mode}
+
+\item{log1p_transform}{Whether to log1p transform the output.}
 
 \item{show_rownames}{whether to show row names.}
 
@@ -69,10 +70,6 @@ plot_cpdb_heatmap(
 
 \item{return_tables}{whether or not to return the results as a table rather than the heatmap}
 
-\item{degs_analysis}{if is cellphonedb degs_analysis mode.}
-
-\item{verbose}{prints cat/print statements if TRUE.}
-
 \item{symmetrical}{whether or not to return as symmetrical matrix}
 
 \item{...}{passed to pheatmap::pheatmap.}
@@ -81,12 +78,12 @@ plot_cpdb_heatmap(
 pheatmap object of cellphone db output
 }
 \description{
-Plotting cellphonedb results as a heatmap
+Plotting CellPhoneDB results as a heatmap
 }
 \examples{
 \donttest{
 data(kidneyimmune)
 data(cpdb_output2)
-plot_cpdb_heatmap(kidneyimmune, "celltype", pvals2)
+plot_cpdb_heatmap(pvals2)
 }
 }

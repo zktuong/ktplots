@@ -104,9 +104,9 @@ plot_cpdb(
     scdata=kidneyimmune,
     cell_type1="B cell",
     cell_type2=".",  # this means all cell-types
+    celltype_key="celltype",
     means=means2,
     pvals=pvals2,
-    idents="celltype",
     genes=c("PTPRC", "TNFSF13"),
     title="interacting interactions!",
 )
@@ -119,31 +119,31 @@ plot_cpdb(
     scdata=kidneyimmune,
     cell_type1="B cell",
     cell_type2=".",
+    celltype_key="celltype",
     means=means2,
     pvals=pvals2,
-    idents="celltype",
     genes=c("PTPRC", "CD40", "CLEC2D"),
     default_style=FALSE
 )
 ```
 
-you can also toggle options to `split.by` and `genes.family`:
+you can also toggle options to `splitby_key` and `gene_family`:
 
 ```{r, message = FALSE, warning = FALSE, fig.width = 6, fig.height = 8}
 plot_cpdb(
     scdata = kidneyimmune,
     cell_type1 = "B cell",
     cell_type2 = "CD4T cell",
+    celltype_key = "celltype",
     means = means,
     pvals = pvals,
-    idents = "celltype",
-    split.by = "Experiment",
-    gene.family = "chemokines",
+    splitby_key = "Experiment",
+    gene_family = "chemokines",
     keep_significant_only = FALSE
 )
 ```
 
-if `genes` and `gene.family` are both not specified, the function will try to plot everything.
+if `genes` and `gene_family` are both not specified, the function will try to plot everything.
 
 Specifying `keep_significant_only` will only keep those that are p<0.05.
 
@@ -153,11 +153,11 @@ plot_cpdb(
     scdata = kidneyimmune,
     cell_type1 = "B cell",
     cell_type2 = "CD4T cell",
+    celltype_key = "celltype",
     means = means,
     pvals = pvals,
-    idents = "celltype",
-    split.by = "Experiment",
-    gene.family = c("Coinhibitory", "Costimulatory"),
+    splitby_key = "Experiment",
+    gene_family = c("Coinhibitory", "Costimulatory"),
     cluster_rows = FALSE # ensures that the families are separate,
 )
 ```
@@ -169,20 +169,20 @@ plot_cpdb(
     scdata=kidneyimmune,
     cell_type1 = "B cell",
     cell_type2 = "CD4T cell",
+    celltype_key = "celltype",
     means = means,
     pvals = pvals,
-    idents = "celltype",
-    split.by = "Experiment",
-    gene.family = c("set1", "set2"),
+    splitby_key = "Experiment",
+    gene_family = c("set1", "set2"),
     custom_gene_family = df,
 )
 ```
 
 ### combine_cpdb
 
-For the ```split.by``` option to work, the annotation in the meta file must be defined in the following format:
+For the `splitby_key` option to work, the annotation in the meta file must be defined in the following format:
 ```{r, eval = FALSE}
-{split.by}_{idents}
+{splitby_key}_{celltype_key}
 ```
 
 so to set up an example vector, it would be something like:
@@ -190,11 +190,11 @@ so to set up an example vector, it would be something like:
 annotation <- paste0(kidneyimmune$Experiment, "_", kidneyimmune$celltype)
 ```
 
-The recommended way to use `split.by` is to prepare the data with `combine_cpdb` like in this example:
+The recommended way to use `splitby_key` is to prepare the data with `combine_cpdb` like in this example:
 
 ```{r, eval = FALSE}
 # Assume you have 2 cellphonedb runs, one where it's just naive and the other is treated, you will end up with 2 cellphonedb out folders
-# remember, the celltype labels you provide to cellphonedb's meta.txt should already be like {split.by}_{idents}
+# remember, the celltype labels you provide to cellphonedb's meta.txt should already be like {splitby_key}_{celltype_key}
 # so the two meta.txt should look like:
 
 # naive file
@@ -244,7 +244,7 @@ plot_cpdb2(
     scdata = kidneyimmune,
     cell_type1 = "B cell",
     cell_type2 = ".",
-    idents = "celltype", # column name where the cell ids are located in the metadata
+    celltype_key = "celltype", # column name where the cell ids are located in the metadata
     means = means2,
     pvals = pvals2,
     deconvoluted = decon2, # new options from here on specific to plot_cpdb2
@@ -277,7 +277,7 @@ plot_cpdb3(
     scdata = kidneyimmune,
     cell_type1 = "B cell",
     cell_type2 = "CD4T cell|MNPd",
-    idents = "celltype", # column name where the cell ids are located in the metadata
+    celltype_key = "celltype", # column name where the cell ids are located in the metadata
     means = means2,
     pvals = pvals2,
     deconvoluted = decon2 # new options from here on specific to plot_cpdb3
@@ -295,7 +295,7 @@ plot_cpdb4(
     interaction = "CLEC2D-KLRB1",
     cell_type1 = "NK",
     cell_type2 = "Mast",
-    idents = "celltype",
+    celltype_key = "celltype",
     means = means2,
     pvals = pvals2,
     deconvoluted = decon2
@@ -308,7 +308,7 @@ plot_cpdb4(
     interaction = c("CLEC2D-KLRB1", "CD40-CD40LG"),
     cell_type1 = "NK|B", cell_type2 = "Mast|CD4T",
     scdata = kidneyimmune,
-    idents = "celltype",
+    celltype_key = "celltype",
     means = means2,
     pvals = pvals2,
     deconvoluted = decon2,
@@ -332,8 +332,8 @@ library(ggplot2)
 geneDotPlot(
     scdata = kidneyimmune, # object
     genes = c("CD68", "CD80", "CD86", "CD74", "CD2", "CD5"), # genes to plot
-    idents = "celltype", # column name in meta data that holds the cell-cluster ID/assignment
-    split.by = "Project", # column name in the meta data that you want to split the plotting by. If not provided, it will just plot according to idents
+    celltype_key = "celltype", # column name in meta data that holds the cell-cluster ID/assignment
+    splitby_key = "Project", # column name in the meta data that you want to split the plotting by. If not provided, it will just plot according to celltype_key
     standard_scale = TRUE
 ) + theme(strip.text.x = element_text(angle = 0, hjust = 0, size = 7)) + small_guide() + small_legend()
 ```

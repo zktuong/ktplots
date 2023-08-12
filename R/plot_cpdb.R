@@ -1,17 +1,17 @@
-#' Plotting cellphonedb results
+#' Plotting CellPhoneDB results
 #'
-#' @param cell_type1 cell type 1
-#' @param cell_type2 cell type 2
-#' @param scdata single-cell data. can be seurat/summarizedexperiment object
-#' @param idents vector holding the idents for each cell or column name of scdata's metadata. MUST match cpdb's columns
-#' @param means object holding means.txt from cpdb output
-#' @param pvals object holding pvals.txt from cpdb output. Use relevant_interactions.txt if degs_analysis mode.
+#' @param scdata single-cell data. can be Seurat/SingleCellExperiment object
+#' @param cell_type1 Name of cell type 1. Accepts regex pattern.
+#' @param cell_type2 Name of cell type 2. Accepts regex pattern.
+#' @param celltype_key Column name in metadata/colData storing the celltype annotations. Values in this column should match the second column of the input `meta.txt` used for CellPhoneDB.
+#' @param means Data frame corresponding to `means.txt` from CellPhoneDB.
+#' @param pvals Data frame corresponding to `pvalues.txt` or `relevant_interactions.txt` from CellPhoneDB.
 #' @param max_size max size of points.
 #' @param keep_significant_only logical. Default is FALSE. Switch to TRUE if you only want to plot the significant hits from cpdb.
-#' @param split.by column name in the metadata/coldata table to split the spots by. Can only take columns with binary options. If specified, name to split by MUST be specified in the meta file provided to cpdb prior to analysis.
-#' @param gene.family default = NULL. some predefined group of genes. can take one (or several) of these default options: 'chemokines', 'Th1', 'Th2', 'Th17', 'Treg', 'costimulatory', 'coinhibitory', 'niche'. Also accepts name(s) of custom gene families.
-#' @param custom_gene_family default = NULL. If provided, will update the gene.family function with this custom entry. Both `gene.family` (name of the custom family) and `custom_gene_family` must be specified for this to work. Provide either a data.frame with column names as name of family and genes in rows or a named likes like : list("customfamily" = c("genea", "geneb", "genec"))
-#' @param genes default = NULL. can specify custom list of genes if gene.family is NULL
+#' @param splitby_key column name in the metadata/coldata table to split the spots by. Can only take columns with binary options. If specified, name to split by MUST be specified in the meta file provided to cpdb prior to analysis.
+#' @param gene_family default = NULL. some predefined group of genes. can take one (or several) of these default options: 'chemokines', 'Th1', 'Th2', 'Th17', 'Treg', 'costimulatory', 'coinhibitory', 'niche'. Also accepts name(s) of custom gene families.
+#' @param custom_gene_family default = NULL. If provided, will update the gene_family function with this custom entry. Both `gene_family` (name of the custom family) and `custom_gene_family` must be specified for this to work. Provide either a data.frame with column names as name of family and genes in rows or a named likes like : list('customfamily' = c('genea', 'geneb', 'genec'))
+#' @param genes default = NULL. can specify custom list of genes if gene_family is NULL
 #' @param standard_scale logical. scale the expression to range from 0 to 1. NULL defaults to FALSE.
 #' @param cluster_rows logical. whether or not to cluster the rows.
 #' @param col_option specify plotting colours
@@ -20,7 +20,7 @@
 #' @param highlight_size stroke size for highlight if p < 0.05. if NULL, scales to -log10(pval).
 #' @param max_highlight_size max size of stroke for highlight.
 #' @param special_character_regex_pattern search pattern if the cell type names contains special character. NULL defaults to '/|:|\\?|\\*|\\+|[\\]|\\(|\\)'.
-#' @param degs_analysis if is cellphonedb degs_analysis mode.
+#' @param degs_analysis if is CellPhoneDB degs_analysis mode.
 #' @param return_table whether or not to return as a table rather than to plot.
 #' @param exclude_interactions if provided, the interactions will be removed from the output.
 #' @param ... passes arguments to grep for cell_type1 and cell_type2.
@@ -29,8 +29,8 @@
 #' \donttest{
 #' data(kidneyimmune)
 #' data(cpdb_output)
-#' plot_cpdb(kidneyimmune, "B cell", "CD4T cell", "celltype", means, pvals, split.by = "Experiment", genes = c("CXCL13", "CD274", "CXCR5"))
-#' plot_cpdb(kidneyimmune, "B cell", "CD4T cell", "celltype", means, pvals, split.by = "Experiment", gene.family = "chemokines")
+#' plot_cpdb(kidneyimmune, 'B cell', 'CD4T cell', 'celltype', means, pvals, splitby_key = 'Experiment', genes = c('CXCL13', 'CD274', 'CXCR5'))
+#' plot_cpdb(kidneyimmune, 'B cell', 'CD4T cell', 'celltype', means, pvals, splitby_key = 'Experiment', gene_family = 'chemokines')
 #' }
 #' @include utils.R
 #' @import viridis
@@ -38,31 +38,12 @@
 #' @import reshape2
 #' @export
 
-plot_cpdb <- function(
-    scdata,
-    cell_type1,
-    cell_type2,
-    means,
-    pvals,
-    idents,
-    max_size = 8,
-    keep_significant_only = TRUE,
-    split.by = NULL,
-    gene.family = NULL,
-    custom_gene_family = NULL,
-    genes = NULL,
-    standard_scale = TRUE,
-    cluster_rows = TRUE,
-    col_option = viridis::viridis(50),
-    default_style = TRUE,
-    highlight_col = "red",
-    highlight_size = NULL,
-    max_highlight_size = 2,
-    special_character_regex_pattern = NULL,
-    degs_analysis = FALSE,
-    return_table = FALSE,
-    exclude_interactions = NULL,
-    title = "",
+plot_cpdb <- function(scdata, cell_type1, cell_type2, celltype_key, means, pvals,
+    max_size = 8, keep_significant_only = TRUE, splitby_key = NULL, gene_family = NULL,
+    custom_gene_family = NULL, genes = NULL, standard_scale = TRUE, cluster_rows = TRUE,
+    col_option = viridis::viridis(50), default_style = TRUE, highlight_col = "red",
+    highlight_size = NULL, max_highlight_size = 2, special_character_regex_pattern = NULL,
+    degs_analysis = FALSE, return_table = FALSE, exclude_interactions = NULL, title = "",
     ...) {
     requireNamespace("SingleCellExperiment")
     requireNamespace("grDevices")
@@ -82,25 +63,28 @@ plot_cpdb <- function(
     }
     cell_type1 <- .sub_pattern(cell_type = cell_type1, pattern = special_character_regex_pattern)
     cell_type2 <- .sub_pattern(cell_type = cell_type2, pattern = special_character_regex_pattern)
-    query_list <- .prep_query_group(data = means_mat, genes = genes, gene.family = gene.family, custom_gene_family = custom_gene_family)
+    query_list <- .prep_query_group(data = means_mat, genes = genes, gene_family = gene_family,
+        custom_gene_family = custom_gene_family)
     query <- query_list[["query"]]
     query_group <- query_list[["query_group"]]
     # prepare the cell_type query
-    if (!is.null(split.by)) {
-        labels <- paste0(metadata[[split.by]], "_", metadata[[idents]])
-        if (is.factor(metadata[[split.by]]) & is.factor(metadata[[idents]])) {
-            labels <- factor(labels, levels = paste0(levels(metadata[[split.by]]), "_", rep(levels(metadata[[idents]]), each = length(levels(metadata[[split.by]])))))
+    if (!is.null(splitby_key)) {
+        labels <- paste0(metadata[[splitby_key]], "_", metadata[[celltype_key]])
+        if (is.factor(metadata[[splitby_key]]) & is.factor(metadata[[celltype_key]])) {
+            labels <- factor(labels, levels = paste0(levels(metadata[[splitby_key]]),
+                "_", rep(levels(metadata[[celltype_key]]), each = length(levels(metadata[[splitby_key]])))))
         } else {
             labels <- factor(labels)
         }
         labels <- levels(labels)
-        groups <- factor(metadata[[split.by]])
+        groups <- factor(metadata[[splitby_key]])
         groups <- levels(groups)
         if (length(groups) > 0) {
             # the purpose for this step is to allow for special characters to
             # be used in the celltype grepping
             if (length(groups) > 1) {
-                labels2 <- gsub(paste0(paste0(groups, "_"), collapse = "|"), "", labels)
+                labels2 <- gsub(paste0(paste0(groups, "_"), collapse = "|"), "",
+                  labels)
             } else {
                 labels2 <- gsub(paste0(groups, "_"), "", labels)
             }
@@ -114,8 +98,10 @@ plot_cpdb <- function(
             grp <- as.list(groups)
             celltype <- list()
             for (i in 1:length(c_type1)) {
-                celltype[[i]] <- .create_celltype_query(ctype1 = c_type1[[i]], ctype2 = c_type2, sep = DEFAULT_SEP)
-                celltype[[i]] <- lapply(grp, .keep_interested_groups, ct = celltype[[i]], sep = DEFAULT_SEP)
+                celltype[[i]] <- .create_celltype_query(ctype1 = c_type1[[i]], ctype2 = c_type2,
+                  sep = DEFAULT_SEP)
+                celltype[[i]] <- lapply(grp, .keep_interested_groups, ct = celltype[[i]],
+                  sep = DEFAULT_SEP)
             }
             for (i in 1:length(celltype)) {
                 celltype[[i]] <- celltype[[i]][-which(celltype[[i]] == "")]
@@ -127,7 +113,7 @@ plot_cpdb <- function(
             }
             cell_type <- do.call(paste0, list(celltype, collapse = "|"))
         } else {
-            labels <- metadata[[idents]]
+            labels <- metadata[[celltype_key]]
             labels <- factor(labels)
             labels <- levels(labels)
             c_type1 <- as.list(grep(cell_type1, labels, value = TRUE, ...))
@@ -136,12 +122,13 @@ plot_cpdb <- function(
             c_type2 <- lapply(c_type2, .sub_pattern, pattern = special_character_regex_pattern)
             celltype <- list()
             for (i in 1:length(c_type1)) {
-                celltype[[i]] <- .create_celltype_query(ctype1 = c_type1[[i]], ctype2 = c_type2, sep = DEFAULT_SEP)
+                celltype[[i]] <- .create_celltype_query(ctype1 = c_type1[[i]], ctype2 = c_type2,
+                  sep = DEFAULT_SEP)
             }
             cell_type <- do.call(paste0, list(celltype, collapse = "|"))
         }
     } else {
-        labels <- metadata[[idents]]
+        labels <- metadata[[celltype_key]]
         labels <- factor(labels)
         labels <- levels(labels)
         c_type1 <- as.list(grep(cell_type1, labels, value = TRUE))
@@ -150,27 +137,38 @@ plot_cpdb <- function(
         c_type2 <- lapply(c_type2, .sub_pattern, pattern = special_character_regex_pattern)
         celltype <- list()
         for (i in 1:length(c_type1)) {
-            celltype[[i]] <- .create_celltype_query(ctype1 = c_type1[[i]], ctype2 = c_type2, sep = DEFAULT_SEP)
+            celltype[[i]] <- .create_celltype_query(ctype1 = c_type1[[i]], ctype2 = c_type2,
+                sep = DEFAULT_SEP)
         }
         cell_type <- do.call(paste0, list(celltype, collapse = "|"))
     }
-    if (!is.null(gene.family) & is.null(genes)) {
-        if (length(gene.family) == 1) {
-            means_mat <- .prep_data_querygroup_celltype1(.data = means_mat, .query_group = query_group, .gene.family = gene.family, .cell_type = cell_type, .celltype = celltype, ...)
-            pvals_mat <- .prep_data_querygroup_celltype1(.data = pvals_mat, .query_group = query_group, .gene.family = gene.family, .cell_type = cell_type, .celltype = celltype, ...)
-        } else if (length(gene.family) > 1) {
-            means_mat <- .prep_data_querygroup_celltype2(.data = means_mat, .query_group = query_group, .gene.family = gene.family, .cell_type = cell_type, .celltype = celltype, ...)
-            pvals_mat <- .prep_data_querygroup_celltype2(.data = pvals_mat, .query_group = query_group, .gene.family = gene.family, .cell_type = cell_type, .celltype = celltype, ...)
+    if (!is.null(gene_family) & is.null(genes)) {
+        if (length(gene_family) == 1) {
+            means_mat <- .prep_data_querygroup_celltype1(.data = means_mat, .query_group = query_group,
+                .gene_family = gene_family, .cell_type = cell_type, .celltype = celltype,
+                ...)
+            pvals_mat <- .prep_data_querygroup_celltype1(.data = pvals_mat, .query_group = query_group,
+                .gene_family = gene_family, .cell_type = cell_type, .celltype = celltype,
+                ...)
+        } else if (length(gene_family) > 1) {
+            means_mat <- .prep_data_querygroup_celltype2(.data = means_mat, .query_group = query_group,
+                .gene_family = gene_family, .cell_type = cell_type, .celltype = celltype,
+                ...)
+            pvals_mat <- .prep_data_querygroup_celltype2(.data = pvals_mat, .query_group = query_group,
+                .gene_family = gene_family, .cell_type = cell_type, .celltype = celltype,
+                ...)
         }
-    } else if (is.null(gene.family) & !is.null(genes) | is.null(gene.family) & is.null(genes)) {
-        means_mat <- .prep_data_query_celltype(.data = means_mat, .query = query, .cell_type = cell_type, .celltype = celltype, ...)
-        pvals_mat <- .prep_data_query_celltype(.data = pvals_mat, .query = query, .cell_type = cell_type, .celltype = celltype, ...)
+    } else if (is.null(gene_family) & !is.null(genes) | is.null(gene_family) & is.null(genes)) {
+        means_mat <- .prep_data_query_celltype(.data = means_mat, .query = query,
+            .cell_type = cell_type, .celltype = celltype, ...)
+        pvals_mat <- .prep_data_query_celltype(.data = pvals_mat, .query = query,
+            .cell_type = cell_type, .celltype = celltype, ...)
     }
     if (length(means_mat) == 0) {
-        stop("Please check your options for split.by and your celltypes.")
+        stop("Please check your options for splitby_key and your celltypes.")
     }
     # rearrange the columns so that it interleaves the two groups
-    if (!is.null(split.by)) {
+    if (!is.null(splitby_key)) {
         if (length(groups) > 0) {
             grp <- as.list(groups)
             group_i <- lapply(grp, function(g) {
@@ -223,7 +221,9 @@ plot_cpdb <- function(
         df_means <- reshape2::melt(means_mat2, value.name = "means")
     }
     df_pvals <- reshape2::melt(pvals_mat2, value.name = "pvals")
-    # use dplyr left_join to combine df_means and the pvals column in df_pvals. df_means and df_pvals should have the same Var1 and Var2. non-mathc should fill with NA.
+    # use dplyr left_join to combine df_means and the pvals column in df_pvals.
+    # df_means and df_pvals should have the same Var1 and Var2. non-mathc
+    # should fill with NA.
     df <- dplyr::left_join(df_means, df_pvals, by = c("Var1", "Var2"))
     xp <- which(df$pvals == 1)
     if (length(xp) > 0) {
@@ -243,7 +243,7 @@ plot_cpdb <- function(
     df$pvals[which(df$pvals == 0)] <- 0.001
     df$pvals[which(df$pvals >= 0.05)] <- NA
 
-    if (!is.null(split.by)) {
+    if (!is.null(splitby_key)) {
         if (length(groups) > 0) {
             grp <- as.list(groups)
             grp2 <- lapply(grp, function(i) {
@@ -291,66 +291,84 @@ plot_cpdb <- function(
     } else {
         if (default_style) {
             if (standard_scale) {
-                g <- ggplot(df, aes(x = Var2, y = Var1, color = significant, fill = scaled_means, size = scaled_means))
+                g <- ggplot(df, aes(x = Var2, y = Var1, color = significant, fill = scaled_means,
+                  size = scaled_means))
             } else {
-                g <- ggplot(df, aes(x = Var2, y = Var1, color = significant, fill = means, size = means))
+                g <- ggplot(df, aes(x = Var2, y = Var1, color = significant, fill = means,
+                  size = means))
             }
         } else {
             if (all(df$significant == "no")) {
                 if (standard_scale) {
-                    g <- ggplot(df, aes(x = Var2, y = Var1, color = significant, fill = scaled_means, size = scaled_means))
+                  g <- ggplot(df, aes(x = Var2, y = Var1, color = significant, fill = scaled_means,
+                    size = scaled_means))
                 } else {
-                    g <- ggplot(df, aes(x = Var2, y = Var1, color = significant, fill = means, size = means))
+                  g <- ggplot(df, aes(x = Var2, y = Var1, color = significant, fill = means,
+                    size = means))
                 }
                 default_style <- TRUE
             } else {
-                highlight_col <- "#FFFFFF" # enforce this
+                highlight_col <- "#FFFFFF"  # enforce this
                 if (standard_scale) {
-                    if (!is.null(highlight_size)) {
-                        g <- ggplot(df, aes(x = Var2, y = Var1, fill = significant, colour = scaled_means, size = scaled_means, stroke = highlight_size))
-                    } else {
-                        g <- ggplot(df, aes(x = Var2, y = Var1, fill = significant, colour = scaled_means, size = scaled_means, stroke = x_stroke))
-                    }
+                  if (!is.null(highlight_size)) {
+                    g <- ggplot(df, aes(x = Var2, y = Var1, fill = significant, colour = scaled_means,
+                      size = scaled_means, stroke = highlight_size))
+                  } else {
+                    g <- ggplot(df, aes(x = Var2, y = Var1, fill = significant, colour = scaled_means,
+                      size = scaled_means, stroke = x_stroke))
+                  }
                 } else {
-                    if (!is.null(highlight_size)) {
-                        g <- ggplot(df, aes(x = Var2, y = Var1, fill = significant, colour = means, size = means, stroke = highlight_size))
-                    } else {
-                        g <- ggplot(df, aes(x = Var2, y = Var1, fill = significant, colour = means, size = means, stroke = x_stroke))
-                    }
+                  if (!is.null(highlight_size)) {
+                    g <- ggplot(df, aes(x = Var2, y = Var1, fill = significant, colour = means,
+                      size = means, stroke = highlight_size))
+                  } else {
+                    g <- ggplot(df, aes(x = Var2, y = Var1, fill = significant, colour = means,
+                      size = means, stroke = x_stroke))
+                  }
                 }
             }
         }
-        g <- g + geom_point(pch = 21, na.rm = TRUE) +
-            theme_bw() +
-            theme(axis.text.x = element_text(angle = 45, hjust = 0, color = "#000000"), axis.text.y = element_text(color = "#000000"), axis.title.x = element_blank(), axis.title.y = element_blank()) +
-            scale_x_discrete(position = "top") +
+        g <- g + geom_point(pch = 21, na.rm = TRUE) + theme_bw() + theme(axis.text.x = element_text(angle = 45,
+            hjust = 0, color = "#000000"), axis.text.y = element_text(color = "#000000"),
+            axis.title.x = element_blank(), axis.title.y = element_blank()) + scale_x_discrete(position = "top") +
             # scale_color_gradientn(colors = highlight_col) +
-            scale_radius(range = c(0, max_size)) +
-            scale_linewidth(range = c(0, max_highlight_size))
+        scale_radius(range = c(0, max_size)) + scale_linewidth(range = c(0, max_highlight_size))
         if (default_style) {
-            g <- g + scale_colour_manual(values = c("yes" = highlight_col, "no" = "#ffffff"), na.value = NA, na.translate = FALSE) +
-                guides(fill = guide_colourbar(barwidth = 4, label = TRUE, ticks = TRUE, draw.ulim = TRUE, draw.llim = TRUE, order = 1), size = guide_legend(reverse = TRUE, order = 2), stroke = guide_legend(reverse = TRUE, order = 3))
+            g <- g + scale_colour_manual(values = c(yes = highlight_col, no = "#ffffff"),
+                na.value = NA, na.translate = FALSE) + guides(fill = guide_colourbar(barwidth = 4,
+                label = TRUE, ticks = TRUE, draw.ulim = TRUE, draw.llim = TRUE, order = 1),
+                size = guide_legend(reverse = TRUE, order = 2), stroke = guide_legend(reverse = TRUE,
+                  order = 3))
             if (length(col_option) == 1) {
-                g <- g + scale_fill_gradientn(colors = grDevices::colorRampPalette(c("white", col_option))(100), na.value = "white")
+                g <- g + scale_fill_gradientn(colors = (grDevices::colorRampPalette(c("white",
+                  col_option)))(100), na.value = "white")
             } else {
-                g <- g + scale_fill_gradientn(colors = c("white", grDevices::colorRampPalette(col_option)(99)), na.value = "white")
+                g <- g + scale_fill_gradientn(colors = c("white", (grDevices::colorRampPalette(col_option))(99)),
+                  na.value = "white")
             }
         } else {
-            g <- g + scale_fill_manual(values = highlight_col, na.value = "#ffffff", na.translate = TRUE) +
-                guides(colour = guide_colourbar(barwidth = 4, label = TRUE, ticks = TRUE, draw.ulim = TRUE, draw.llim = TRUE, order = 1), size = guide_legend(reverse = TRUE, order = 2), stroke = guide_legend(reverse = TRUE, order = 3))
+            g <- g + scale_fill_manual(values = highlight_col, na.value = "#ffffff",
+                na.translate = TRUE) + guides(colour = guide_colourbar(barwidth = 4,
+                label = TRUE, ticks = TRUE, draw.ulim = TRUE, draw.llim = TRUE, order = 1),
+                size = guide_legend(reverse = TRUE, order = 2), stroke = guide_legend(reverse = TRUE,
+                  order = 3))
 
             df2 <- df
             if (standard_scale) {
                 df2$scaled_means[df$pvals < 0.05] <- NA
-                g <- g + geom_point(aes(x = Var2, y = Var1, colour = scaled_means, size = scaled_means), data = df2, inherit_aes = FALSE, na_rm = TRUE)
+                g <- g + geom_point(aes(x = Var2, y = Var1, colour = scaled_means,
+                  size = scaled_means), data = df2, inherit_aes = FALSE, na_rm = TRUE)
             } else {
                 df2$means[df$pvals < 0.05] <- NA
-                g <- g + geom_point(aes(x = Var2, y = Var1, colour = means, size = means), data = df2, inherit_aes = FALSE, na_rm = TRUE)
+                g <- g + geom_point(aes(x = Var2, y = Var1, colour = means, size = means),
+                  data = df2, inherit_aes = FALSE, na_rm = TRUE)
             }
             if (length(col_option) == 1) {
-                g <- g + scale_colour_gradientn(colors = grDevices::colorRampPalette(c("white", col_option))(100), na.value = "white")
+                g <- g + scale_colour_gradientn(colors = (grDevices::colorRampPalette(c("white",
+                  col_option)))(100), na.value = "white")
             } else {
-                g <- g + scale_colour_gradientn(colors = c("white", grDevices::colorRampPalette(col_option)(99)), na.value = "white")
+                g <- g + scale_colour_gradientn(colors = c("white", (grDevices::colorRampPalette(col_option))(99)),
+                  na.value = "white")
             }
         }
         if (!is.null(highlight_size)) {
@@ -358,11 +376,11 @@ plot_cpdb <- function(
         }
         if (title != "") {
             g <- g + ggtitle(title)
-        } else if (!is.null(gene.family) & is.null(genes)) {
-            if (length(gene.family) > 1) {
-                gene.family <- paste(gene.family, collapse = ", ")
+        } else if (!is.null(gene_family) & is.null(genes)) {
+            if (length(gene_family) > 1) {
+                gene_family <- paste(gene_family, collapse = ", ")
             }
-            g <- g + ggtitle(gene.family)
+            g <- g + ggtitle(gene_family)
         }
         return(g)
     }

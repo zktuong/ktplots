@@ -1,27 +1,27 @@
-#' Plotting cellphonedb results
+#' Plotting CellPhoneDB results
 #'
+#' @param scdata single-cell data. Must be SingleCellExperiment object
 #' @param cell_type1 cell type 1
 #' @param cell_type2 cell type 2
-#' @param scdata single-cell data. can be seurat/summarizedexperiment object
-#' @param idents vector holding the idents for each cell or column name of scdata's metadata. MUST match cpdb's columns
+#' @param celltype_key column name of scdata's metadata. MUST match cpdb's columns
 #' @param means object holding means.txt from cpdb output
 #' @param pvals object holding pvals.txt from cpdb output
 #' @param deconvoluted object holding deconvoluted.txt from cpdb output
 #' @param keep_significant_only logical. Default is FALSE. Switch to TRUE if you only want to plot the significant hits from cpdb.
-#' @param split.by column name in the metadata/coldata table to split the spots by. Can only take columns with binary options. If specified, name to split by MUST be specified in the meta file provided to cpdb prior to analysis.
+#' @param splitby_key column name in the metadata/coldata table to split the spots by. Can only take columns with binary options. If specified, name to split by MUST be specified in the meta file provided to cpdb prior to analysis.
 #' @param standard_scale logical. scale the expression to range from 0 to 1. Default is TRUE
 #' @param gene_symbol_mapping default = NULL.column name for rowData in sce holding the actual gene symbols if row names aren't gene symbols
 #' @param frac default = 0.1. Minimum fraction of celtypes expressing a gene in order to keep the interaction. Gene must be expressesd >= `frac` in either of the pair of celltypes in order to keep.
 #' @param remove_self default = TRUE. Remove self-self arcs.
 #' @param desiredInteractions default = NULL. Specific list of celltype comparisons e.g. list(c('CD4_Tcm', 'cDC1'), c('CD4_Tcm', 'cDC2')). Also accepts a dataframe where first column is celltype 1 and 2nd column is celltype 2.
-#' @param interaction_grouping default = NULL. dataframe specifying groupings of cellphonedb interactions. First column must be cellphonedb's interacting_pair column. second column is whatever grouping you want.
-#' @param edge_group_colors default = NULL. vector for colour mapping for edge groups. only used if split.by is specified.
+#' @param interaction_grouping default = NULL. dataframe specifying groupings of CellPhoneDB interactions. First column must be CellPhoneDB's interacting_pair column. second column is whatever grouping you want.
+#' @param edge_group_colors default = NULL. vector for colour mapping for edge groups. only used if splitby_key is specified.
 #' @param node_group_colors default = NULL. vector for colour mapping for node labels.
-#' @param degs_analysis if is cellphonedb degs_analysis mode.
+#' @param degs_analysis if is CellPhoneDB degs_analysis mode.
 #' @param return_df whether to just return this as a data.frame rather than plotting iot
 #' @param plot_score_as_thickness logical. Whether to scale the thickness of the edges to the interaction score and scale alpha to -log10(significance). Default is TRUE. FALSE will be opposite behaviour
 #' @param ... passes arguments plot_cpdb
-#' @return Plotting cellphonedb results as a weird chord diagram
+#' @return Plotting CellPhoneDB results as a weird chord diagram
 #' @examples
 #' \donttest{
 #'
@@ -32,63 +32,50 @@
 #' @import ggrepel
 #' @export
 
-plot_cpdb2 <- function(
-    cell_type1, cell_type2, scdata, idents, means, pvals, deconvoluted,
-    keep_significant_only = TRUE, split.by = NULL, standard_scale = TRUE,
-    gene_symbol_mapping = NULL, frac = 0.1, remove_self = TRUE,
-    desiredInteractions = NULL, interaction_grouping = NULL, edge_group_colors = NULL,
-    node_group_colors = NULL, degs_analysis = FALSE, return_df = FALSE, plot_score_as_thickness = TRUE,
-    ...) {
+plot_cpdb2 <- function(scdata, cell_type1, cell_type2, celltype_key, means, pvals,
+    deconvoluted, keep_significant_only = TRUE, splitby_key = NULL, standard_scale = TRUE,
+    gene_symbol_mapping = NULL, frac = 0.1, remove_self = TRUE, desiredInteractions = NULL,
+    interaction_grouping = NULL, edge_group_colors = NULL, node_group_colors = NULL,
+    degs_analysis = FALSE, return_df = FALSE, plot_score_as_thickness = TRUE, ...) {
     if (class(scdata) == "Seurat") {
         stop("Sorry not supported. Please use a SingleCellExperiment object.")
     }
-    lr_interactions <- plot_cpdb(
-        cell_type1 = cell_type1, cell_type2 = cell_type2, scdata = scdata,
-        idents = idents, split.by = split.by, means = means, pvals = pvals, keep_significant_only = keep_significant_only,
-        standard_scale = standard_scale, return_table = TRUE, degs_analysis = degs_analysis, ...
-    )
+    lr_interactions <- plot_cpdb(scdata = scdata, cell_type1 = cell_type1, cell_type2 = cell_type2,
+        celltype_key = celltype_key, splitby_key = splitby_key, means = means, pvals = pvals,
+        keep_significant_only = keep_significant_only, standard_scale = standard_scale,
+        return_table = TRUE, degs_analysis = degs_analysis, ...)
     requireNamespace("SummarizedExperiment")
     requireNamespace("SingleCellExperiment")
-    if (is.null(split.by)) {
+    if (is.null(splitby_key)) {
         if (any(lr_interactions[, 3] > 0)) {
             if (any(is.na(lr_interactions[, 3]))) {
-                lr_interactions <- lr_interactions[lr_interactions[, 3] > 0 & !is.na(lr_interactions[
-                    ,
-                    3
-                ]), ]
+                lr_interactions <- lr_interactions[lr_interactions[, 3] > 0 & !is.na(lr_interactions[,
+                  3]), ]
             } else {
                 lr_interactions <- lr_interactions[lr_interactions[, 3] > 0, ]
             }
         }
     }
-    subset_clusters <- unique(unlist(lapply(
-        as.character(lr_interactions$group),
-        strsplit, DEFAULT_SEP
-    )))
-    sce_subset <- scdata[, SummarizedExperiment::colData(scdata)[, idents] %in% subset_clusters]
-    interactions <- means[, c(
-        "interacting_pair", "gene_a", "gene_b", "partner_a",
-        "partner_b", "receptor_a", "receptor_b"
-    )]
+    subset_clusters <- unique(unlist(lapply(as.character(lr_interactions$group),
+        strsplit, DEFAULT_SEP)))
+    sce_subset <- scdata[, SummarizedExperiment::colData(scdata)[, celltype_key] %in%
+        subset_clusters]
+    interactions <- means[, c("interacting_pair", "gene_a", "gene_b", "partner_a",
+        "partner_b", "receptor_a", "receptor_b")]
     interactions$converted <- gsub("-", " ", interactions$interacting_pair)
     interactions$converted <- gsub("_", "-", interactions$converted)
-    interactions_subset <- interactions[interactions$converted %in% lr_interactions$Var1, ]
-    tm0 <- do.call(c, lapply(
-        as.list(interactions_subset$interacting_pair), strsplit,
-        "_"
-    ))
+    interactions_subset <- interactions[interactions$converted %in% lr_interactions$Var1,
+        ]
+    tm0 <- do.call(c, lapply(as.list(interactions_subset$interacting_pair), strsplit,
+        "_"))
     if (any(lapply(tm0, length) > 2)) {
         complex_id <- which(lapply(tm0, length) > 2)
         interactions_subset_ <- interactions_subset[complex_id, ]
         simple_1 <- interactions_subset_$interacting_pair[grep("complex:", interactions_subset_$partner_b)]
-        partner_1 <- gsub("complex:", "", interactions_subset_$partner_b[grep(
-            "complex:",
-            interactions_subset_$partner_b
-        )])
-        partner_2 <- gsub("complex:", "", interactions_subset_$partner_a[grep(
-            "complex:",
-            interactions_subset_$partner_a
-        )])
+        partner_1 <- gsub("complex:", "", interactions_subset_$partner_b[grep("complex:",
+            interactions_subset_$partner_b)])
+        partner_2 <- gsub("complex:", "", interactions_subset_$partner_a[grep("complex:",
+            interactions_subset_$partner_a)])
         simple_2 <- interactions_subset_$interacting_pair[grep("complex:", interactions_subset_$partner_a)]
         for (i in seq_along(simple_1)) {
             simple_1[i] <- gsub(paste0(partner_1[i], "_|_", partner_1[i]), "", simple_1[i])
@@ -101,34 +88,28 @@ plot_cpdb2 <- function(
         for (i in seq_along(complex_id)) {
             tm0[[complex_id[i]]] <- tmplist[[i]]
         }
-        tm0 <- data.frame(t(matrix(unlist(tm0), 2, length(unlist(tm0)) / 2)))
+        tm0 <- data.frame(t(matrix(unlist(tm0), 2, length(unlist(tm0))/2)))
         colnames(tm0) <- c("id_a", "id_b")
         interactions_subset <- cbind(interactions_subset, tm0)
-        dictionary <- interactions_subset[, c(
-            "gene_a", "gene_b", "partner_a", "partner_b",
-            "id_a", "id_b", "receptor_a", "receptor_b"
-        )]
+        dictionary <- interactions_subset[, c("gene_a", "gene_b", "partner_a", "partner_b",
+            "id_a", "id_b", "receptor_a", "receptor_b")]
     } else {
-        tm0 <- data.frame(t(matrix(unlist(tm0), 2, length(unlist(tm0)) / 2)))
+        tm0 <- data.frame(t(matrix(unlist(tm0), 2, length(unlist(tm0))/2)))
         colnames(tm0) <- c("id_a", "id_b")
         interactions_subset <- cbind(interactions_subset, tm0)
-        dictionary <- interactions_subset[, c(
-            "gene_a", "gene_b", "partner_a", "partner_b",
-            "id_a", "id_b", "receptor_a", "receptor_b"
-        )]
+        dictionary <- interactions_subset[, c("gene_a", "gene_b", "partner_a", "partner_b",
+            "id_a", "id_b", "receptor_a", "receptor_b")]
     }
     if (!is.null(interaction_grouping)) {
         if ((class(interaction_grouping) == "data.frame")) {
-            interactions_subset$group <- interaction_grouping[, 2][match(
-                interactions_subset$interacting_pair,
-                interaction_grouping[, 1]
-            )]
+            interactions_subset$group <- interaction_grouping[, 2][match(interactions_subset$interacting_pair,
+                interaction_grouping[, 1])]
         }
     }
     # extract all the possible genes.
     geneid <- unique(c(interactions_subset$id_a, interactions_subset$id_b))
-    # rmg = which(geneid == '') if (length(rmg) > 0){ geneid = geneid[-which(geneid
-    # == '')] }
+    # rmg = which(geneid == '') if (length(rmg) > 0){ geneid =
+    # geneid[-which(geneid == '')] }
     if (all(!geneid %in% row.names(sce_subset))) {
         geneid <- unique(c(interactions_subset$gene_a, interactions_subset$gene_b))
     }
@@ -139,23 +120,19 @@ plot_cpdb2 <- function(
     }
     # split to list and calculate celltype mean for each treatment group
     meta <- as.data.frame(SummarizedExperiment::colData(sce_subset_tmp))
-    if (!is.null(split.by)) {
+    if (!is.null(splitby_key)) {
         sce_list <- list()
         sce_list_alt <- list()
-        for (x in unique(meta[, split.by])) {
+        for (x in unique(meta[, splitby_key])) {
             sce_list[[x]] <- list()
             sce_list_alt[[x]] <- list()
         }
         for (n in names(sce_list)) {
-            for (x in unique(meta[, idents])) {
-                sce_list[[n]][[x]] <- sce_subset_tmp[, meta[, idents] == x & meta[
-                    ,
-                    split.by
-                ] == n]
-                sce_list_alt[[n]][[x]] <- sce_subset[, meta[, idents] == x & meta[
-                    ,
-                    split.by
-                ] == n]
+            for (x in unique(meta[, celltype_key])) {
+                sce_list[[n]][[x]] <- sce_subset_tmp[, meta[, celltype_key] == x &
+                  meta[, splitby_key] == n]
+                sce_list_alt[[n]][[x]] <- sce_subset[, meta[, celltype_key] == x &
+                  meta[, splitby_key] == n]
             }
         }
         sce_list2 <- lapply(sce_list, function(y) {
@@ -177,9 +154,9 @@ plot_cpdb2 <- function(
     } else {
         sce_list <- list()
         sce_list_alt <- list()
-        for (x in unique(meta[, idents])) {
-            sce_list[[x]] <- sce_subset_tmp[, meta[, idents] == x]
-            sce_list_alt[[x]] <- sce_subset[, meta[, idents] == x]
+        for (x in unique(meta[, celltype_key])) {
+            sce_list[[x]] <- sce_subset_tmp[, meta[, celltype_key] == x]
+            sce_list_alt[[x]] <- sce_subset[, meta[, celltype_key] == x]
         }
         sce_list2 <- lapply(sce_list, .cellTypeMeans)
         sce_list3 <- lapply(sce_list, .cellTypeFraction)
@@ -200,28 +177,29 @@ plot_cpdb2 <- function(
     }
     rownames(sce_list2) <- humanreadablename
     rownames(sce_list3) <- humanreadablename
-    decon_subset <- deconvoluted[deconvoluted$complex_name %in% .findComplex(interactions_subset), ]
+    decon_subset <- deconvoluted[deconvoluted$complex_name %in% .findComplex(interactions_subset),
+        ]
     if (nrow(decon_subset) > 0) {
-        # although multiple rows are returned, really it's the same value for the same
-        # complex
+        # although multiple rows are returned, really it's the same value for
+        # the same complex
         decon_subset <- split(decon_subset, decon_subset$complex_name)
         decon_subset_expr <- lapply(decon_subset, function(x) {
             x <- x[, colnames(x) %in% colnames(sce_list2)]
             x <- colMeans(x)
             return(x)
         })
-        if (!is.null(split.by)) {
+        if (!is.null(splitby_key)) {
             decon_subset_fraction <- lapply(decon_subset, function(x) {
                 x <- unique(x$gene_name)
                 test <- lapply(sce_list_alt, function(y) {
-                    return(lapply(y, .cellTypeFraction_complex, genes = z, gene_symbol_mapping = gene_symbol_mapping))
+                  return(lapply(y, .cellTypeFraction_complex, genes = z, gene_symbol_mapping = gene_symbol_mapping))
                 })
                 return(test)
             })
             decon_subset_fraction <- lapply(decon_subset_fraction, function(x) {
                 y <- lapply(x, function(z) do.call(cbind, z))
                 for (i in 1:length(y)) {
-                    colnames(y[[i]]) <- paste0(names(y[i]), "_", colnames(y[[i]]))
+                  colnames(y[[i]]) <- paste0(names(y[i]), "_", colnames(y[[i]]))
                 }
                 y <- do.call(cbind, y)
                 return(y)
@@ -230,7 +208,7 @@ plot_cpdb2 <- function(
             decon_subset_fraction <- lapply(decon_subset, function(x) {
                 z <- unique(x$gene_name)
                 test <- lapply(sce_list_alt, function(y) {
-                    return(.cellTypeFraction_complex(y, genes = z, gene_symbol_mapping = gene_symbol_mapping))
+                  return(.cellTypeFraction_complex(y, genes = z, gene_symbol_mapping = gene_symbol_mapping))
                 })
                 return(do.call(cbind, test))
             })
@@ -250,21 +228,16 @@ plot_cpdb2 <- function(
     # make a big fat edgelist
     if (!is.null(desiredInteractions)) {
         if (class(desiredInteractions) == "list") {
-            desiredInteractions_ <- c(desiredInteractions, lapply(
-                desiredInteractions,
-                rev
-            ))
+            desiredInteractions_ <- c(desiredInteractions, lapply(desiredInteractions,
+                rev))
             cell_type_grid <- as.data.frame(do.call(rbind, desiredInteractions_))
         } else if ((class(desiredInteractions) == "data.frame")) {
             cell_type_grid <- desiredInteractions
         }
         cells_test <- unique(unlist(desiredInteractions))
     } else {
-        cells_test <- tryCatch(unique(droplevels(meta[, idents])), error = function(e) {
-            unique(meta[
-                ,
-                idents
-            ])
+        cells_test <- tryCatch(unique(droplevels(meta[, celltype_key])), error = function(e) {
+            unique(meta[, celltype_key])
         })
         cell_type_grid <- expand.grid(cells_test, cells_test)
     }
@@ -285,32 +258,29 @@ plot_cpdb2 <- function(
     receivers <- as.character(cell_type_grid[, 2])
     barcodes <- paste0(lr_interactions$Var2, DEFAULT_SEP, lr_interactions$Var1)
     dfx <- list()
-    if (!is.null(split.by)) {
-        for (i in unique(meta[, split.by])) {
-            dfx[[i]] <- .generateDf(
-                ligand = ligand, sep = DEFAULT_SEP, receptor = receptor,
+    if (!is.null(splitby_key)) {
+        for (i in unique(meta[, splitby_key])) {
+            dfx[[i]] <- .generateDf(ligand = ligand, sep = DEFAULT_SEP, receptor = receptor,
                 receptor_a = receptor_a, receptor_b = receptor_b, pair = pair, converted_pair = converted_pair,
                 producers = producers, receivers = receivers, cell_type_means = expr_df,
                 cell_type_fractions = fraction_df, sce = sce_subset, sce_alt = sce_list_alt,
-                gsm = gene_symbol_mapping, splitted = i
-            )
+                gsm = gene_symbol_mapping, splitted = i)
             dfx[[i]] <- dfx[[i]][dfx[[i]]$barcode %in% barcodes, ]
         }
     } else {
-        dfx[[1]] <- .generateDf(
-            ligand = ligand, sep = DEFAULT_SEP, receptor = receptor, receptor_a = receptor_a,
-            receptor_b = receptor_b, pair = pair, converted_pair = converted_pair,
+        dfx[[1]] <- .generateDf(ligand = ligand, sep = DEFAULT_SEP, receptor = receptor,
+            receptor_a = receptor_a, receptor_b = receptor_b, pair = pair, converted_pair = converted_pair,
             producers = producers, receivers = receivers, cell_type_means = expr_df,
             cell_type_fractions = fraction_df, sce = sce_subset, sce_alt = sce_list_alt,
-            gsm = gene_symbol_mapping
-        )
+            gsm = gene_symbol_mapping)
         dfx[[1]] <- dfx[[1]][dfx[[1]]$barcode %in% barcodes, ]
     }
     if (return_df) {
         return(dfx)
     } else {
         # set the bundled connections
-        df0 <- lapply(dfx, function(x) x[x$producer_fraction >= frac | x$receiver_fraction >= frac, ]) # save this for later
+        df0 <- lapply(dfx, function(x) x[x$producer_fraction >= frac | x$receiver_fraction >=
+            frac, ])  # save this for later
         # now construct the hierachy
         gl <- list()
         if (!is.null(interaction_grouping)) {
@@ -321,32 +291,33 @@ plot_cpdb2 <- function(
         cantplot <- c()
         noplot <- FALSE
         for (i in 1:length(dfx)) {
-            if (!is.null(split.by)) {
+            if (!is.null(splitby_key)) {
                 if (nrow(dfx[[i]]) > 0 & nrow(df0[[i]]) > 0) {
-                    gl[[i]] <- .constructGraph(
-                        input_group = names(dfx)[i], sep = DEFAULT_SEP, el = dfx[[i]], el0 = df0[[i]],
-                        unique_id = cells_test, interactions_df = interactions_subset, plot_cpdb_out = lr_interactions, edge_group = edge_group,
-                        edge_group_colors = edge_group_colors, node_group_color = node_group_colors, plot_score_as_thickness=plot_score_as_thickness
-                    )
+                  gl[[i]] <- .constructGraph(input_group = names(dfx)[i], sep = DEFAULT_SEP,
+                    el = dfx[[i]], el0 = df0[[i]], unique_id = cells_test, interactions_df = interactions_subset,
+                    plot_cpdb_out = lr_interactions, celltype_key = celltype_key,
+                    edge_group = edge_group, edge_group_colors = edge_group_colors,
+                    node_group_color = node_group_colors, plot_score_as_thickness = plot_score_as_thickness)
                 } else {
-                    gl[[i]] <- NA
-                    cantplot <- c(cantplot, names(dfx)[i])
+                  gl[[i]] <- NA
+                  cantplot <- c(cantplot, names(dfx)[i])
                 }
             } else {
                 if (nrow(dfx[[i]]) > 0 & nrow(df0[[i]]) > 0) {
-                    gl[[i]] <- .constructGraph(
-                        input_group = NULL, sep = DEFAULT_SEP, el = dfx[[i]], el0 = df0[[i]], unique_id = cells_test, interactions_df = interactions_subset, plot_cpdb_out = lr_interactions, edge_group = edge_group, edge_group_colors = edge_group_colors, node_group_color = node_group_colors, plot_score_as_thickness=plot_score_as_thickness
-                    )
+                  gl[[i]] <- .constructGraph(input_group = NULL, sep = DEFAULT_SEP,
+                    el = dfx[[i]], el0 = df0[[i]], unique_id = cells_test, interactions_df = interactions_subset,
+                    plot_cpdb_out = lr_interactions, celltype_key = celltype_key,
+                    edge_group = edge_group, edge_group_colors = edge_group_colors,
+                    node_group_color = node_group_colors, plot_score_as_thickness = plot_score_as_thickness)
                 } else {
-                    gl[[i]] <- NA
-                    noplot <- TRUE
+                  gl[[i]] <- NA
+                  noplot <- TRUE
                 }
             }
         }
         if (length(cantplot) > 0) {
-            cat("The following groups in split.by cannot be plotted due to missing/no significant interactions/celltypes",
-                sep = "\n"
-            )
+            cat("The following groups in splitby_key cannot be plotted due to missing/no significant interactions/celltypes",
+                sep = "\n")
             cat(cantplot, sep = "\n")
         }
         if (noplot) {

@@ -30,13 +30,13 @@ DEFAULT_SPEC_PAT <- "/|:|\\?|\\*|\\+|[\\]|\\(|\\)|\\/"
     return(df)
 }
 
-.prep_query_group <- function(data, genes = NULL, gene.family = NULL, custom_gene_family = NULL) {
-    if (is.null(gene.family) & is.null(genes)) {
+.prep_query_group <- function(data, genes = NULL, gene_family = NULL, custom_gene_family = NULL) {
+    if (is.null(gene_family) & is.null(genes)) {
         query_group <- NULL
         query <- grep("", data$interacting_pair)
-    } else if (!is.null(gene.family) & !is.null(genes)) {
-        stop("Please specify either genes or gene.family, not both")
-    } else if (!is.null(gene.family) & is.null(genes)) {
+    } else if (!is.null(gene_family) & !is.null(genes)) {
+        stop("Please specify either genes or gene_family, not both")
+    } else if (!is.null(gene_family) & is.null(genes)) {
         chemokines <- grep("^CXC|CCL|CCR|CX3|XCL|XCR", data$interacting_pair)
         th1 <- grep("IL2|IL12|IL18|IL27|IFNG|IL10|TNF$|TNF |LTA|LTB|STAT1|CCR5|CXCR3|IL12RB1|IFNGR1|TBX21|STAT4", data$interacting_pair)
         th2 <- grep("IL4|IL5|IL25|IL10|IL13|AREG|STAT6|GATA3|IL4R", data$interacting_pair)
@@ -62,7 +62,7 @@ DEFAULT_SPEC_PAT <- "/|:|\\?|\\*|\\+|[\\]|\\(|\\)|\\/"
             query_group <- c(query_group, cgf)
         }
         query <- NULL
-    } else if (is.null(gene.family) & !is.null(genes)) {
+    } else if (is.null(gene_family) & !is.null(genes)) {
         query_group <- NULL
         query <- grep(paste(genes, collapse = "|"), data$interacting_pair)
     }
@@ -88,9 +88,9 @@ DEFAULT_SPEC_PAT <- "/|:|\\?|\\*|\\+|[\\]|\\(|\\)|\\/"
     grDevices::hcl(h = hues, l = 65, c = 100)[1:n]
 }
 
-.prep_data_querygroup_celltype1 <- function(.data, .query_group, .gene.family, .cell_type, .celltype, ...) {
+.prep_data_querygroup_celltype1 <- function(.data, .query_group, .gene_family, .cell_type, .celltype, ...) {
     dat <- suppressWarnings(tryCatch(
-        .data[.query_group[[tolower(.gene.family)]],
+        .data[.query_group[[tolower(.gene_family)]],
             grep(.cell_type, colnames(.data), useBytes = TRUE, ...),
             drop = FALSE
         ],
@@ -101,16 +101,16 @@ DEFAULT_SPEC_PAT <- "/|:|\\?|\\*|\\+|[\\]|\\(|\\)|\\/"
                 )
             })
             colidx <- unique(do.call(c, colidx))
-            tmpm <- .data[.query_group[[tolower(.gene.family)]], colidx, drop = FALSE]
+            tmpm <- .data[.query_group[[tolower(.gene_family)]], colidx, drop = FALSE]
             return(tmpm)
         }
     ))
     return(dat)
 }
 
-.prep_data_querygroup_celltype2 <- function(.data, .query_group, .gene.family, .cell_type, .celltype, ...) {
+.prep_data_querygroup_celltype2 <- function(.data, .query_group, .gene_family, .cell_type, .celltype, ...) {
     dat <- suppressWarnings(tryCatch(
-        .data[unlist(.query_group[c(tolower(.gene.family))], use.names = FALSE),
+        .data[unlist(.query_group[c(tolower(.gene_family))], use.names = FALSE),
             grep(.cell_type, colnames(.data), useBytes = TRUE, ...),
             drop = FALSE
         ],
@@ -121,7 +121,7 @@ DEFAULT_SPEC_PAT <- "/|:|\\?|\\*|\\+|[\\]|\\(|\\)|\\/"
                 )
             })
             colidx <- unique(do.call(c, colidx))
-            tmpm <- .data[unlist(.query_group[c(tolower(.gene.family))], use.names = FALSE), colidx, drop = FALSE]
+            tmpm <- .data[unlist(.query_group[c(tolower(.gene_family))], use.names = FALSE), colidx, drop = FALSE]
             return(tmpm)
         }
     ))
@@ -450,7 +450,7 @@ DEFAULT_SPEC_PAT <- "/|:|\\?|\\*|\\+|[\\]|\\(|\\)|\\/"
 }
 
 .constructGraph <- function(input_group, sep, el, el0, unique_id, interactions_df,
-                            plot_cpdb_out, edge_group = FALSE, edge_group_colors = NULL, node_group_colors = NULL, plot_score_as_thickness=TRUE) {
+                            plot_cpdb_out, celltype_key, edge_group = FALSE, edge_group_colors = NULL, node_group_colors = NULL, plot_score_as_thickness = TRUE) {
     requireNamespace("igraph")
     celltypes <- unique(c(as.character(el$producer), as.character(el$receiver)))
     el1 <- data.frame(
@@ -575,7 +575,7 @@ DEFAULT_SPEC_PAT <- "/|:|\\?|\\*|\\+|[\\]|\\(|\\)|\\/"
         if (!is.null(node_group_colors)) {
             node_group_colors <- node_group_colors
         } else {
-            nn <- length(unique(meta[, idents]))
+            nn <- length(unique(meta[, celltype_key]))
             node_group_colors <- .gg_color_hue(nn)
         }
         # plot the graph

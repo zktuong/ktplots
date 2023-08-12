@@ -9,7 +9,7 @@ R plotting functions to plot gene expression data of single-cell data.
 For a python port of `ktplots`, please check out my other [repository](https://www.github.com/zktuong/ktplotspy).
 
 ## Installation instructions
-You can install the package via ```devtools::install_github()``` function in R
+You can install the package via `devtools::install_github()` function in R
 ```R
 if (!requireNamespace("devtools", quietly = TRUE))
     install.packages("devtools")
@@ -46,76 +46,76 @@ To run, you will need to load in the means.txt and pvals.txt from the analysis. 
 # I've provided an example dataset
 data(cpdb_output)
 plot_cpdb(scdata = kidneyimmune, cell_type1 = 'B cell', cell_type2 = 'CD4T cell', 
-	idents = 'celltype', # column name where the cell ids are located in the metadata
-	split.by = 'Experiment', # column name where the grouping column is. Optional.
+	celltype_key = 'celltype', # column name where the cell ids are located in the metadata
+	splitby_key = 'Experiment', # column name where the grouping column is. Optional.
 	means = means, pvals = pvals,
 	genes = c("XCR1", "CXCL10", "CCL5")) +
 small_axis(fontsize = 3) + small_grid() + small_guide() + small_legend(fontsize = 2) # some helper functions included in ktplots to help with the plotting
 ```
 ![plot_cpdb](exampleImages/plot_cpdb_example.png)
 
-You can also try specifying ```gene.family``` option which will grep some pre-determined genes.
+You can also try specifying `gene_family` option which will grep some pre-determined genes.
 ```R
 plot_cpdb(scdata = kidneyimmune, cell_type1 = 'B cell', cell_type2 = 'CD4T cell', 
-    idents = 'celltype', means = means, pvals = pvals, split.by = 'Experiment',
-    gene.family = 'chemokines') + small_guide() + small_axis() + small_legend(keysize=.5)
+    celltype_key = 'celltype', means = means, pvals = pvals, splitby_key = 'Experiment',
+    gene_family = 'chemokines') + small_guide() + small_axis() + small_legend(keysize=.5)
 ```
 ![plot_cpdb](exampleImages/plot_cpdb_example1.png)
 ```R
 plot_cpdb(scdata = kidneyimmune, cell_type1 = 'B cell', cell_type2 = 'CD4T cell', 
-    idents = 'celltype', means = means, pvals = pvals, split.by = 'Experiment',
-    gene.family = 'chemokines', col_option = "maroon", highlight = "blue") + small_guide() + small_axis() + small_legend(keysize=.5)
+    celltype_key = 'celltype', means = means, pvals = pvals, splitby_key = 'Experiment',
+    gene_family = 'chemokines', col_option = "maroon", highlight = "blue") + small_guide() + small_axis() + small_legend(keysize=.5)
 ```
 ![plot_cpdb](exampleImages/plot_cpdb_example2.png)
 ```R
 plot_cpdb(scdata = kidneyimmune, cell_type1 = 'B cell', cell_type2 = 'CD4T cell', 
-    idents = 'celltype', means = means, pvals = pvals, split.by = 'Experiment',
-    gene.family = 'chemokines', col_option = viridis::cividis(50)) + small_guide() + small_axis() + small_legend(keysize=.5)
+    celltype_key = 'celltype', means = means, pvals = pvals, splitby_key = 'Experiment',
+    gene_family = 'chemokines', col_option = viridis::cividis(50)) + small_guide() + small_axis() + small_legend(keysize=.5)
 ```
 ![plot_cpdb](exampleImages/plot_cpdb_example3.png)
 ```R
 plot_cpdb(scdata = kidneyimmune, cell_type1 = 'B cell', cell_type2 = 'CD4T cell', 
-    idents = 'celltype', means = means, pvals = pvals, split.by = 'Experiment',
-    gene.family = 'chemokines', noir = TRUE) + small_guide() + small_axis() + small_legend(keysize=.5)
+    celltype_key = 'celltype', means = means, pvals = pvals, splitby_key = 'Experiment',
+    gene_family = 'chemokines', noir = TRUE) + small_guide() + small_axis() + small_legend(keysize=.5)
 ```
 ![plot_cpdb](exampleImages/plot_cpdb_example4.png)
 
 A new style to plot inspired from `squidpy.pl.ligrec` where significant interactions are shown as outline instead.
 ```R
 plot_cpdb(scdata = kidneyimmune, cell_type1 = 'B cell', cell_type2 = 'CD4T cell', 
-    idents = 'celltype', means = means, pvals = pvals, split.by = 'Experiment',
-    gene.family = 'chemokines', default_style = FALSE) + small_guide() + small_axis() + small_legend(keysize=.5)
+    celltype_key = 'celltype', means = means, pvals = pvals, splitby_key = 'Experiment',
+    gene_family = 'chemokines', default_style = FALSE) + small_guide() + small_axis() + small_legend(keysize=.5)
 ```
 ![plot_cpdb](exampleImages/plot_cpdb_alternate2.png)
 
-if ```genes``` and ```gene.family``` are both not specified, the function will try to plot everything.
+if `genes` and `gene_family` are both not specified, the function will try to plot everything.
 
-Specifying ```keep_significant_only``` will only keep those that are p<0.05 (which you can try to adjust with ```p.adjust.method```).
+Specifying `keep_significant_only` will only keep those that are p<0.05.
 
 You can now also specify more than 1 gene families:
 ```R
 p <- plot_cpdb(scdata = kidneyimmune, cell_type1 = "B cell", cell_type2 = "CD4T cell", 
-        idents = "celltype", means = means, pvals = pvals,
-        split.by = "Experiment", gene.family = c("Coinhibitory", "Costimulatory"),
+        celltype_key = "celltype", means = means, pvals = pvals,
+        splitby_key = "Experiment", gene_family = c("Coinhibitory", "Costimulatory"),
         cluster_rows = FALSE, # ensures that the families are separate
         keep_significant_only = TRUE)
 ```
 ![plot_cpdb](exampleImages/plotcpdb_two.png)
 
-And also provide custom families as a ```data.frame```.
+And also provide custom families as a `data.frame`.
 ```R
 df = data.frame(set1 = c("CCR6", "CCL20"), set2 = c("CCL5", "CCR4"))
-p <- plot_cpdb(scdata = kidneyimmune, cell_type1 = "B cell", cell_type2 = "CD4T cell", idents = "celltype", means = means, pvals = pvals,,
-        split.by = "Experiment", gene.family = c("set1", "set2"), custom_gene_family =df,
+p <- plot_cpdb(scdata = kidneyimmune, cell_type1 = "B cell", cell_type2 = "CD4T cell", celltype_key = "celltype", means = means, pvals = pvals,,
+        splitby_key = "Experiment", gene_family = c("set1", "set2"), custom_gene_family =df,
         keep_significant_only = TRUE)
 ```
 ![plot_cpdb](exampleImages/plotcpdb_custom.png)
 
 ## combine_cpdb
 
-For the ```split.by``` option to work, the annotation in the meta file must be defined in the following format:
+For the `splitby_key` option to work, the annotation in the meta file must be defined in the following format:
 ```R
-{split.by}_{idents}
+{splitby_key}_{celltype_key}
 ```
 
 so to set up an example vector, it would be something like:
@@ -123,11 +123,11 @@ so to set up an example vector, it would be something like:
 annotation <- paste0(kidneyimmune$Experiment, '_', kidneyimmune$celltype)
 ```
 
-The recommended way to use `split.by` is to prepare the data with `combine_cpdb` like in this example:
+The recommended way to use `splitby_key` is to prepare the data with `combine_cpdb` like in this example:
 
 ```R
 # Assume you have 2 cellphonedb runs, one where it's just naive and the other is treated, you will end up with 2 cellphonedb out folders
-# remember, the celltype labels you provide to cellphonedb's meta.txt should already be like {split.by}_{idents}
+# remember, the celltype labels you provide to cellphonedb's meta.txt should already be like {splitby_key}_{celltype_key}
 # so the two meta.txt should look like:
 
 # naive file
@@ -179,7 +179,7 @@ data(cpdb_output2)
 
 p <- plot_cpdb2(cell_type1 = 'B cell', cell_type2 = 'CD4T cell',
     scdata = kidneyimmune,
-    idents = 'celltype', # column name where the cell ids are located in the metadata
+    celltype_key = 'celltype', # column name where the cell ids are located in the metadata
     means = means2,
     pvals = pvals2,
     deconvoluted = decon2, # new options from here on specific to plot_cpdb2
@@ -235,8 +235,8 @@ interaction_grouping <- read.delim('interactions_groups.txt')
 
 test <- plot_cpdb2(cell_type1 = "CD4_Tem|CD4_Tcm|CD4_Treg", # same usage style as plot_cpdb
 	cell_type2 = "cDC",
-	idents = 'fine_clustering',
-	split.by = 'treatment_group_1',
+	celltype_key = 'fine_clustering',
+	splitby_key = 'treatment_group_1',
 	scdata = sce,
 	means = means,
 	pvals = pvalues,
@@ -263,7 +263,7 @@ data(cpdb_output2)
 
 p <- plot_cpdb3(cell_type1 = 'B cell', cell_type2 = 'CD4T cell|MNPd',
     scdata = kidneyimmune,
-    idents = 'celltype', # column name where the cell ids are located in the metadata
+    celltype_key = 'celltype', # column name where the cell ids are located in the metadata
     means = means2,
     pvals = pvals2,
     deconvoluted = decon2, # new options from here on specific to plot_cpdb3
@@ -290,7 +290,7 @@ p <- plot_cpdb4(
     interaction = 'CLEC2D-KLRB1',
     cell_type1 = 'NK', cell_type2 = 'Mast',
     scdata = kidneyimmune,
-    idents = 'celltype',
+    celltype_key = 'celltype',
     means = means2,
     pvals = pvals2,
     deconvoluted = decon2,
@@ -308,7 +308,7 @@ plot_cpdb4(
         interaction = c('CLEC2D-KLRB1', 'CD40-CD40LG'),
         cell_type1 = 'NK|B', cell_type2 = 'Mast|CD4T',
         scdata = kidneyimmune,
-        idents = 'celltype',
+        celltype_key = 'celltype',
         means = means2,
         pvals = pvals2,
         deconvoluted = decon2,
@@ -360,8 +360,8 @@ Plotting gene expression dot plots heatmaps.
 # Note, this conflicts with tidyr devel version
 geneDotPlot(scdata = kidneyimmune, # object
     genes = c("CD68", "CD80", "CD86", "CD74", "CD2", "CD5"), # genes to plot
-    idents = "celltype", # column name in meta data that holds the cell-cluster ID/assignment
-    split.by = 'Project', # column name in the meta data that you want to split the plotting by. If not provided, it will just plot according to idents
+    celltype_key = "celltype", # column name in meta data that holds the cell-cluster ID/assignment
+    splitby_key = 'Project', # column name in the meta data that you want to split the plotting by. If not provided, it will just plot according to celltype_key
     standard_scale = TRUE) + # whether to scale expression values from 0 to 1. See ?geneDotPlot for other options
 theme(strip.text.x = element_text(angle=0, hjust = 0, size =7)) + small_guide() + small_legend()
 ```

@@ -2,18 +2,18 @@
 % Please edit documentation in R/plot_cpdb2.R
 \name{plot_cpdb2}
 \alias{plot_cpdb2}
-\title{Plotting cellphonedb results}
+\title{Plotting CellPhoneDB results}
 \usage{
 plot_cpdb2(
+  scdata,
   cell_type1,
   cell_type2,
-  scdata,
-  idents,
+  celltype_key,
   means,
   pvals,
   deconvoluted,
   keep_significant_only = TRUE,
-  split.by = NULL,
+  splitby_key = NULL,
   standard_scale = TRUE,
   gene_symbol_mapping = NULL,
   frac = 0.1,
@@ -29,13 +29,13 @@ plot_cpdb2(
 )
 }
 \arguments{
+\item{scdata}{single-cell data. Must be SingleCellExperiment object}
+
 \item{cell_type1}{cell type 1}
 
 \item{cell_type2}{cell type 2}
 
-\item{scdata}{single-cell data. can be seurat/summarizedexperiment object}
-
-\item{idents}{vector holding the idents for each cell or column name of scdata's metadata. MUST match cpdb's columns}
+\item{celltype_key}{column name of scdata's metadata. MUST match cpdb's columns}
 
 \item{means}{object holding means.txt from cpdb output}
 
@@ -45,7 +45,7 @@ plot_cpdb2(
 
 \item{keep_significant_only}{logical. Default is FALSE. Switch to TRUE if you only want to plot the significant hits from cpdb.}
 
-\item{split.by}{column name in the metadata/coldata table to split the spots by. Can only take columns with binary options. If specified, name to split by MUST be specified in the meta file provided to cpdb prior to analysis.}
+\item{splitby_key}{column name in the metadata/coldata table to split the spots by. Can only take columns with binary options. If specified, name to split by MUST be specified in the meta file provided to cpdb prior to analysis.}
 
 \item{standard_scale}{logical. scale the expression to range from 0 to 1. Default is TRUE}
 
@@ -57,13 +57,13 @@ plot_cpdb2(
 
 \item{desiredInteractions}{default = NULL. Specific list of celltype comparisons e.g. list(c('CD4_Tcm', 'cDC1'), c('CD4_Tcm', 'cDC2')). Also accepts a dataframe where first column is celltype 1 and 2nd column is celltype 2.}
 
-\item{interaction_grouping}{default = NULL. dataframe specifying groupings of cellphonedb interactions. First column must be cellphonedb's interacting_pair column. second column is whatever grouping you want.}
+\item{interaction_grouping}{default = NULL. dataframe specifying groupings of CellPhoneDB interactions. First column must be CellPhoneDB's interacting_pair column. second column is whatever grouping you want.}
 
-\item{edge_group_colors}{default = NULL. vector for colour mapping for edge groups. only used if split.by is specified.}
+\item{edge_group_colors}{default = NULL. vector for colour mapping for edge groups. only used if splitby_key is specified.}
 
 \item{node_group_colors}{default = NULL. vector for colour mapping for node labels.}
 
-\item{degs_analysis}{if is cellphonedb degs_analysis mode.}
+\item{degs_analysis}{if is CellPhoneDB degs_analysis mode.}
 
 \item{return_df}{whether to just return this as a data.frame rather than plotting iot}
 
@@ -72,10 +72,10 @@ plot_cpdb2(
 \item{...}{passes arguments plot_cpdb}
 }
 \value{
-Plotting cellphonedb results as a weird chord diagram
+Plotting CellPhoneDB results as a weird chord diagram
 }
 \description{
-Plotting cellphonedb results
+Plotting CellPhoneDB results
 }
 \examples{
 \donttest{

@@ -2,18 +2,18 @@
 % Please edit documentation in R/plot_cpdb3.R
 \name{plot_cpdb3}
 \alias{plot_cpdb3}
-\title{Plotting cellphonedb results as a chord diagram}
+\title{Plotting CellPhoneDB results as a chord diagram}
 \usage{
 plot_cpdb3(
+  scdata,
   cell_type1,
   cell_type2,
-  scdata,
-  idents,
+  celltype_key,
   means,
   pvals,
   deconvoluted,
   keep_significant_only = TRUE,
-  split.by = NULL,
+  splitby_key = NULL,
   standard_scale = TRUE,
   gene_symbol_mapping = NULL,
   frac = 0.1,
@@ -31,13 +31,13 @@ plot_cpdb3(
 )
 }
 \arguments{
+\item{scdata}{single-cell data. can be seurat/summarizedexperiment object}
+
 \item{cell_type1}{cell type 1}
 
 \item{cell_type2}{cell type 2}
 
-\item{scdata}{single-cell data. can be seurat/summarizedexperiment object}
-
-\item{idents}{vector holding the idents for each cell or column name of scdata's metadata. MUST match cpdb's columns}
+\item{celltype_key}{vector holding the celltype_key for each cell or column name of scdata's metadata. MUST match cpdb's columns}
 
 \item{means}{object holding means.txt from cpdb output}
 
@@ -47,7 +47,7 @@ plot_cpdb3(
 
 \item{keep_significant_only}{logical. Default is FALSE. Switch to TRUE if you only want to plot the significant hits from cpdb.}
 
-\item{split.by}{column name in the metadata/coldata table to split the spots by. Can only take columns with binary options. If specified, name to split by MUST be specified in the meta file provided to cpdb prior to analysis.}
+\item{splitby_key}{column name in the metadata/coldata table to split the spots by. Can only take columns with binary options. If specified, name to split by MUST be specified in the meta file provided to cpdb prior to analysis.}
 
 \item{standard_scale}{logical. scale the expression to range from 0 to 1. Default is TRUE}
 
@@ -59,7 +59,7 @@ plot_cpdb3(
 
 \item{desiredInteractions}{default = NULL. Specific list of celltype comparisons e.g. list(c('CD4_Tcm', 'cDC1'), c('CD4_Tcm', 'cDC2')). Also accepts a dataframe where first column is celltype 1 and 2nd column is celltype 2.}
 
-\item{degs_analysis}{if is cellphonedb degs_analysis mode.}
+\item{degs_analysis}{if is CellPhoneDB degs_analysis mode.}
 
 \item{directional}{Whether links have directions. 1 means the direction is from the first column in df to the second column, -1 is the reverse, 0 is no direction, and 2 for two directional.}
 
@@ -78,10 +78,10 @@ plot_cpdb3(
 \item{...}{passes arguments plot_cpdb}
 }
 \value{
-Plotting cellphonedb results as a CellChat inspired chord diagram
+Plotting CellPhoneDB results as a CellChat inspired chord diagram
 }
 \description{
-Plotting cellphonedb results as a chord diagram
+Plotting CellPhoneDB results as a chord diagram
 }
 \examples{
 \donttest{

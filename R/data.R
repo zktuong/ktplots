@@ -108,3 +108,53 @@
 #' @rdname kidneyimmune
 #' @docType data
 "covid_sample_metadata"
+
+#' cpdb_output_v5
+#'
+#' cpdb_output_v5 - Dataframe of CellPhoneDB output means.txt file
+#' @rdname kidneyimmune
+#' @docType data
+#' @usage data(cpdb_output_v5)
+#' @format data after CellPhoneDB v5 analysis
+#' @examples
+#' data(cpdb_output_v5)
+"means_v5"
+
+
+#' sce_v5
+#'
+#' sce_v5 - A small dummy singlecelldata for cellphonedb v5
+#' @rdname kidneyimmune
+#' @docType data
+"sce_v5"
+
+
+#' relevant_interactions_v5
+#'
+#' relevant_interactions_v5 - Dataframe of CellPhoneDB output relevant_interactions.txt file
+#' @rdname kidneyimmune
+#' @docType data
+"relevant_interactions_v5"
+
+
+#' decon_v5
+#'
+#' decon_v5 - Dataframe of CellPhoneDB output deconvoluted.txt file
+#' @rdname kidneyimmune
+#' @docType data
+"decon_v5"
+
+
+#' cellsign_v5
+#'
+#' cellsign_v5 - Dataframe of CellPhoneDB output CellSign.txt file
+#' @rdname kidneyimmune
+#' @docType data
+"cellsign_v5"
+
+#' interaction_scores_v5
+#'
+#' interaction_scores_v5 - Dataframe of CellPhoneDB output interaction_scores.txt file
+#' @rdname kidneyimmune
+#' @docType data
+"interaction_scores_v5"
