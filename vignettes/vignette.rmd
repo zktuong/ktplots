@@ -327,6 +327,7 @@ plot_cpdb4(
 ### geneDotPlot
 Plotting gene expression dot plots heatmaps.
 ```{r, message = FALSE, warning = FALSE}
+library(ggplot2)
 # Note, this conflicts with tidyr devel version
 geneDotPlot(
     scdata = kidneyimmune, # object
