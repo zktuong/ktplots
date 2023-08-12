@@ -18,7 +18,7 @@
 #' @param default_style default = TRUE. Show all mean values and trace significant interactions with `higlight` colour. If FALSE, significant interactions will be presented as a white ring.
 #' @param highlight_col colour for highlighting p <0.05
 #' @param highlight_size stroke size for highlight if p < 0.05. if NULL, scales to -log10(pval).
-#' @param max_highlight_size
+#' @param max_highlight_size max size of stroke for highlight.
 #' @param special_character_regex_pattern search pattern if the cell type names contains special character. NULL defaults to '/|:|\\?|\\*|\\+|[\\]|\\(|\\)'.
 #' @param degs_analysis if is cellphonedb degs_analysis mode.
 #' @param return_table whether or not to return as a table rather than to plot.
@@ -62,6 +62,7 @@ plot_cpdb <- function(
     degs_analysis = FALSE,
     return_table = FALSE,
     exclude_interactions = NULL,
+    title = "",
     ...) {
     requireNamespace("SingleCellExperiment")
     requireNamespace("grDevices")
@@ -215,13 +216,15 @@ plot_cpdb <- function(
     # remove rows that are entirely NA
     pvals_mat2 <- pvals_mat2[rowSums(is.na(means_mat2)) != ncol(means_mat2), , drop = FALSE]
     means_mat2 <- means_mat2[rowSums(is.na(means_mat2)) != ncol(means_mat2), , drop = FALSE]
+    requireNamespace("reshape2")
     if (standard_scale) {
-        df_means <- melt(means_mat2, value.name = "scaled_means")
+        df_means <- reshape2::melt(means_mat2, value.name = "scaled_means")
     } else {
-        df_means <- melt(means_mat2, value.name = "means")
+        df_means <- reshape2::melt(means_mat2, value.name = "means")
     }
-    df_pvals <- melt(pvals_mat2, value.name = "pvals")
-    df <- data.frame(cbind(df_means, pvals = df_pvals$pvals))
+    df_pvals <- reshape2::melt(pvals_mat2, value.name = "pvals")
+    # use dplyr left_join to combine df_means and the pvals column in df_pvals. df_means and df_pvals should have the same Var1 and Var2. non-mathc should fill with NA.
+    df <- dplyr::left_join(df_means, df_pvals, by = c("Var1", "Var2"))
     xp <- which(df$pvals == 1)
     if (length(xp) > 0) {
         df$pvals[which(df$pvals == 1)] <- NA

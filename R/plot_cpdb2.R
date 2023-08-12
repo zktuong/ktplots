@@ -31,7 +31,6 @@
 #' }
 #' @include utils.R
 #' @import ggplot2
-#' @import igraph
 #' @import ggraph
 #' @import ggrepel
 #' @export

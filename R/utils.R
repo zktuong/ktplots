@@ -84,10 +84,16 @@ DEFAULT_SPEC_PAT <- "/|:|\\?|\\*|\\+|[\\]|\\(|\\)|\\/"
 }
 
 .prep_data_querygroup_celltype1 <- function(.data, .query_group, .gene.family, .cell_type, .celltype, ...) {
-    dat <- suppressWarnings(tryCatch(.data[.query_group[[tolower(.gene.family)]], grep(.cell_type, colnames(.data), useBytes = TRUE, ...), drop = FALSE],
+    dat <- suppressWarnings(tryCatch(
+        .data[.query_group[[tolower(.gene.family)]],
+            grep(.cell_type, colnames(.data), useBytes = TRUE, ...),
+            drop = FALSE
+        ],
         error = function(e) {
             colidx <- lapply(.celltype, function(z) {
-                grep(z, colnames(.data), useBytes = TRUE, ...)
+                grep(z, colnames(.data),
+                    useBytes = TRUE, ...
+                )
             })
             colidx <- unique(do.call(c, colidx))
             tmpm <- .data[.query_group[[tolower(.gene.family)]], colidx, drop = FALSE]
@@ -118,19 +124,19 @@ DEFAULT_SPEC_PAT <- "/|:|\\?|\\*|\\+|[\\]|\\(|\\)|\\/"
 }
 
 .prep_data_query_celltype <- function(.data, .query, .cell_type, .celltype, ...) {
-    dat <- suppressWarnings(tryCatch(.data[.query, grep(.cell_type, colnames(.data), useBytes = TRUE, ...), drop = FALSE],
-        error = function(e) {
-            colidx <- lapply(.celltype, function(z) {
-                grep(z, colnames(.data),
-                    useBytes = TRUE,
-                    ...
-                )
-            })
-            colidx <- unique(do.call(c, colidx))
-            tmpm <- .data[.query, colidx, drop = FALSE]
-            return(tmpm)
-        }
-    ))
+    dat <- suppressWarnings(tryCatch(.data[.query, grep(.cell_type, colnames(.data),
+        useBytes = TRUE, ...
+    ), drop = FALSE], error = function(e) {
+        colidx <- lapply(.celltype, function(z) {
+            grep(z, colnames(.data),
+                useBytes = TRUE,
+                ...
+            )
+        })
+        colidx <- unique(do.call(c, colidx))
+        tmpm <- .data[.query, colidx, drop = FALSE]
+        return(tmpm)
+    }))
     return(dat)
 }
 
@@ -653,8 +659,8 @@ DEFAULT_SPEC_PAT <- "/|:|\\?|\\*|\\+|[\\]|\\(|\\)|\\/"
 }
 
 .chord_diagram4 <- function(tmp_dfx, lr_interactions, p.adjust_method, scaled,
-                           alpha, directional, show_legend, edge_cols, grid_cols, legend.pos.x, legend.pos.y,
-                           title, grid_scale) {
+                            alpha, directional, show_legend, edge_cols, grid_cols, legend.pos.x, legend.pos.y,
+                            title, grid_scale) {
     tmp_dfx <- .swap_ligand_receptor(tmp_dfx)
     unique_celltype <- unique(c(lr_interactions$`1`, lr_interactions$`2`))
     na_df <- data.frame(t(combn(unique_celltype, 2)))
@@ -745,8 +751,8 @@ DEFAULT_SPEC_PAT <- "/|:|\\?|\\*|\\+|[\\]|\\(|\\)|\\/"
 }
 
 .chord_diagram3 <- function(tmp_dfx, lr_interactions, p.adjust_method, scaled,
-                           alpha, directional, show_legend, edge_cols, grid_cols, legend.pos.x, legend.pos.y,
-                           title) {
+                            alpha, directional, show_legend, edge_cols, grid_cols, legend.pos.x, legend.pos.y,
+                            title) {
     tmp_dfx <- .swap_ligand_receptor(tmp_dfx)
     if (scaled) {
         interactions_items <- lr_interactions$scaled_means
