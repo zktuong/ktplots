@@ -64,11 +64,7 @@ plot_cpdb <- function(
         metadata <- scdata@meta.data
     }
     means_mat <- .prep_table(means)
-    if (degs_analysis) {
-        pvals_mat <- .prep_table(pvals, switch = TRUE)
-    } else {
-        pvals_mat <- .prep_table(pvals)
-    }
+    pvals_mat <- .prep_table(pvals)
     if (!is.null(interaction_scores)) {
         interaction_scores_mat <- .prep_table(interaction_scores)
     } else if (!is.null(cellsign)) {

@@ -7,17 +7,12 @@ DEFAULT_SEP <- ">@<"
 DEFAULT_SPEC_PAT <- "/|:|\\?|\\*|\\+|[\\]|\\(|\\)|\\/"
 
 
-.prep_table <- function(data, switch = FALSE) {
+.prep_table <- function(data) {
     dat <- data
     rownames(dat) <- make.names(dat$interacting_pair, unique = TRUE)
     colnames(dat) <- gsub("\\|", DEFAULT_SEP, colnames(dat))
     rownames(dat) <- gsub("_", "-", rownames(dat))
     rownames(dat) <- gsub("[.]", " ", rownames(dat))
-    if (switch == TRUE) {
-        dat[is.na(dat)] <- 1
-    } else {
-        dat[is.na(dat)] <- 0
-    }
     return(dat)
 }
 
