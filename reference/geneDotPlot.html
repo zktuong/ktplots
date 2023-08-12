@@ -56,9 +56,9 @@
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">geneDotPlot</span><span class="op">(</span></span>
 <span>  <span class="va">scdata</span>,</span>
-<span>  <span class="va">idents</span>,</span>
+<span>  <span class="va">celltype_key</span>,</span>
 <span>  <span class="va">genes</span>,</span>
-<span>  split.by <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  splitby_key <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  pct.threshold <span class="op">=</span> <span class="fl">0.05</span>,</span>
 <span>  scale <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  standard_scale <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -82,16 +82,16 @@
 <dd><p>single-cell data. can be seurat/summarizedexperiment object</p></dd>
 
 
-<dt>idents</dt>
-<dd><p>column name holding the idents for each cell</p></dd>
+<dt>celltype_key</dt>
+<dd><p>column name holding the celltype for each cell</p></dd>
 
 
 <dt>genes</dt>
 <dd><p>genes you want to plot</p></dd>
 
 
-<dt>split.by</dt>
-<dd><p>column name in the metadata/coldata table to split the spots by. If not provided, it will plot via idents provided.</p></dd>
+<dt>splitby_key</dt>
+<dd><p>column name in the metadata/coldata table to split the spots by. If not provided, it will plot via celltype_key provided.</p></dd>
 
 
 <dt>pct.threshold</dt>
@@ -107,7 +107,7 @@
 
 
 <dt>keepLevels</dt>
-<dd><p>logical. keep the original factor of the levels of the idents (for plotting)</p></dd>
+<dd><p>logical. keep the original factor of the levels of the celltype_key (for plotting)</p></dd>
 
 
 <dt>save.plot</dt>
@@ -157,7 +157,7 @@
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">kidneyimmune</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">geneDotPlot</span><span class="op">(</span><span class="va">kidneyimmune</span>, genes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CD68"</span>, <span class="st">"CD80"</span>, <span class="st">"CD86"</span>, <span class="st">"CD74"</span>, <span class="st">"CD2"</span>, <span class="st">"CD5"</span><span class="op">)</span>, idents <span class="op">=</span> <span class="st">"celltype"</span>, split.by <span class="op">=</span> <span class="st">"Project"</span>, standard_scale <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>strip.text.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>angle <span class="op">=</span> <span class="fl">45</span>, hjust <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">geneDotPlot</span><span class="op">(</span><span class="va">kidneyimmune</span>, genes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'CD68'</span>, <span class="st">'CD80'</span>, <span class="st">'CD86'</span>, <span class="st">'CD74'</span>, <span class="st">'CD2'</span>, <span class="st">'CD5'</span><span class="op">)</span>, celltype_key <span class="op">=</span> <span class="st">'celltype'</span>, splitby_key <span class="op">=</span> <span class="st">'Project'</span>, standard_scale <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>strip.text.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>angle <span class="op">=</span> <span class="fl">45</span>, hjust <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> data provided is a SingleCellExperiment/SummarizedExperiment object</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> extracting expression matrix</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attempting to subset the expression matrix to the 6 genes provided</span>

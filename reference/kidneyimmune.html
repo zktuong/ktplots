@@ -9,7 +9,13 @@ pvals2 - Dataframe of CellPhoneDB output pvalues.txt file
 decon2 - Dataframe of CellPhoneDB output deconvoluted.txt file
 sig_means2 - Dataframe of CellPhoneDB output significant_means.txt file
 covid_cpdb_meta - Example dataframe to use for cpdb_meta option in compare_cpdb
-covid_sample_metadata - Example dataframe to use for sample_metadata option in compare_cpdb"><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
+covid_sample_metadata - Example dataframe to use for sample_metadata option in compare_cpdb
+cpdb_output_v5 - Dataframe of CellPhoneDB output means.txt file
+sce_v5 - A small dummy singlecelldata for cellphonedb v5
+relevant_interactions_v5 - Dataframe of CellPhoneDB output relevant_interactions.txt file
+decon_v5 - Dataframe of CellPhoneDB output deconvoluted.txt file
+cellsign_v5 - Dataframe of CellPhoneDB output CellSign.txt file
+interaction_scores_v5 - Dataframe of CellPhoneDB output interaction_scores.txt file"><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]--></head><body data-spy="scroll" data-target="#toc">
@@ -71,6 +77,12 @@ covid_sample_metadata - Example dataframe to use for sample_metadata option in c
 <p>sig_means2 - Dataframe of CellPhoneDB output significant_means.txt file</p>
 <p>covid_cpdb_meta - Example dataframe to use for cpdb_meta option in compare_cpdb</p>
 <p>covid_sample_metadata - Example dataframe to use for sample_metadata option in compare_cpdb</p>
+<p>cpdb_output_v5 - Dataframe of CellPhoneDB output means.txt file</p>
+<p>sce_v5 - A small dummy singlecelldata for cellphonedb v5</p>
+<p>relevant_interactions_v5 - Dataframe of CellPhoneDB output relevant_interactions.txt file</p>
+<p>decon_v5 - Dataframe of CellPhoneDB output deconvoluted.txt file</p>
+<p>cellsign_v5 - Dataframe of CellPhoneDB output CellSign.txt file</p>
+<p>interaction_scores_v5 - Dataframe of CellPhoneDB output interaction_scores.txt file</p>
     </div>
 
     <div id="ref-usage">
@@ -94,7 +106,19 @@ covid_sample_metadata - Example dataframe to use for sample_metadata option in c
 <span></span>
 <span><span class="va">covid_cpdb_meta</span></span>
 <span></span>
-<span><span class="va">covid_sample_metadata</span></span></code></pre></div>
+<span><span class="va">covid_sample_metadata</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">cpdb_output_v5</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">sce_v5</span></span>
+<span></span>
+<span><span class="va">relevant_interactions_v5</span></span>
+<span></span>
+<span><span class="va">decon_v5</span></span>
+<span></span>
+<span><span class="va">cellsign_v5</span></span>
+<span></span>
+<span><span class="va">interaction_scores_v5</span></span></code></pre></div>
     </div>
 
     <div id="format">
@@ -130,6 +154,12 @@ covid_sample_metadata - Example dataframe to use for sample_metadata option in c
 <p>An object of class <code>data.frame</code> with 837 rows and 156 columns.</p>
 <p>An object of class <code>data.frame</code> with 12 rows and 3 columns.</p>
 <p>An object of class <code>data.frame</code> with 12 rows and 2 columns.</p>
+<p>data after CellPhoneDB v5 analysis</p>
+<p>An object of class <code>SingleCellExperiment</code> with 1000 rows and 3312 columns.</p>
+<p>An object of class <code>data.frame</code> with 419 rows and 85 columns.</p>
+<p>An object of class <code>data.frame</code> with 6825 rows and 49 columns.</p>
+<p>An object of class <code>data.frame</code> with 9 rows and 85 columns.</p>
+<p>An object of class <code>data.frame</code> with 2440 rows and 94 columns.</p>
     </div>
     <div id="source">
     <h2>Source</h2>
@@ -141,6 +171,8 @@ covid_sample_metadata - Example dataframe to use for sample_metadata option in c
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">kidneyimmune</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">cpdb_output</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">cpdb_output</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">cpdb_output_v5</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>data set ‘cpdb_output_v5’ not found</span>
 </code></pre></div>
     </div>
   </div>

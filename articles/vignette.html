@@ -181,9 +181,9 @@ cell] on the <code>x-axis</code>:</p>
 <span>    scdata<span class="op">=</span><span class="va">kidneyimmune</span>,</span>
 <span>    cell_type1<span class="op">=</span><span class="st">"B cell"</span>,</span>
 <span>    cell_type2<span class="op">=</span><span class="st">"."</span>,  <span class="co"># this means all cell-types</span></span>
+<span>    celltype_key<span class="op">=</span><span class="st">"celltype"</span>,</span>
 <span>    means<span class="op">=</span><span class="va">means2</span>,</span>
 <span>    pvals<span class="op">=</span><span class="va">pvals2</span>,</span>
-<span>    idents<span class="op">=</span><span class="st">"celltype"</span>,</span>
 <span>    genes<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PTPRC"</span>, <span class="st">"TNFSF13"</span><span class="op">)</span>,</span>
 <span>    title<span class="op">=</span><span class="st">"interacting interactions!"</span>,</span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -195,29 +195,29 @@ interactions.</p>
 <span>    scdata<span class="op">=</span><span class="va">kidneyimmune</span>,</span>
 <span>    cell_type1<span class="op">=</span><span class="st">"B cell"</span>,</span>
 <span>    cell_type2<span class="op">=</span><span class="st">"."</span>,</span>
+<span>    celltype_key<span class="op">=</span><span class="st">"celltype"</span>,</span>
 <span>    means<span class="op">=</span><span class="va">means2</span>,</span>
 <span>    pvals<span class="op">=</span><span class="va">pvals2</span>,</span>
-<span>    idents<span class="op">=</span><span class="st">"celltype"</span>,</span>
 <span>    genes<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PTPRC"</span>, <span class="st">"CD40"</span>, <span class="st">"CLEC2D"</span><span class="op">)</span>,</span>
 <span>    default_style<span class="op">=</span><span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p><img src="vignette_files/figure-html/unnamed-chunk-9-1.png" width="960"></p>
-<p>you can also toggle options to <code>split.by</code> and
-<code>genes.family</code>:</p>
+<p>you can also toggle options to <code>splitby_key</code> and
+<code>gene_family</code>:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_cpdb.html">plot_cpdb</a></span><span class="op">(</span></span>
 <span>    scdata <span class="op">=</span> <span class="va">kidneyimmune</span>,</span>
 <span>    cell_type1 <span class="op">=</span> <span class="st">"B cell"</span>,</span>
 <span>    cell_type2 <span class="op">=</span> <span class="st">"CD4T cell"</span>,</span>
+<span>    celltype_key <span class="op">=</span> <span class="st">"celltype"</span>,</span>
 <span>    means <span class="op">=</span> <span class="va">means</span>,</span>
 <span>    pvals <span class="op">=</span> <span class="va">pvals</span>,</span>
-<span>    idents <span class="op">=</span> <span class="st">"celltype"</span>,</span>
-<span>    split.by <span class="op">=</span> <span class="st">"Experiment"</span>,</span>
-<span>    gene.family <span class="op">=</span> <span class="st">"chemokines"</span>,</span>
+<span>    splitby_key <span class="op">=</span> <span class="st">"Experiment"</span>,</span>
+<span>    gene_family <span class="op">=</span> <span class="st">"chemokines"</span>,</span>
 <span>    keep_significant_only <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p><img src="vignette_files/figure-html/unnamed-chunk-10-1.png" width="576"></p>
-<p>if <code>genes</code> and <code>gene.family</code> are both not
+<p>if <code>genes</code> and <code>gene_family</code> are both not
 specified, the function will try to plot everything.</p>
 <p>Specifying <code>keep_significant_only</code> will only keep those
 that are p&lt;0.05.</p>
@@ -227,11 +227,11 @@ that are p&lt;0.05.</p>
 <span>    scdata <span class="op">=</span> <span class="va">kidneyimmune</span>,</span>
 <span>    cell_type1 <span class="op">=</span> <span class="st">"B cell"</span>,</span>
 <span>    cell_type2 <span class="op">=</span> <span class="st">"CD4T cell"</span>,</span>
+<span>    celltype_key <span class="op">=</span> <span class="st">"celltype"</span>,</span>
 <span>    means <span class="op">=</span> <span class="va">means</span>,</span>
 <span>    pvals <span class="op">=</span> <span class="va">pvals</span>,</span>
-<span>    idents <span class="op">=</span> <span class="st">"celltype"</span>,</span>
-<span>    split.by <span class="op">=</span> <span class="st">"Experiment"</span>,</span>
-<span>    gene.family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Coinhibitory"</span>, <span class="st">"Costimulatory"</span><span class="op">)</span>,</span>
+<span>    splitby_key <span class="op">=</span> <span class="st">"Experiment"</span>,</span>
+<span>    gene_family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Coinhibitory"</span>, <span class="st">"Costimulatory"</span><span class="op">)</span>,</span>
 <span>    cluster_rows <span class="op">=</span> <span class="cn">FALSE</span> <span class="co"># ensures that the families are separate,</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p><img src="vignette_files/figure-html/unnamed-chunk-11-1.png" width="576"></p>
@@ -242,11 +242,11 @@ that are p&lt;0.05.</p>
 <span>    scdata<span class="op">=</span><span class="va">kidneyimmune</span>,</span>
 <span>    cell_type1 <span class="op">=</span> <span class="st">"B cell"</span>,</span>
 <span>    cell_type2 <span class="op">=</span> <span class="st">"CD4T cell"</span>,</span>
+<span>    celltype_key <span class="op">=</span> <span class="st">"celltype"</span>,</span>
 <span>    means <span class="op">=</span> <span class="va">means</span>,</span>
 <span>    pvals <span class="op">=</span> <span class="va">pvals</span>,</span>
-<span>    idents <span class="op">=</span> <span class="st">"celltype"</span>,</span>
-<span>    split.by <span class="op">=</span> <span class="st">"Experiment"</span>,</span>
-<span>    gene.family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"set1"</span>, <span class="st">"set2"</span><span class="op">)</span>,</span>
+<span>    splitby_key <span class="op">=</span> <span class="st">"Experiment"</span>,</span>
+<span>    gene_family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"set1"</span>, <span class="st">"set2"</span><span class="op">)</span>,</span>
 <span>    custom_gene_family <span class="op">=</span> <span class="va">df</span>,</span>
 <span><span class="op">)</span></span></code></pre></div>
 <p><img src="vignette_files/figure-html/unnamed-chunk-12-1.png" width="576"></p>
@@ -254,17 +254,17 @@ that are p&lt;0.05.</p>
 <div class="section level4">
 <h4 id="combine_cpdb">combine_cpdb<a class="anchor" aria-label="anchor" href="#combine_cpdb"></a>
 </h4>
-<p>For the <code>split.by</code> option to work, the annotation in the
-meta file must be defined in the following format:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>{split.by}_{idents}</span></code></pre></div>
+<p>For the <code>splitby_key</code> option to work, the annotation in
+the meta file must be defined in the following format:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>{splitby_key}_{celltype_key}</span></code></pre></div>
 <p>so to set up an example vector, it would be something like:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">annotation</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">kidneyimmune</span><span class="op">$</span><span class="va">Experiment</span>, <span class="st">"_"</span>, <span class="va">kidneyimmune</span><span class="op">$</span><span class="va">celltype</span><span class="op">)</span></span></code></pre></div>
-<p>The recommended way to use <code>split.by</code> is to prepare the
+<p>The recommended way to use <code>splitby_key</code> is to prepare the
 data with <code>combine_cpdb</code> like in this example:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Assume you have 2 cellphonedb runs, one where it's just naive and the other is treated, you will end up with 2 cellphonedb out folders</span></span>
-<span><span class="co"># remember, the celltype labels you provide to cellphonedb's meta.txt should already be like {split.by}_{idents}</span></span>
+<span><span class="co"># remember, the celltype labels you provide to cellphonedb's meta.txt should already be like {splitby_key}_{celltype_key}</span></span>
 <span><span class="co"># so the two meta.txt should look like:</span></span>
 <span></span>
 <span><span class="co"># naive file</span></span>
@@ -313,7 +313,7 @@ function and generates the results like this:</p>
 <span>    scdata <span class="op">=</span> <span class="va">kidneyimmune</span>,</span>
 <span>    cell_type1 <span class="op">=</span> <span class="st">"B cell"</span>,</span>
 <span>    cell_type2 <span class="op">=</span> <span class="st">"."</span>,</span>
-<span>    idents <span class="op">=</span> <span class="st">"celltype"</span>, <span class="co"># column name where the cell ids are located in the metadata</span></span>
+<span>    celltype_key <span class="op">=</span> <span class="st">"celltype"</span>, <span class="co"># column name where the cell ids are located in the metadata</span></span>
 <span>    means <span class="op">=</span> <span class="va">means2</span>,</span>
 <span>    pvals <span class="op">=</span> <span class="va">pvals2</span>,</span>
 <span>    deconvoluted <span class="op">=</span> <span class="va">decon2</span>, <span class="co"># new options from here on specific to plot_cpdb2</span></span>
@@ -349,7 +349,7 @@ Additional kwargs are passed to <code>plot_cpdb</code>.</p>
 <span>    scdata <span class="op">=</span> <span class="va">kidneyimmune</span>,</span>
 <span>    cell_type1 <span class="op">=</span> <span class="st">"B cell"</span>,</span>
 <span>    cell_type2 <span class="op">=</span> <span class="st">"CD4T cell|MNPd"</span>,</span>
-<span>    idents <span class="op">=</span> <span class="st">"celltype"</span>, <span class="co"># column name where the cell ids are located in the metadata</span></span>
+<span>    celltype_key <span class="op">=</span> <span class="st">"celltype"</span>, <span class="co"># column name where the cell ids are located in the metadata</span></span>
 <span>    means <span class="op">=</span> <span class="va">means2</span>,</span>
 <span>    pvals <span class="op">=</span> <span class="va">pvals2</span>,</span>
 <span>    deconvoluted <span class="op">=</span> <span class="va">decon2</span> <span class="co"># new options from here on specific to plot_cpdb3</span></span>
@@ -370,7 +370,7 @@ to <code>plot_cpdb</code>.</p>
 <span>    interaction <span class="op">=</span> <span class="st">"CLEC2D-KLRB1"</span>,</span>
 <span>    cell_type1 <span class="op">=</span> <span class="st">"NK"</span>,</span>
 <span>    cell_type2 <span class="op">=</span> <span class="st">"Mast"</span>,</span>
-<span>    idents <span class="op">=</span> <span class="st">"celltype"</span>,</span>
+<span>    celltype_key <span class="op">=</span> <span class="st">"celltype"</span>,</span>
 <span>    means <span class="op">=</span> <span class="va">means2</span>,</span>
 <span>    pvals <span class="op">=</span> <span class="va">pvals2</span>,</span>
 <span>    deconvoluted <span class="op">=</span> <span class="va">decon2</span></span>
@@ -383,7 +383,7 @@ type interactions!</p>
 <span>    interaction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CLEC2D-KLRB1"</span>, <span class="st">"CD40-CD40LG"</span><span class="op">)</span>,</span>
 <span>    cell_type1 <span class="op">=</span> <span class="st">"NK|B"</span>, cell_type2 <span class="op">=</span> <span class="st">"Mast|CD4T"</span>,</span>
 <span>    scdata <span class="op">=</span> <span class="va">kidneyimmune</span>,</span>
-<span>    idents <span class="op">=</span> <span class="st">"celltype"</span>,</span>
+<span>    celltype_key <span class="op">=</span> <span class="st">"celltype"</span>,</span>
 <span>    means <span class="op">=</span> <span class="va">means2</span>,</span>
 <span>    pvals <span class="op">=</span> <span class="va">pvals2</span>,</span>
 <span>    deconvoluted <span class="op">=</span> <span class="va">decon2</span>,</span>
@@ -411,8 +411,8 @@ type interactions!</p>
 <span><span class="fu"><a href="../reference/geneDotPlot.html">geneDotPlot</a></span><span class="op">(</span></span>
 <span>    scdata <span class="op">=</span> <span class="va">kidneyimmune</span>, <span class="co"># object</span></span>
 <span>    genes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CD68"</span>, <span class="st">"CD80"</span>, <span class="st">"CD86"</span>, <span class="st">"CD74"</span>, <span class="st">"CD2"</span>, <span class="st">"CD5"</span><span class="op">)</span>, <span class="co"># genes to plot</span></span>
-<span>    idents <span class="op">=</span> <span class="st">"celltype"</span>, <span class="co"># column name in meta data that holds the cell-cluster ID/assignment</span></span>
-<span>    split.by <span class="op">=</span> <span class="st">"Project"</span>, <span class="co"># column name in the meta data that you want to split the plotting by. If not provided, it will just plot according to idents</span></span>
+<span>    celltype_key <span class="op">=</span> <span class="st">"celltype"</span>, <span class="co"># column name in meta data that holds the cell-cluster ID/assignment</span></span>
+<span>    splitby_key <span class="op">=</span> <span class="st">"Project"</span>, <span class="co"># column name in the meta data that you want to split the plotting by. If not provided, it will just plot according to celltype_key</span></span>
 <span>    standard_scale <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>strip.text.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>angle <span class="op">=</span> <span class="fl">0</span>, hjust <span class="op">=</span> <span class="fl">0</span>, size <span class="op">=</span> <span class="fl">7</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="../reference/misc.html">small_guide</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="../reference/misc.html">small_legend</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; data provided is a SingleCellExperiment/SummarizedExperiment object</span></span>
