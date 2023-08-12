@@ -1,3 +1,8 @@
+#' @import ggplot2
+#' @import ggraph
+#' @importFrom circlize circos.clear chordDiagram
+#' @importFrom grDevices recordPlot
+
 DEFAULT_SEP <- ">@<"
 DEFAULT_SPEC_PAT <- "/|:|\\?|\\*|\\+|[\\]|\\(|\\)|\\/"
 
@@ -446,6 +451,7 @@ DEFAULT_SPEC_PAT <- "/|:|\\?|\\*|\\+|[\\]|\\(|\\)|\\/"
 
 .constructGraph <- function(input_group, sep, el, el0, unique_id, interactions_df,
                             plot_cpdb_out, edge_group = FALSE, edge_group_colors = NULL, node_group_colors = NULL) {
+    requireNamespace("igraph")
     celltypes <- unique(c(as.character(el$producer), as.character(el$receiver)))
     el1 <- data.frame(
         from = "root", to = celltypes, barcode_1 = NA, barcode_2 = NA,
@@ -501,24 +507,24 @@ DEFAULT_SPEC_PAT <- "/|:|\\?|\\*|\\+|[\\]|\\(|\\)|\\/"
     if (edge_group) {
         groups <- interactions_df$group[match(gr_el$barcode_2, interactions_df$interacting_pair)]
     }
-    gr <- graph_from_edgelist(as.matrix(gr_el[, 1:2]))
-    E(gr)$interaction_score <- as.numeric(means)
-    E(gr)$pvals <- as.numeric(pvals)
+    gr <- igraph::graph_from_edgelist(as.matrix(gr_el[, 1:2]))
+    igraph::E(gr)$interaction_score <- as.numeric(means)
+    igraph::E(gr)$pvals <- as.numeric(pvals)
     if (edge_group) {
-        E(gr)$group <- groups
+        igraph::E(gr)$group <- groups
     }
-    E(gr)$name <- gr_el$barcode_3
+    igraph::E(gr)$name <- gr_el$barcode_3
     # order the graph vertices
-    V(gr)$type <- NA
-    V(gr)$type[V(gr)$name %in% el4$to] <- "ligand"
-    V(gr)$type[V(gr)$name %in% el5$to] <- "receptor"
-    from <- match(el0$from, V(gr)$name)
-    to <- match(el0$to, V(gr)$name)
+    igraph::V(gr)$type <- NA
+    igraph::V(gr)$type[igraph::V(gr)$name %in% el4$to] <- "ligand"
+    igraph::V(gr)$type[igraph::V(gr)$name %in% el5$to] <- "receptor"
+    from <- match(el0$from, igraph::V(gr)$name)
+    to <- match(el0$to, igraph::V(gr)$name)
     dat <- data.frame(from = el0$from, to = el0$to)
     if (nrow(dat) > 0) {
         dat$barcode <- paste0(dat$from, sep, dat$to)
-        interaction_score <- E(gr)$interaction_score[match(dat$barcode, gr_el$barcode_3)]
-        pval <- E(gr)$pvals[match(dat$barcode, gr_el$barcode_3)]
+        interaction_score <- igraph::E(gr)$interaction_score[match(dat$barcode, gr_el$barcode_3)]
+        pval <- igraph::E(gr)$pvals[match(dat$barcode, gr_el$barcode_3)]
         if (any(is.na(pval))) {
             pval[is.na(pval)] <- 1
         }
@@ -526,7 +532,7 @@ DEFAULT_SPEC_PAT <- "/|:|\\?|\\*|\\+|[\\]|\\(|\\)|\\/"
             pval <- range01(-log10(pval))
         }
         if (edge_group) {
-            group <- E(gr)$group[match(dat$barcode, gr_el$barcode_3)]
+            group <- igraph::E(gr)$group[match(dat$barcode, gr_el$barcode_3)]
         }
         ligand_expr <- data.frame(
             cell_mol = el$from, expression = el$producer_expression,
@@ -557,12 +563,12 @@ DEFAULT_SPEC_PAT <- "/|:|\\?|\\*|\\+|[\\]|\\(|\\)|\\/"
         df$vertices$label[!df$vertices$name %in% c(el0$from, el0$to)] <- ""
         gr <- graph_from_data_frame(df$edges, directed = TRUE, vertices = df$vertices)
         for (x in unique_id) {
-            V(gr)$label <- gsub(paste0(x, sep), "", V(gr)$label)
+            igraph::V(gr)$label <- gsub(paste0(x, sep), "", igraph::V(gr)$label)
         }
         if (!is.null(edge_group_colors)) {
             edge_group_colors <- edge_group_colors
         } else {
-            nn <- length(unique(E(gr)$group))
+            nn <- length(unique(igraph::E(gr)$group))
             edge_group_colors <- .gg_color_hue(nn)
         }
         if (!is.null(node_group_colors)) {
