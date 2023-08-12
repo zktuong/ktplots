@@ -12,7 +12,7 @@ plot_cpdb(
   means,
   pvals,
   max_size = 8,
-  keep_significant_only = FALSE,
+  keep_significant_only = TRUE,
   split.by = NULL,
   gene.family = NULL,
   custom_gene_family = NULL,
