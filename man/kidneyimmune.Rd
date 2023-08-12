@@ -61,7 +61,7 @@ An object of class \code{data.frame} with 12 rows and 2 columns.
 
 data after CellPhoneDB v5 analysis
 
-An object of class \code{SingleCellExperiment} with 1000 rows and 3312 columns.
+An object of class \code{SingleCellExperiment} with 30800 rows and 3312 columns.
 
 An object of class \code{data.frame} with 419 rows and 85 columns.
 
