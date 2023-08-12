@@ -64,7 +64,7 @@ plot_cpdb <- function(
         metadata <- scdata@meta.data
     }
     means_mat <- .prep_table(means)
-    if (deg_analysis) {
+    if (degs_analysis) {
         pvals_mat <- .prep_table(pvals, switch = TRUE)
     } else {
         pvals_mat <- .prep_table(pvals)
