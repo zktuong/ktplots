@@ -283,6 +283,9 @@ plot_cpdb <- function(
         df$significant <- "no"
         highlight_col <- "#ffffff"
     }
+    if (default_style){
+        df$significant[is.na(df$significant)] <- "no"
+    }
     if (return_table) {
         return(df)
     } else {
@@ -320,12 +323,12 @@ plot_cpdb <- function(
         g <- g + geom_point(pch = 21, na.rm = TRUE) +
             theme_bw() +
             theme(axis.text.x = element_text(angle = 45, hjust = 0, color = "#000000"), axis.text.y = element_text(color = "#000000")) +
-            scale_x_discrete(position = "top") +
-            scale_color_gradientn(colors = highlight_col, na.value = "white") +
+            scale_x_discrete(position = "top") + 
+            # scale_color_gradientn(colors = highlight_col) +
             scale_radius(range = c(0, max_size)) +
             scale_linewidth(range = c(0, max_highlight_size))
         if (default_style) {
-            g <- g + scale_colour_manual(values = highlight_col, na.translate = FALSE) +
+            g <- g + scale_colour_manual(values = c("yes"=highlight_col, "no"="#ffffff"), na.value = NA, na.translate = FALSE) +
                 guides(fill = guide_colourbar(barwidth = 4, label = TRUE, ticks = TRUE, draw.ulim = TRUE, draw.llim = TRUE, order = 1), size = guide_legend(reverse = TRUE, order = 2), stroke = guide_legend(reverse = TRUE, order = 3))
             if (length(col_option) == 1) {
                 g <- g + scale_fill_gradientn(colors = grDevices::colorRampPalette(c("white", col_option))(100), na.value = "white")
@@ -333,7 +336,7 @@ plot_cpdb <- function(
                 g <- g + scale_fill_gradientn(colors = c("white", grDevices::colorRampPalette(col_option)(99)), na.value = "white")
             }
         } else {
-            g <- g + scale_fill_manual(values = highlight_col, na.translate = FALSE) +
+            g <- g + scale_fill_manual(values = highlight_col, na.value = "#ffffff", na.translate = TRUE) +
                 guides(colour = guide_colourbar(barwidth = 4, label = TRUE, ticks = TRUE, draw.ulim = TRUE, draw.llim = TRUE, order = 1), size = guide_legend(reverse = TRUE, order = 2), stroke = guide_legend(reverse = TRUE, order = 3))
 
             df2 <- df
