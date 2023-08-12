@@ -45,7 +45,7 @@ knitr::opts_chunk$set(
 library(ktplots)
 data(cpdb_output_v5)
 
-plot_cpdb_heatmap(pvals=relevant_interactions, degs_analysis=TRUE, title="Sum of significant interactions")
+plot_cpdb_heatmap(pvals=relevant_interactions_v5, degs_analysis=TRUE, title="Sum of significant interactions")
 ```
 
 ```{r, message = FALSE, warning = FALSE}
