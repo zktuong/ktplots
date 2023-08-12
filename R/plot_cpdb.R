@@ -29,8 +29,8 @@
 #' \donttest{
 #' data(kidneyimmune)
 #' data(cpdb_output)
-#' plot_cpdb("B cell", "CD4T cell", kidneyimmune, "celltype", means, pvals, split.by = "Experiment", genes = c("CXCL13", "CD274", "CXCR5"))
-#' plot_cpdb("B cell", "CD4T cell", kidneyimmune, "celltype", means, pvals, split.by = "Experiment", gene.family = "chemokines")
+#' plot_cpdb(kidneyimmune, "B cell", "CD4T cell", "celltype", means, pvals, split.by = "Experiment", genes = c("CXCL13", "CD274", "CXCR5"))
+#' plot_cpdb(kidneyimmune, "B cell", "CD4T cell", "celltype", means, pvals, split.by = "Experiment", gene.family = "chemokines")
 #' }
 #' @include utils.R
 #' @import viridis
@@ -39,12 +39,12 @@
 #' @export
 
 plot_cpdb <- function(
+    scdata,
     cell_type1,
     cell_type2,
-    scdata,
-    idents,
     means,
     pvals,
+    idents,
     max_size = 8,
     keep_significant_only = TRUE,
     split.by = NULL,

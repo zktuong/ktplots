@@ -242,7 +242,7 @@ Credits to Ben Stewart for coming up with the base code!
 
 plot_cpdb2(
     scdata = kidneyimmune,
-    cell_type1 = "B cell"
+    cell_type1 = "B cell",
     cell_type2 = ".",
     idents = "celltype", # column name where the cell ids are located in the metadata
     means = means2,
