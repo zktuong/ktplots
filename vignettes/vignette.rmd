@@ -129,17 +129,16 @@ plot_cpdb(
 
 you can also toggle options to `splitby_key` and `gene_family`:
 
-```{r, message = FALSE, warning = FALSE, fig.width = 6, fig.height = 8}
+```{r, message = FALSE, warning = FALSE, fig.width = 10, fig.height = 6}
 plot_cpdb(
     scdata = kidneyimmune,
     cell_type1 = "B cell",
-    cell_type2 = "CD4T cell",
+    cell_type2 = "Neutrophil|MNPc|NK cell",
     celltype_key = "celltype",
     means = means,
     pvals = pvals,
     splitby_key = "Experiment",
-    gene_family = "chemokines",
-    keep_significant_only = FALSE
+    gene_family = "chemokines"
 )
 ```
 
