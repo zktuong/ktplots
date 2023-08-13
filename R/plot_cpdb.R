@@ -565,7 +565,7 @@ plot_cpdb <- function(scdata, cell_type1, cell_type2, celltype_key, means, pvals
       hjust = 0, color = "#000000"), axis.text.y = element_text(color = "#000000"),
       axis.title.x = element_blank(), axis.title.y = element_blank(), legend.direction = "vertical",
       legend.box = "horizontal") + scale_x_discrete(position = "top") + scale_radius(range = c(0,
-      max_size), breaks = c(0, 0.25, 0.5, 0.75, 1)) + scale_linewidth(range = c(0,
+      max_size)) + scale_linewidth(range = c(0,
       max_highlight_size))
     if (default_style) {
       g <- g + scale_colour_manual(values = c(yes = highlight_col, no = "#ffffff"),
