@@ -40,7 +40,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-### load packages
+### Load packages
 ```{r, message = FALSE, warning = FALSE}
 library(ktplots)
 data(cpdb_output_v5)
@@ -65,7 +65,7 @@ plot_cpdb(
 )
 ```
 
-## Interaction scores
+### Interaction scores
 
 Let's start with interaction scores. If a dataframe corresponding to the `interaction_scores` file is provided, you can toggle the alpha transparency of the interactions by the interaction score (interaction ranking is simply the score/100).
 
