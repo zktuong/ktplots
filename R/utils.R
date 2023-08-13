@@ -33,7 +33,8 @@ DEFAULT_SPEC_PAT <- "/|:|\\?|\\*|\\+|[\\]|\\(|\\)|\\/"
 .prep_query_group <- function(data, genes = NULL, gene_family = NULL, custom_gene_family = NULL) {
     if (is.null(gene_family) & is.null(genes)) {
         query_group <- NULL
-        query <- grep("", data$interacting_pair)
+        query_id <- grep("", data$interacting_pair)
+        query <- row.names(data)[query_id]
     } else if (!is.null(gene_family) & !is.null(genes)) {
         stop("Please specify either genes or gene_family, not both")
     } else if (!is.null(gene_family) & is.null(genes)) {
@@ -58,13 +59,18 @@ DEFAULT_SPEC_PAT <- "/|:|\\?|\\*|\\+|[\\]|\\(|\\)|\\/"
         )
         if (!is.null(custom_gene_family)) {
             cgf <- as.list(custom_gene_family)
-            cgf <- lapply(cgf, function(x) grep(paste(x, collapse = "|"), data$interacting_pair))
+            cgf <- lapply(cgf, function(x) {
+                q_id <- grep(paste(x, collapse = "|"), data$interacting_pair)
+                q <- row.names(data)[q_id]
+                return(q)
+            })
             query_group <- c(query_group, cgf)
         }
         query <- NULL
     } else if (is.null(gene_family) & !is.null(genes)) {
         query_group <- NULL
-        query <- grep(paste(genes, collapse = "|"), data$interacting_pair)
+        query_id <- grep(paste(genes, collapse = "|"), data$interacting_pair)
+        query <- row.names(data)[query_id]
     }
     out <- list("query_group" = query_group, "query" = query)
     return(out)
@@ -92,7 +98,7 @@ DEFAULT_SPEC_PAT <- "/|:|\\?|\\*|\\+|[\\]|\\(|\\)|\\/"
     dat <- suppressWarnings(tryCatch(
         .data[.query_group[[tolower(.gene_family)]],
             grep(.cell_type, colnames(.data), useBytes = TRUE, ...),
-            drop = FALSE
+            drop = FALSE,
         ],
         error = function(e) {
             colidx <- lapply(.celltype, function(z) {
@@ -105,6 +111,7 @@ DEFAULT_SPEC_PAT <- "/|:|\\?|\\*|\\+|[\\]|\\(|\\)|\\/"
             return(tmpm)
         }
     ))
+    dat <- dat[rowSums(is.na(dat)) == 0, ]
     return(dat)
 }
 
@@ -125,6 +132,7 @@ DEFAULT_SPEC_PAT <- "/|:|\\?|\\*|\\+|[\\]|\\(|\\)|\\/"
             return(tmpm)
         }
     ))
+    dat <- dat[rowSums(is.na(dat)) == 0, ]
     return(dat)
 }
 
@@ -142,6 +150,7 @@ DEFAULT_SPEC_PAT <- "/|:|\\?|\\*|\\+|[\\]|\\(|\\)|\\/"
         tmpm <- .data[.query, colidx, drop = FALSE]
         return(tmpm)
     }))
+    dat <- dat[rowSums(is.na(dat)) == 0, ]
     return(dat)
 }
 
