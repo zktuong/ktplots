@@ -236,7 +236,7 @@ that are p&lt;0.05.</p>
 <span>    gene_family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Coinhibitory"</span>, <span class="st">"Costimulatory"</span><span class="op">)</span>,</span>
 <span>    cluster_rows <span class="op">=</span> <span class="cn">FALSE</span> <span class="co"># ensures that the families are separate,</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="vignette_files/figure-html/unnamed-chunk-11-1.png" width="576"></p>
+<p><img src="vignette_files/figure-html/unnamed-chunk-11-1.png" width="960"></p>
 <p>And also provide custom families as a <code>data.frame</code>.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>set1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CCR6"</span>, <span class="st">"CCL20"</span>, <span class="st">"CXCL10"</span>, <span class="st">"CCR3"</span>, <span class="st">"TNFRSF13C"</span><span class="op">)</span>, set2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CCL5"</span>, <span class="st">"CCR4"</span>, <span class="st">"PTPRC"</span>, <span class="st">"CD40"</span>, <span class="st">"CLEC2D"</span><span class="op">)</span><span class="op">)</span></span>
@@ -251,7 +251,7 @@ that are p&lt;0.05.</p>
 <span>    gene_family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"set1"</span>, <span class="st">"set2"</span><span class="op">)</span>,</span>
 <span>    custom_gene_family <span class="op">=</span> <span class="va">df</span>,</span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="vignette_files/figure-html/unnamed-chunk-12-1.png" width="576"></p>
+<p><img src="vignette_files/figure-html/unnamed-chunk-12-1.png" width="960"></p>
 </div>
 <div class="section level4">
 <h4 id="combine_cpdb">combine_cpdb<a class="anchor" aria-label="anchor" href="#combine_cpdb"></a>
@@ -356,7 +356,7 @@ Additional kwargs are passed to <code>plot_cpdb</code>.</p>
 <span>    pvals <span class="op">=</span> <span class="va">pvals2</span>,</span>
 <span>    deconvoluted <span class="op">=</span> <span class="va">decon2</span> <span class="co"># new options from here on specific to plot_cpdb3</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="vignette_files/figure-html/unnamed-chunk-17-1.png" width="576"></p>
+<p><img src="vignette_files/figure-html/unnamed-chunk-17-1.png" width="960"></p>
 </div>
 <div class="section level4">
 <h4 id="plot_cpdb4">plot_cpdb4<a class="anchor" aria-label="anchor" href="#plot_cpdb4"></a>
@@ -377,7 +377,7 @@ to <code>plot_cpdb</code>.</p>
 <span>    pvals <span class="op">=</span> <span class="va">pvals2</span>,</span>
 <span>    deconvoluted <span class="op">=</span> <span class="va">decon2</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="vignette_files/figure-html/unnamed-chunk-18-1.png" width="576"></p>
+<p><img src="vignette_files/figure-html/unnamed-chunk-18-1.png" width="960"></p>
 <p>or specify more than 1 interactions + only show specific cell-type
 type interactions!</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
