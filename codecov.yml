@@ -1,0 +1,24 @@
+coverage:
+  status:
+    project:
+      default:
+        # Require 1% coverage, i.e., always succeed
+        target: 1
+    patch: false
+    changes: false
+
+ignore:
+  - "data"
+  - "exampleImages"
+  - "inst"
+  - "man"
+  - "tests"
+  - "vignette"
+  - "*.yml"
+  - "*.rmd"
+  - "*.yaml"
+  - "LICENSE"
+  - ".git*"
+  - "R/init_ktplots.R"
+  - "R/ktplots.R"
+  - "R/correlationSpot.R"

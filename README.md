@@ -35,7 +35,7 @@ For more info, please see [Stewart et al. kidney single cell data set published 
 
 Please go to the official [vignette](https://zktuong.github.io/ktplots/articles/vignette.html) for more information.
 
-For the legacy version of the `README.md` file, please go to [_legacy_README.md].
+For the legacy version of the `README.md` file, please go [here](https://github.com/zktuong/ktplots/blob/master/_legacy_README.md).
 
 ## Citation
 If you find these functions useful, please consider leaving a star, citing this repository, and/or citing the following [DOI](https://doi.org/10.5281/zenodo.5717922):
