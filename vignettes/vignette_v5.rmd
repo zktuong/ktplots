@@ -48,7 +48,7 @@ data(cpdb_output_v5)
 plot_cpdb_heatmap(pvals=relevant_interactions_v5, degs_analysis=TRUE, title="Sum of significant interactions")
 ```
 
-```{r, message = FALSE, warning = FALSE}
+```{r, message = FALSE, warning = FALSE, fig.height=12, fig.width=6}
 plot_cpdb(
     scdata=sce_v5,
     cell_type1="PV MYH11|PV STEAP4|PV MMPP11",
@@ -69,7 +69,7 @@ plot_cpdb(
 
 Let's start with interaction scores. If a dataframe corresponding to the `interaction_scores` file is provided, you can toggle the alpha transparency of the interactions by the interaction score (interaction ranking is simply the score/100).
 
-```{r, message = FALSE, warning = FALSE}
+```{r, message = FALSE, warning = FALSE, fig.height=12, fig.width=6}
 plot_cpdb(
     scdata=sce_v5,
     cell_type1="PV MYH11|PV STEAP4|PV MMPP11",
@@ -90,7 +90,7 @@ plot_cpdb(
 
 You can also specify a minimum interaction score to keep, removing all interactions lesser than this value.
 
-```{r, message = FALSE, warning = FALSE}
+```{r, message = FALSE, warning = FALSE, fig.height=6, fig.width=6}
 plot_cpdb(
     scdata=sce_v5,
     cell_type1="PV MYH11|PV STEAP4|PV MMPP11",
@@ -109,9 +109,9 @@ plot_cpdb(
 )
 ```
 
-or specify both to have the alpha transparacency shown too.
+or specify both to have the alpha transparency shown too.
 
-```{r, message = FALSE, warning = FALSE}
+```{r, message = FALSE, warning = FALSE, fig.height=8, fig.width=6}
 plot_cpdb(
     scdata=sce_v5,
     cell_type1="PV MYH11|PV STEAP4|PV MMPP11",

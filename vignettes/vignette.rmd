@@ -147,7 +147,7 @@ if `genes` and `gene_family` are both not specified, the function will try to pl
 Specifying `keep_significant_only` will only keep those that are p<0.05.
 
 You can also specify more than 1 gene families:
-```{r, message = FALSE, warning = FALSE, fig.width = 6, fig.height = 8}
+```{r, message = FALSE, warning = FALSE, fig.width = 10, fig.height = 8}
 plot_cpdb(
     scdata = kidneyimmune,
     cell_type1 = "B cell",
@@ -162,7 +162,7 @@ plot_cpdb(
 ```
 
 And also provide custom families as a `data.frame`.
-```{r, message = FALSE, warning = FALSE, fig.width = 6, fig.height = 6}
+```{r, message = FALSE, warning = FALSE, fig.width = 10, fig.height = 6}
 df <- data.frame(set1 = c("CCR6", "CCL20", "CXCL10", "CCR3", "TNFRSF13C"), set2 = c("CCL5", "CCR4", "PTPRC", "CD40", "CLEC2D"))
 plot_cpdb(
     scdata=kidneyimmune,
@@ -271,7 +271,7 @@ plot_cpdb2(
 Generates a chord diagram inspired from [CellChat](https://github.com/sqjin/CellChat)'s way of showing the data!
 
 Usage is similar to `plot_cpdb2` but with reduced options. Additional kwargs are passed to `plot_cpdb`.
-```{r, message = FALSE, warning = FALSE, fig.width = 6, fig.height = 6}
+```{r, message = FALSE, warning = FALSE, fig.width = 10, fig.height = 6}
 plot_cpdb3(
     scdata = kidneyimmune,
     cell_type1 = "B cell",
@@ -288,7 +288,7 @@ plot_cpdb3(
 New! Alternate way of showing the chord diagram for specific interactions!
 
 Usage is similar to `plot_cpdb3` but with additional required `interaction` option. Additional kwargs are passed to `plot_cpdb`.
-```{r, message = FALSE, warning = FALSE, fig.width = 6, fig.height = 6}
+```{r, message = FALSE, warning = FALSE, fig.width = 10, fig.height = 6}
 plot_cpdb4(
     scdata = kidneyimmune,
     interaction = "CLEC2D-KLRB1",
