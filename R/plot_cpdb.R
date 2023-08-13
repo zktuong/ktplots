@@ -285,17 +285,21 @@ plot_cpdb <- function(
     if (length(whichempty) > 0) {
         means_mat2 <- means_mat2[whichempty, , drop = FALSE]
     }
+    means_mat2 <- as.matrix(means_mat2)
     requireNamespace("reshape2")
     if (standard_scale) {
         df_means <- reshape2::melt(means_mat2, value.name = "scaled_means")
     } else {
         df_means <- reshape2::melt(means_mat2, value.name = "means")
     }
-    df_pvals <- reshape2::melt(pvals_mat, value.name = "pvals")
+    pvals_mat2 <- as.matrix(pvals_mat)
+    df_pvals <- reshape2::melt(pvals_mat2, value.name = "pvals")
     if (!is.null(interaction_scores)) {
-        df_interaction_scores <- reshape2::melt(interaction_scores_mat, value.name = "interaction_scores")
+        interaction_scores_mat2 <- as.matrix(interaction_scores_mat)
+        df_interaction_scores <- reshape2::melt(interaction_scores_mat2, value.name = "interaction_scores")
     } else if (!is.null(cellsign)) {
-        df_cellsign <- reshape2::melt(cellsign_mat, value.name = "cellsign")
+        cellsign_mat2 <- as.matrix(cellsign_mat)
+        df_cellsign <- reshape2::melt(cellsign_mat2, value.name = "cellsign")
     }
     # use dplyr left_join to combine df_means and the pvals column in df_pvals.
     # df_means and df_pvals should have the same Var1 and Var2. non-mathc
@@ -378,7 +382,8 @@ plot_cpdb <- function(
         return(df)
     } else {
         if (!is.null(interaction_scores)) {
-            df <- df[df$interaction_scores >= min_interaction_score, ]
+            requireNamespace("dplyr")
+            df <- df %>% dplyr::filter(interaction_scores >= min_interaction_score)
             if (scale_alpha_by_interaction_scores == TRUE) {
                 if (default_style) {
                     if (standard_scale) {
@@ -497,7 +502,8 @@ plot_cpdb <- function(
             }
         } else if (!is.null(cellsign)) {
             if (filter_by_cellsign == TRUE) {
-                df <- df[df$cellsign >= 1, ]
+                requireNamespace("dplyr")
+                df <- df %>% dplyr::filter(cellsign >= 1)
             }
             if (scale_alpha_by_cellsign == TRUE) {
                 if (default_style) {
