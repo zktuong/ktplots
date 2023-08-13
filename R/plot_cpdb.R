@@ -683,7 +683,9 @@ plot_cpdb <- function(
                 angle = 45,
                 hjust = 0, color = "#000000"
             ), axis.text.y = element_text(color = "#000000"),
-            axis.title.x = element_blank(), axis.title.y = element_blank()
+            axis.title.x = element_blank(), axis.title.y = element_blank(),
+            legend.direction="vertical",
+            legend.box="horizontal"
         ) + scale_x_discrete(position = "top") +
             # scale_color_gradientn(colors = highlight_col) +
             scale_radius(range = c(0, max_size)) + scale_linewidth(range = c(0, max_highlight_size))
@@ -696,7 +698,8 @@ plot_cpdb <- function(
                     barwidth = 4,
                     label = TRUE, ticks = TRUE, draw.ulim = TRUE, draw.llim = TRUE, order = 1
                 ),
-                size = guide_legend(reverse = TRUE, order = 2), stroke = guide_legend(
+                size = guide_legend(reverse = TRUE, order = 2),
+                stroke = guide_legend(
                     reverse = TRUE,
                     order = 3
                 )
@@ -721,11 +724,11 @@ plot_cpdb <- function(
                     barwidth = 4,
                     label = TRUE, ticks = TRUE, draw.ulim = TRUE, draw.llim = TRUE, order = 1
                 ),
-                size = guide_legend(reverse = TRUE, order = 2), stroke = guide_legend(
+                size = guide_legend(reverse = TRUE, order = 2),
+                stroke = guide_legend(
                     reverse = TRUE,
                     order = 3
                 )
-            )
 
             df2 <- df
             if (standard_scale) {
