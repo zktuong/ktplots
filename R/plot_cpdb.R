@@ -35,8 +35,8 @@
 #' \donttest{
 #' data(kidneyimmune)
 #' data(cpdb_output)
-#' plot_cpdb(kidneyimmune, 'B cell', 'CD4T cell', 'celltype', means, pvals, splitby_key = 'Experiment', genes = c('CXCL13', 'CD274', 'CXCR5'))
-#' plot_cpdb(kidneyimmune, 'B cell', 'CD4T cell', 'celltype', means, pvals, splitby_key = 'Experiment', gene_family = 'chemokines')
+#' plot_cpdb(kidneyimmune, "B cell", "CD4T cell", "celltype", means, pvals, splitby_key = "Experiment", genes = c("CXCL13", "CD274", "CXCR5"))
+#' plot_cpdb(kidneyimmune, "B cell", "CD4T cell", "celltype", means, pvals, splitby_key = "Experiment", gene_family = "chemokines")
 #' }
 #' @include utils.R
 #' @import viridis
@@ -44,7 +44,8 @@
 #' @import reshape2
 #' @export
 
-plot_cpdb <- function(scdata, cell_type1, cell_type2, celltype_key, means, pvals,
+plot_cpdb <- function(
+    scdata, cell_type1, cell_type2, celltype_key, means, pvals,
     interaction_scores = NULL, cellsign = NULL, max_size = 8, keep_significant_only = TRUE,
     splitby_key = NULL, gene_family = NULL, custom_gene_family = NULL, genes = NULL,
     standard_scale = TRUE, cluster_rows = TRUE, col_option = viridis::viridis(50),
@@ -52,587 +53,724 @@ plot_cpdb <- function(scdata, cell_type1, cell_type2, celltype_key, means, pvals
     special_character_regex_pattern = NULL, degs_analysis = FALSE, return_table = FALSE,
     exclude_interactions = NULL, min_interaction_score = 0, scale_alpha_by_interaction_scores = FALSE,
     scale_alpha_by_cellsign = FALSE, filter_by_cellsign = FALSE, title = "", ...) {
-    requireNamespace("SingleCellExperiment")
-    requireNamespace("grDevices")
-    if (is.null(special_character_regex_pattern)) {
-        special_character_regex_pattern <- DEFAULT_SPEC_PAT
-    }
-    if (class(scdata) %in% c("SingleCellExperiment", "SummarizedExperiment")) {
-        metadata <- SingleCellExperiment::colData(scdata)
-    } else if (class(scdata) == "Seurat") {
-        metadata <- scdata@meta.data
-    }
-    means_mat <- .prep_table(means)
-    pvals_mat <- .prep_table(pvals)
-    if (!is.null(interaction_scores)) {
-        interaction_scores_mat <- .prep_table(interaction_scores)
-    } else if (!is.null(cellsign)) {
-        cellsign_mat <- .prep_table(cellsign)
-    }
-    if (degs_analysis) {
-        col_start <- ifelse(colnames(pvals_mat)[13] == "classification", 14, 12)
-        pvals_mat[, col_start:ncol(pvals_mat)] <- 1 - pvals_mat[, col_start:ncol(pvals_mat)]
-    }
-    cell_type1 <- .sub_pattern(cell_type = cell_type1, pattern = special_character_regex_pattern)
-    cell_type2 <- .sub_pattern(cell_type = cell_type2, pattern = special_character_regex_pattern)
-    query_list <- .prep_query_group(data = means_mat, genes = genes, gene_family = gene_family,
-        custom_gene_family = custom_gene_family)
-    query <- query_list[["query"]]
-    query_group <- query_list[["query_group"]]
-    # prepare the cell_type query
-    if (!is.null(splitby_key)) {
-        labels <- paste0(metadata[[splitby_key]], "_", metadata[[celltype_key]])
-        if (is.factor(metadata[[splitby_key]]) & is.factor(metadata[[celltype_key]])) {
-            labels <- factor(labels, levels = paste0(levels(metadata[[splitby_key]]),
-                "_", rep(levels(metadata[[celltype_key]]), each = length(levels(metadata[[splitby_key]])))))
-        } else {
-            labels <- factor(labels)
-        }
-        labels <- levels(labels)
-        groups <- factor(metadata[[splitby_key]])
-        groups <- levels(groups)
-        if (length(groups) > 0) {
-            # the purpose for this step is to allow for special characters to
-            # be used in the celltype grepping
-            if (length(groups) > 1) {
-                labels2 <- gsub(paste0(paste0(groups, "_"), collapse = "|"), "",
-                  labels)
-            } else {
-                labels2 <- gsub(paste0(groups, "_"), "", labels)
-            }
-            # this returns the indices from the labels
-            ct1 <- grep(cell_type1, labels2, ...)
-            ct2 <- grep(cell_type2, labels2, ...)
-            c_type1 <- as.list(labels[ct1])
-            c_type2 <- as.list(labels[ct2])
-            c_type1 <- lapply(c_type1, .sub_pattern, pattern = special_character_regex_pattern)
-            c_type2 <- lapply(c_type2, .sub_pattern, pattern = special_character_regex_pattern)
-            grp <- as.list(groups)
-            celltype <- list()
-            for (i in 1:length(c_type1)) {
-                celltype[[i]] <- .create_celltype_query(ctype1 = c_type1[[i]], ctype2 = c_type2,
-                  sep = DEFAULT_SEP)
-                celltype[[i]] <- lapply(grp, .keep_interested_groups, ct = celltype[[i]],
-                  sep = DEFAULT_SEP)
-            }
-            for (i in 1:length(celltype)) {
-                celltype[[i]] <- celltype[[i]][-which(celltype[[i]] == "")]
-            }
-            celltype <- lapply(celltype, unlist)
-            if (any(unlist(lapply(celltype, is.null)))) {
-                rm <- which(unlist(lapply(celltype, is.null)))
-                celltype <- celltype[-rm]
-            }
-            cell_type <- do.call(paste0, list(celltype, collapse = "|"))
-        } else {
-            labels <- metadata[[celltype_key]]
-            labels <- factor(labels)
-            labels <- levels(labels)
-            c_type1 <- as.list(grep(cell_type1, labels, value = TRUE, ...))
-            c_type2 <- as.list(grep(cell_type2, labels, value = TRUE, ...))
-            c_type1 <- lapply(c_type1, .sub_pattern, pattern = special_character_regex_pattern)
-            c_type2 <- lapply(c_type2, .sub_pattern, pattern = special_character_regex_pattern)
-            celltype <- list()
-            for (i in 1:length(c_type1)) {
-                celltype[[i]] <- .create_celltype_query(ctype1 = c_type1[[i]], ctype2 = c_type2,
-                  sep = DEFAULT_SEP)
-            }
-            cell_type <- do.call(paste0, list(celltype, collapse = "|"))
-        }
+  requireNamespace("SingleCellExperiment")
+  requireNamespace("grDevices")
+  if (is.null(special_character_regex_pattern)) {
+    special_character_regex_pattern <- DEFAULT_SPEC_PAT
+  }
+  if (class(scdata) %in% c("SingleCellExperiment", "SummarizedExperiment")) {
+    metadata <- SingleCellExperiment::colData(scdata)
+  } else if (class(scdata) == "Seurat") {
+    metadata <- scdata@meta.data
+  }
+  means_mat <- .prep_table(means)
+  pvals_mat <- .prep_table(pvals)
+  if (!is.null(interaction_scores)) {
+    interaction_scores_mat <- .prep_table(interaction_scores)
+  } else if (!is.null(cellsign)) {
+    cellsign_mat <- .prep_table(cellsign)
+  }
+  if (degs_analysis) {
+    col_start <- ifelse(colnames(pvals_mat)[13] == "classification", 14, 12)
+    pvals_mat[, col_start:ncol(pvals_mat)] <- 1 - pvals_mat[, col_start:ncol(pvals_mat)]
+  }
+  cell_type1 <- .sub_pattern(cell_type = cell_type1, pattern = special_character_regex_pattern)
+  cell_type2 <- .sub_pattern(cell_type = cell_type2, pattern = special_character_regex_pattern)
+  query_list <- .prep_query_group(
+    data = means_mat, genes = genes, gene_family = gene_family,
+    custom_gene_family = custom_gene_family
+  )
+  query <- query_list[["query"]]
+  query_group <- query_list[["query_group"]]
+  # prepare the cell_type query
+  if (!is.null(splitby_key)) {
+    labels <- paste0(metadata[[splitby_key]], "_", metadata[[celltype_key]])
+    if (is.factor(metadata[[splitby_key]]) & is.factor(metadata[[celltype_key]])) {
+      labels <- factor(labels, levels = paste0(
+        levels(metadata[[splitby_key]]),
+        "_", rep(levels(metadata[[celltype_key]]), each = length(levels(metadata[[splitby_key]])))
+      ))
     } else {
-        labels <- metadata[[celltype_key]]
-        labels <- factor(labels)
-        labels <- levels(labels)
-        c_type1 <- as.list(grep(cell_type1, labels, value = TRUE))
-        c_type2 <- as.list(grep(cell_type2, labels, value = TRUE))
-        c_type1 <- lapply(c_type1, .sub_pattern, pattern = special_character_regex_pattern)
-        c_type2 <- lapply(c_type2, .sub_pattern, pattern = special_character_regex_pattern)
-        celltype <- list()
-        for (i in 1:length(c_type1)) {
-            celltype[[i]] <- .create_celltype_query(ctype1 = c_type1[[i]], ctype2 = c_type2,
-                sep = DEFAULT_SEP)
-        }
-        cell_type <- do.call(paste0, list(celltype, collapse = "|"))
+      labels <- factor(labels)
     }
-    if (!is.null(gene_family) & is.null(genes)) {
-        if (length(gene_family) == 1) {
-            means_mat <- .prep_data_querygroup_celltype1(.data = means_mat, .query_group = query_group,
-                .gene_family = gene_family, .cell_type = cell_type, .celltype = celltype,
-                ...)
-            pvals_mat <- .prep_data_querygroup_celltype1(.data = pvals_mat, .query_group = query_group,
-                .gene_family = gene_family, .cell_type = cell_type, .celltype = celltype,
-                ...)
-            if (!is.null(interaction_scores)) {
-                interaction_scores_mat <- .prep_data_querygroup_celltype1(.data = interaction_scores_mat,
-                  .query_group = query_group, .gene_family = gene_family, .cell_type = cell_type,
-                  .celltype = celltype, ...)
-            } else if (!is.null(cellsign)) {
-                cellsign_mat <- .prep_data_querygroup_celltype1(.data = cellsign_mat,
-                  .query_group = query_group, .gene_family = gene_family, .cell_type = cell_type,
-                  .celltype = celltype, ...)
-            }
-        } else if (length(gene_family) > 1) {
-            means_mat <- .prep_data_querygroup_celltype2(.data = means_mat, .query_group = query_group,
-                .gene_family = gene_family, .cell_type = cell_type, .celltype = celltype,
-                ...)
-            pvals_mat <- .prep_data_querygroup_celltype2(.data = pvals_mat, .query_group = query_group,
-                .gene_family = gene_family, .cell_type = cell_type, .celltype = celltype,
-                ...)
-            if (!is.null(interaction_scores)) {
-                interaction_scores_mat <- .prep_data_querygroup_celltype2(.data = interaction_scores_mat,
-                  .query_group = query_group, .gene_family = gene_family, .cell_type = cell_type,
-                  .celltype = celltype, ...)
-            } else if (!is.null(cellsign)) {
-                cellsign_mat <- .prep_data_querygroup_celltype2(.data = cellsign_mat,
-                  .query_group = query_group, .gene_family = gene_family, .cell_type = cell_type,
-                  .celltype = celltype, ...)
-            }
-        }
-    } else if (is.null(gene_family) & !is.null(genes) | is.null(gene_family) & is.null(genes)) {
-        means_mat <- .prep_data_query_celltype(.data = means_mat, .query = query,
-            .cell_type = cell_type, .celltype = celltype, ...)
-        pvals_mat <- .prep_data_query_celltype(.data = pvals_mat, .query = query,
-            .cell_type = cell_type, .celltype = celltype, ...)
-        if (!is.null(interaction_scores)) {
-            interaction_scores_mat <- .prep_data_query_celltype(.data = interaction_scores_mat,
-                .cell_type = cell_type, .celltype = celltype, ...)
-        } else if (!is.null(cellsign)) {
-            cellsign_mat <- .prep_data_query_celltype(.data = cellsign_mat, .cell_type = cell_type,
-                .celltype = celltype, ...)
-        }
+    labels <- levels(labels)
+    groups <- factor(metadata[[splitby_key]])
+    groups <- levels(groups)
+    if (length(groups) > 0) {
+      # the purpose for this step is to allow for special characters to
+      # be used in the celltype grepping
+      if (length(groups) > 1) {
+        labels2 <- gsub(
+          paste0(paste0(groups, "_"), collapse = "|"), "",
+          labels
+        )
+      } else {
+        labels2 <- gsub(paste0(groups, "_"), "", labels)
+      }
+      # this returns the indices from the labels
+      ct1 <- grep(cell_type1, labels2, ...)
+      ct2 <- grep(cell_type2, labels2, ...)
+      c_type1 <- as.list(labels[ct1])
+      c_type2 <- as.list(labels[ct2])
+      c_type1 <- lapply(c_type1, .sub_pattern, pattern = special_character_regex_pattern)
+      c_type2 <- lapply(c_type2, .sub_pattern, pattern = special_character_regex_pattern)
+      grp <- as.list(groups)
+      celltype <- list()
+      for (i in 1:length(c_type1)) {
+        celltype[[i]] <- .create_celltype_query(
+          ctype1 = c_type1[[i]], ctype2 = c_type2,
+          sep = DEFAULT_SEP
+        )
+        celltype[[i]] <- lapply(grp, .keep_interested_groups,
+          ct = celltype[[i]],
+          sep = DEFAULT_SEP
+        )
+      }
+      for (i in 1:length(celltype)) {
+        celltype[[i]] <- celltype[[i]][-which(celltype[[i]] == "")]
+      }
+      celltype <- lapply(celltype, unlist)
+      if (any(unlist(lapply(celltype, is.null)))) {
+        rm <- which(unlist(lapply(celltype, is.null)))
+        celltype <- celltype[-rm]
+      }
+      cell_type <- do.call(paste0, list(celltype, collapse = "|"))
+    } else {
+      labels <- metadata[[celltype_key]]
+      labels <- factor(labels)
+      labels <- levels(labels)
+      c_type1 <- as.list(grep(cell_type1, labels, value = TRUE, ...))
+      c_type2 <- as.list(grep(cell_type2, labels, value = TRUE, ...))
+      c_type1 <- lapply(c_type1, .sub_pattern, pattern = special_character_regex_pattern)
+      c_type2 <- lapply(c_type2, .sub_pattern, pattern = special_character_regex_pattern)
+      celltype <- list()
+      for (i in 1:length(c_type1)) {
+        celltype[[i]] <- .create_celltype_query(
+          ctype1 = c_type1[[i]], ctype2 = c_type2,
+          sep = DEFAULT_SEP
+        )
+      }
+      cell_type <- do.call(paste0, list(celltype, collapse = "|"))
     }
-    if (length(means_mat) == 0) {
-        stop("Please check your options for splitby_key and your celltypes.")
+  } else {
+    labels <- metadata[[celltype_key]]
+    labels <- factor(labels)
+    labels <- levels(labels)
+    c_type1 <- as.list(grep(cell_type1, labels, value = TRUE))
+    c_type2 <- as.list(grep(cell_type2, labels, value = TRUE))
+    c_type1 <- lapply(c_type1, .sub_pattern, pattern = special_character_regex_pattern)
+    c_type2 <- lapply(c_type2, .sub_pattern, pattern = special_character_regex_pattern)
+    celltype <- list()
+    for (i in 1:length(c_type1)) {
+      celltype[[i]] <- .create_celltype_query(
+        ctype1 = c_type1[[i]], ctype2 = c_type2,
+        sep = DEFAULT_SEP
+      )
     }
-    # rearrange the columns so that it interleaves the two groups
-    if (!is.null(splitby_key)) {
-        if (length(groups) > 0) {
-            grp <- as.list(groups)
-            group_i <- lapply(grp, function(g) {
-                gx <- grep(g, colnames(means_mat), ...)
-                return(gx)
-            })
-            group_id <- do.call(c, group_i)
-            means_mat <- means_mat[, as.vector(group_id), drop = FALSE]
-            if (dim(pvals_mat)[2] > 0) {
-                pvals_mat <- pvals_mat[, as.vector(group_id), drop = FALSE]
-            } else {
-                stop("No significant hits.")
-            }
-        }
+    cell_type <- do.call(paste0, list(celltype, collapse = "|"))
+  }
+  if (!is.null(gene_family) & is.null(genes)) {
+    if (length(gene_family) == 1) {
+      means_mat <- .prep_data_querygroup_celltype1(
+        .data = means_mat, .query_group = query_group,
+        .gene_family = gene_family, .cell_type = cell_type, .celltype = celltype,
+        ...
+      )
+      pvals_mat <- .prep_data_querygroup_celltype1(
+        .data = pvals_mat, .query_group = query_group,
+        .gene_family = gene_family, .cell_type = cell_type, .celltype = celltype,
+        ...
+      )
+      if (!is.null(interaction_scores)) {
+        interaction_scores_mat <- .prep_data_querygroup_celltype1(
+          .data = interaction_scores_mat,
+          .query_group = query_group, .gene_family = gene_family, .cell_type = cell_type,
+          .celltype = celltype, ...
+        )
+      } else if (!is.null(cellsign)) {
+        cellsign_mat <- .prep_data_querygroup_celltype1(
+          .data = cellsign_mat,
+          .query_group = query_group, .gene_family = gene_family, .cell_type = cell_type,
+          .celltype = celltype, ...
+        )
+      }
+    } else if (length(gene_family) > 1) {
+      means_mat <- .prep_data_querygroup_celltype2(
+        .data = means_mat, .query_group = query_group,
+        .gene_family = gene_family, .cell_type = cell_type, .celltype = celltype,
+        ...
+      )
+      pvals_mat <- .prep_data_querygroup_celltype2(
+        .data = pvals_mat, .query_group = query_group,
+        .gene_family = gene_family, .cell_type = cell_type, .celltype = celltype,
+        ...
+      )
+      if (!is.null(interaction_scores)) {
+        interaction_scores_mat <- .prep_data_querygroup_celltype2(
+          .data = interaction_scores_mat,
+          .query_group = query_group, .gene_family = gene_family, .cell_type = cell_type,
+          .celltype = celltype, ...
+        )
+      } else if (!is.null(cellsign)) {
+        cellsign_mat <- .prep_data_querygroup_celltype2(
+          .data = cellsign_mat,
+          .query_group = query_group, .gene_family = gene_family, .cell_type = cell_type,
+          .celltype = celltype, ...
+        )
+      }
     }
-    if (keep_significant_only) {
-        if (dim(pvals_mat)[2] == 0) {
-            stop("No significant hits.")
-        }
+  } else if (is.null(gene_family) & !is.null(genes) | is.null(gene_family) & is.null(genes)) {
+    means_mat <- .prep_data_query_celltype(
+      .data = means_mat, .query = query,
+      .cell_type = cell_type, .celltype = celltype, ...
+    )
+    pvals_mat <- .prep_data_query_celltype(
+      .data = pvals_mat, .query = query,
+      .cell_type = cell_type, .celltype = celltype, ...
+    )
+    if (!is.null(interaction_scores)) {
+      interaction_scores_mat <- .prep_data_query_celltype(
+        .data = interaction_scores_mat,
+        .cell_type = cell_type, .celltype = celltype, ...
+      )
+    } else if (!is.null(cellsign)) {
+      cellsign_mat <- .prep_data_query_celltype(
+        .data = cellsign_mat, .cell_type = cell_type,
+        .celltype = celltype, ...
+      )
     }
-    if (cluster_rows) {
-        if (nrow(means_mat) > 2) {
-            requireNamespace("stats")
-            d <- stats::dist(as.data.frame(means_mat))
-            h <- stats::hclust(d)
-            means_mat <- means_mat[h$order, , drop = FALSE]
-        }
+  }
+  if (length(means_mat) == 0) {
+    stop("Please check your options for splitby_key and your celltypes.")
+  }
+  # rearrange the columns so that it interleaves the two groups
+  if (!is.null(splitby_key)) {
+    if (length(groups) > 0) {
+      grp <- as.list(groups)
+      group_i <- lapply(grp, function(g) {
+        gx <- grep(g, colnames(means_mat), ...)
+        return(gx)
+      })
+      group_id <- do.call(c, group_i)
+      means_mat <- means_mat[, as.vector(group_id), drop = FALSE]
+      if (dim(pvals_mat)[2] > 0) {
+        pvals_mat <- pvals_mat[, as.vector(group_id), drop = FALSE]
+      } else {
+        stop("No significant hits.")
+      }
     }
-    # scaling
+  }
+  if (keep_significant_only) {
+    if (dim(pvals_mat)[2] == 0) {
+      stop("No significant hits.")
+    }
+  }
+  if (cluster_rows) {
+    if (nrow(means_mat) > 2) {
+      requireNamespace("stats")
+      d <- stats::dist(as.data.frame(means_mat))
+      h <- stats::hclust(d)
+      means_mat <- means_mat[h$order, , drop = FALSE]
+    }
+  }
+  # scaling
+  if (standard_scale) {
+    means_mat2 <- apply(means_mat, 1, range01)
+    means_mat2 <- t(means_mat2)
+  } else {
+    means_mat2 <- means_mat
+  }
+  # remove rows that are entirely 0
+  whichempty <- which(rowSums(means_mat2) == 0)
+  if (length(whichempty) > 0) {
+    means_mat2 <- means_mat2[whichempty, , drop = FALSE]
+  }
+  means_mat2 <- as.matrix(means_mat2)
+  requireNamespace("reshape2")
+  if (standard_scale) {
+    df_means <- reshape2::melt(means_mat2, value.name = "scaled_means")
+  } else {
+    df_means <- reshape2::melt(means_mat2, value.name = "means")
+  }
+  pvals_mat2 <- as.matrix(pvals_mat)
+  df_pvals <- reshape2::melt(pvals_mat2, value.name = "pvals")
+  if (!is.null(interaction_scores)) {
+    interaction_scores_mat2 <- as.matrix(interaction_scores_mat)
+    df_interaction_scores <- reshape2::melt(interaction_scores_mat2, value.name = "interaction_scores")
+  } else if (!is.null(cellsign)) {
+    cellsign_mat2 <- as.matrix(cellsign_mat)
+    df_cellsign <- reshape2::melt(cellsign_mat2, value.name = "cellsign")
+  }
+  # use dplyr left_join to combine df_means and the pvals column in df_pvals.
+  # df_means and df_pvals should have the same Var1 and Var2. non-mathc
+  # should fill with NA.
+  df <- dplyr::left_join(df_means, df_pvals, by = c("Var1", "Var2"))
+  if (!is.null(interaction_scores)) {
+    df <- dplyr::left_join(df, df_interaction_scores, by = c("Var1", "Var2"))
+  } else if (!is.null(cellsign)) {
+    df <- dplyr::left_join(df, df_cellsign, by = c("Var1", "Var2"))
+  }
+  xp <- which(df$pvals == 1)
+  if (length(xp) > 0) {
+    df$pvals[which(df$pvals == 1)] <- NA
+  }
+  if (keep_significant_only) {
+    # keep the entire row/ all the comparisons
+    df_ <- split(df, as.character(df$Var1))
+    anysig <- lapply(df_, function(x) {
+      keep <- any(x$pvals < 0.05)
+      return(keep)
+    })
+    df_ <- df_[which(unlist(anysig) == TRUE)]
+    names(df_) <- NULL
+    df <- do.call(rbind, df_)
+  }
+  df$pvals[which(df$pvals == 0)] <- 0.001
+  df$pvals[which(df$pvals >= 0.05)] <- NA
+  if (!is.null(splitby_key)) {
+    if (length(groups) > 0) {
+      grp <- as.list(groups)
+      grp2 <- lapply(grp, function(i) {
+        x <- paste0(i, "_")
+        return(x)
+      })
+      searchterm <- do.call(paste, list(grp2, collapse = "|"))
+      df$group <- gsub(searchterm, "", df$Var2)
+    }
+  } else {
+    df$group <- df$Var2
+  }
+  if (keep_significant_only) {
     if (standard_scale) {
-        means_mat2 <- apply(means_mat, 1, range01)
-        means_mat2 <- t(means_mat2)
+      if (length(df$scaled_means) == 0) {
+        stop("No significant genes found and plotting will not proceed.")
+      }
     } else {
-        means_mat2 <- means_mat
+      if (length(df$means) == 0) {
+        stop("No significant genes found and plotting will not proceed.")
+      }
     }
-    # remove rows that are entirely 0
-    whichempty <- which(rowSums(means_mat2) == 0)
-    if (length(whichempty) > 0) {
-        means_mat2 <- means_mat2[whichempty, , drop = FALSE]
-    }
-    means_mat2 <- as.matrix(means_mat2)
-    requireNamespace("reshape2")
-    if (standard_scale) {
-        df_means <- reshape2::melt(means_mat2, value.name = "scaled_means")
-    } else {
-        df_means <- reshape2::melt(means_mat2, value.name = "means")
-    }
-    pvals_mat2 <- as.matrix(pvals_mat)
-    df_pvals <- reshape2::melt(pvals_mat2, value.name = "pvals")
+  }
+  df$Var2 <- gsub(DEFAULT_SEP, "-", df$Var2)
+  final_levels <- unique(df$Var2)
+  df$Var2 <- factor(df$Var2, unique(df$Var2))
+  df$x_means_ <- df[, colnames(df_means)[3]]
+  df$x_means_[df[, colnames(df)[4]] < 0.05] <- NA
+  df$x_stroke <- df$x_means_
+  df$x_stroke[!is.na(df$x_stroke)] <- 0
+  df$x_stroke[is.na(df$x_stroke)] <- 2
+  if (!is.null(exclude_interactions)) {
+    df <- df[!df$Var1 %in% c(exclude_interactions), ]
+  }
+  if (!is.null(interaction_scores)) {
+    df$x_means_[which(df$interaction_scores < 0)] <- NA
+  } else if (!is.null(cellsign)) {
+    df$cellsign[which(df$cellsign < 1)] <- 0.5
+  }
+  if (!is.null(interaction_scores)) {
+    df$interaction_ranking <- df$interaction_scores
+  }
+  df$significant <- ifelse(df$pvals < 0.05, "yes", NA)
+  if (all(is.na(df$significant))) {
+    df$significant <- "no"
+    highlight_col <- "#ffffff"
+  }
+  if (default_style) {
+    df$significant[is.na(df$significant)] <- "no"
+  }
+  if (return_table) {
+    return(df)
+  } else {
     if (!is.null(interaction_scores)) {
-        interaction_scores_mat2 <- as.matrix(interaction_scores_mat)
-        df_interaction_scores <- reshape2::melt(interaction_scores_mat2, value.name = "interaction_scores")
-    } else if (!is.null(cellsign)) {
-        cellsign_mat2 <- as.matrix(cellsign_mat)
-        df_cellsign <- reshape2::melt(cellsign_mat2, value.name = "cellsign")
-    }
-    # use dplyr left_join to combine df_means and the pvals column in df_pvals.
-    # df_means and df_pvals should have the same Var1 and Var2. non-mathc
-    # should fill with NA.
-    df <- dplyr::left_join(df_means, df_pvals, by = c("Var1", "Var2"))
-    if (!is.null(interaction_scores)) {
-        df <- dplyr::left_join(df, df_interaction_scores, by = c("Var1", "Var2"))
-    } else if (!is.null(cellsign)) {
-        df <- dplyr::left_join(df, df_cellsign, by = c("Var1", "Var2"))
-    }
-    xp <- which(df$pvals == 1)
-    if (length(xp) > 0) {
-        df$pvals[which(df$pvals == 1)] <- NA
-    }
-    if (keep_significant_only) {
-        # keep the entire row/ all the comparisons
-        df_ <- split(df, as.character(df$Var1))
-        anysig <- lapply(df_, function(x) {
-            keep <- any(x$pvals < 0.05)
-            return(keep)
-        })
-        df_ <- df_[which(unlist(anysig) == TRUE)]
-        names(df_) <- NULL
-        df <- do.call(rbind, df_)
-    }
-    df$pvals[which(df$pvals == 0)] <- 0.001
-    df$pvals[which(df$pvals >= 0.05)] <- NA
-    if (!is.null(splitby_key)) {
-        if (length(groups) > 0) {
-            grp <- as.list(groups)
-            grp2 <- lapply(grp, function(i) {
-                x <- paste0(i, "_")
-                return(x)
-            })
-            searchterm <- do.call(paste, list(grp2, collapse = "|"))
-            df$group <- gsub(searchterm, "", df$Var2)
-        }
-    } else {
-        df$group <- df$Var2
-    }
-    if (keep_significant_only) {
-        if (standard_scale) {
-            if (length(df$scaled_means) == 0) {
-                stop("No significant genes found and plotting will not proceed.")
-            }
-        } else {
-            if (length(df$means) == 0) {
-                stop("No significant genes found and plotting will not proceed.")
-            }
-        }
-    }
-    df$Var2 <- gsub(DEFAULT_SEP, "-", df$Var2)
-    final_levels <- unique(df$Var2)
-    df$Var2 <- factor(df$Var2, unique(df$Var2))
-    df$x_means_ <- df[, colnames(df_means)[3]]
-    df$x_means_[df[, colnames(df)[4]] < 0.05] <- NA
-    df$x_stroke <- df$x_means_
-    df$x_stroke[!is.na(df$x_stroke)] <- 0
-    df$x_stroke[is.na(df$x_stroke)] <- 2
-    if (!is.null(exclude_interactions)) {
-        df <- df[!df$Var1 %in% c(exclude_interactions), ]
-    }
-    if (!is.null(interaction_scores)) {
-        df$x_means_[which(df$interaction_scores < 0)] <- NA
-    } else if (!is.null(cellsign)) {
-        df$cellsign[which(df$cellsign < 1)] <- 0.5
-    }
-    if (!is.null(interaction_scores)) {
-        df$interaction_ranking <- df$interaction_scores
-    }
-    df$significant <- ifelse(df$pvals < 0.05, "yes", NA)
-    if (all(is.na(df$significant))) {
-        df$significant <- "no"
-        highlight_col <- "#ffffff"
-    }
-    if (default_style) {
-        df$significant[is.na(df$significant)] <- "no"
-    }
-    if (return_table) {
-        return(df)
-    } else {
-        if (!is.null(interaction_scores)) {
-            requireNamespace("dplyr")
-            df <- df %>%
-                dplyr::filter(interaction_scores >= min_interaction_score)
-            if (scale_alpha_by_interaction_scores == TRUE) {
-                if (default_style) {
-                  if (standard_scale) {
-                    g <- ggplot(df, aes(x = Var2, y = Var1, color = significant,
-                      fill = scaled_means, size = scaled_means, alpha = interaction_ranking))
-                  } else {
-                    g <- ggplot(df, aes(x = Var2, y = Var1, color = significant,
-                      fill = means, size = means, alpha = interaction_ranking))
-                  }
-                } else {
-                  if (all(df$significant == "no")) {
-                    if (standard_scale) {
-                      g <- ggplot(df, aes(x = Var2, y = Var1, color = significant,
-                        fill = scaled_means, size = scaled_means, alpha = interaction_ranking))
-                    } else {
-                      g <- ggplot(df, aes(x = Var2, y = Var1, color = significant,
-                        fill = means, size = means, alpha = interaction_ranking))
-                    }
-                    default_style <- TRUE
-                  } else {
-                    highlight_col <- "#FFFFFF"  # enforce this
-                    if (standard_scale) {
-                      if (!is.null(highlight_size)) {
-                        g <- ggplot(df, aes(x = Var2, y = Var1, fill = significant,
-                          colour = scaled_means, size = scaled_means, stroke = highlight_size,
-                          alpha = interaction_ranking))
-                      } else {
-                        g <- ggplot(df, aes(x = Var2, y = Var1, fill = significant,
-                          colour = scaled_means, size = scaled_means, stroke = x_stroke,
-                          alpha = interaction_ranking))
-                      }
-                    } else {
-                      if (!is.null(highlight_size)) {
-                        g <- ggplot(df, aes(x = Var2, y = Var1, fill = significant,
-                          colour = means, size = means, stroke = highlight_size,
-                          alpha = interaction_ranking))
-                      } else {
-                        g <- ggplot(df, aes(x = Var2, y = Var1, fill = significant,
-                          colour = means, size = means, stroke = x_stroke, alpha = interaction_ranking))
-                      }
-                    }
-                  }
-                }
-            } else {
-                if (default_style) {
-                  if (standard_scale) {
-                    g <- ggplot(df, aes(x = Var2, y = Var1, color = significant,
-                      fill = scaled_means, size = scaled_means))
-                  } else {
-                    g <- ggplot(df, aes(x = Var2, y = Var1, color = significant,
-                      fill = means, size = means))
-                  }
-                } else {
-                  if (all(df$significant == "no")) {
-                    if (standard_scale) {
-                      g <- ggplot(df, aes(x = Var2, y = Var1, color = significant,
-                        fill = scaled_means, size = scaled_means))
-                    } else {
-                      g <- ggplot(df, aes(x = Var2, y = Var1, color = significant,
-                        fill = means, size = means))
-                    }
-                    default_style <- TRUE
-                  } else {
-                    highlight_col <- "#FFFFFF"  # enforce this
-                    if (standard_scale) {
-                      if (!is.null(highlight_size)) {
-                        g <- ggplot(df, aes(x = Var2, y = Var1, fill = significant,
-                          colour = scaled_means, size = scaled_means, stroke = highlight_size))
-                      } else {
-                        g <- ggplot(df, aes(x = Var2, y = Var1, fill = significant,
-                          colour = scaled_means, size = scaled_means, stroke = x_stroke))
-                      }
-                    } else {
-                      if (!is.null(highlight_size)) {
-                        g <- ggplot(df, aes(x = Var2, y = Var1, fill = significant,
-                          colour = means, size = means, stroke = highlight_size))
-                      } else {
-                        g <- ggplot(df, aes(x = Var2, y = Var1, fill = significant,
-                          colour = means, size = means, stroke = x_stroke))
-                      }
-                    }
-                  }
-                }
-            }
-        } else if (!is.null(cellsign)) {
-            if (filter_by_cellsign == TRUE) {
-                requireNamespace("dplyr")
-                df <- df %>%
-                  dplyr::filter(cellsign >= 1)
-            }
-            if (scale_alpha_by_cellsign == TRUE) {
-                if (default_style) {
-                  if (standard_scale) {
-                    g <- ggplot(df, aes(x = Var2, y = Var1, color = significant,
-                      fill = scaled_means, size = scaled_means, alpha = cellsign))
-                  } else {
-                    g <- ggplot(df, aes(x = Var2, y = Var1, color = significant,
-                      fill = means, size = means, alpha = cellsign))
-                  }
-                } else {
-                  if (all(df$significant == "no")) {
-                    if (standard_scale) {
-                      g <- ggplot(df, aes(x = Var2, y = Var1, color = significant,
-                        fill = scaled_means, size = scaled_means, alpha = cellsign))
-                    } else {
-                      g <- ggplot(df, aes(x = Var2, y = Var1, color = significant,
-                        fill = means, size = means, alpha = cellsign))
-                    }
-                    default_style <- TRUE
-                  } else {
-                    highlight_col <- "#FFFFFF"  # enforce this
-                    if (standard_scale) {
-                      if (!is.null(highlight_size)) {
-                        g <- ggplot(df, aes(x = Var2, y = Var1, fill = significant,
-                          colour = scaled_means, size = scaled_means, stroke = highlight_size,
-                          alpha = cellsign))
-                      } else {
-                        g <- ggplot(df, aes(x = Var2, y = Var1, fill = significant,
-                          colour = scaled_means, size = scaled_means, stroke = x_stroke,
-                          alpha = cellsign))
-                      }
-                    } else {
-                      if (!is.null(highlight_size)) {
-                        g <- ggplot(df, aes(x = Var2, y = Var1, fill = significant,
-                          colour = means, size = means, stroke = highlight_size,
-                          alpha = cellsign))
-                      } else {
-                        g <- ggplot(df, aes(x = Var2, y = Var1, fill = significant,
-                          colour = means, size = means, stroke = x_stroke, alpha = cellsign))
-                      }
-                    }
-                  }
-                }
-            } else {
-                if (default_style) {
-                  if (standard_scale) {
-                    g <- ggplot(df, aes(x = Var2, y = Var1, color = significant,
-                      fill = scaled_means, size = scaled_means))
-                  } else {
-                    g <- ggplot(df, aes(x = Var2, y = Var1, color = significant,
-                      fill = means, size = means))
-                  }
-                } else {
-                  if (all(df$significant == "no")) {
-                    if (standard_scale) {
-                      g <- ggplot(df, aes(x = Var2, y = Var1, color = significant,
-                        fill = scaled_means, size = scaled_means))
-                    } else {
-                      g <- ggplot(df, aes(x = Var2, y = Var1, color = significant,
-                        fill = means, size = means))
-                    }
-                    default_style <- TRUE
-                  } else {
-                    highlight_col <- "#FFFFFF"  # enforce this
-                    if (standard_scale) {
-                      if (!is.null(highlight_size)) {
-                        g <- ggplot(df, aes(x = Var2, y = Var1, fill = significant,
-                          colour = scaled_means, size = scaled_means, stroke = highlight_size))
-                      } else {
-                        g <- ggplot(df, aes(x = Var2, y = Var1, fill = significant,
-                          colour = scaled_means, size = scaled_means, stroke = x_stroke))
-                      }
-                    } else {
-                      if (!is.null(highlight_size)) {
-                        g <- ggplot(df, aes(x = Var2, y = Var1, fill = significant,
-                          colour = means, size = means, stroke = highlight_size))
-                      } else {
-                        g <- ggplot(df, aes(x = Var2, y = Var1, fill = significant,
-                          colour = means, size = means, stroke = x_stroke))
-                      }
-                    }
-                  }
-                }
-            }
-        } else {
-            if (default_style) {
-                if (standard_scale) {
-                  g <- ggplot(df, aes(x = Var2, y = Var1, color = significant, fill = scaled_means,
-                    size = scaled_means))
-                } else {
-                  g <- ggplot(df, aes(x = Var2, y = Var1, color = significant, fill = means,
-                    size = means))
-                }
-            } else {
-                if (all(df$significant == "no")) {
-                  if (standard_scale) {
-                    g <- ggplot(df, aes(x = Var2, y = Var1, color = significant,
-                      fill = scaled_means, size = scaled_means))
-                  } else {
-                    g <- ggplot(df, aes(x = Var2, y = Var1, color = significant,
-                      fill = means, size = means))
-                  }
-                  default_style <- TRUE
-                } else {
-                  highlight_col <- "#FFFFFF"  # enforce this
-                  if (standard_scale) {
-                    if (!is.null(highlight_size)) {
-                      g <- ggplot(df, aes(x = Var2, y = Var1, fill = significant,
-                        colour = scaled_means, size = scaled_means, stroke = highlight_size))
-                    } else {
-                      g <- ggplot(df, aes(x = Var2, y = Var1, fill = significant,
-                        colour = scaled_means, size = scaled_means, stroke = x_stroke))
-                    }
-                  } else {
-                    if (!is.null(highlight_size)) {
-                      g <- ggplot(df, aes(x = Var2, y = Var1, fill = significant,
-                        colour = means, size = means, stroke = highlight_size))
-                    } else {
-                      g <- ggplot(df, aes(x = Var2, y = Var1, fill = significant,
-                        colour = means, size = means, stroke = x_stroke))
-                    }
-                  }
-                }
-            }
-        }
-        g <- g + geom_point(pch = 21, na.rm = TRUE) + theme_bw() + theme(axis.text.x = element_text(angle = 45,
-            hjust = 0, color = "#000000"), axis.text.y = element_text(color = "#000000"),
-            axis.title.x = element_blank(), axis.title.y = element_blank(), legend.direction = "vertical",
-            legend.box = "horizontal") + scale_x_discrete(position = "top") + # scale_color_gradientn(colors = highlight_col) + legend.box
-            legend.box = "horizontal") + scale_x_discrete(position = "top") + # scale_color_gradientn(colors = highlight_col) + =
-            legend.box = "horizontal") + scale_x_discrete(position = "top") + # scale_color_gradientn(colors = highlight_col) + "horizontal")
-            legend.box = "horizontal") + scale_x_discrete(position = "top") + # scale_color_gradientn(colors = highlight_col) + +
-            legend.box = "horizontal") + scale_x_discrete(position = "top") + # scale_color_gradientn(colors = highlight_col) + scale_x_discrete(position
-            legend.box = "horizontal") + scale_x_discrete(position = "top") + # scale_color_gradientn(colors = highlight_col) + =
-            legend.box = "horizontal") + scale_x_discrete(position = "top") + # scale_color_gradientn(colors = highlight_col) + "top")
-            legend.box = "horizontal") + scale_x_discrete(position = "top") + # scale_color_gradientn(colors = highlight_col) + +
-            legend.box = "horizontal") + scale_x_discrete(position = "top") + # scale_color_gradientn(colors = highlight_col) + #
-            legend.box = "horizontal") + scale_x_discrete(position = "top") + # scale_color_gradientn(colors = highlight_col) + scale_color_gradientn(colors
-            legend.box = "horizontal") + scale_x_discrete(position = "top") + # scale_color_gradientn(colors = highlight_col) + =
-            legend.box = "horizontal") + scale_x_discrete(position = "top") + # scale_color_gradientn(colors = highlight_col) + highlight_col)
-            legend.box = "horizontal") + scale_x_discrete(position = "top") + # scale_color_gradientn(colors = highlight_col) + +
-        scale_radius(range = c(0, max_size)) + scale_linewidth(range = c(0, max_highlight_size))
+      requireNamespace("dplyr")
+      df <- df %>%
+        dplyr::filter(interaction_scores >= min_interaction_score)
+      if (scale_alpha_by_interaction_scores == TRUE) {
         if (default_style) {
-            g <- g + scale_colour_manual(values = c(yes = highlight_col, no = "#ffffff"),
-                na.value = NA, na.translate = FALSE) + guides(fill = guide_colourbar(barwidth = 4,
-                label = TRUE, ticks = TRUE, draw.ulim = TRUE, draw.llim = TRUE, order = 1),
-                size = guide_legend(reverse = TRUE, order = 2), stroke = guide_legend(reverse = TRUE,
-                  order = 3))
-            if (length(col_option) == 1) {
-                g <- g + scale_fill_gradientn(colors = (grDevices::colorRampPalette(c("white",
-                  col_option)))(100), na.value = "white")
-            } else {
-                g <- g + scale_fill_gradientn(colors = c("white", (grDevices::colorRampPalette(col_option))(99)),
-                  na.value = "white")
-            }
+          if (standard_scale) {
+            g <- ggplot(df, aes(
+              x = Var2, y = Var1, color = significant,
+              fill = scaled_means, size = scaled_means, alpha = interaction_ranking
+            ))
+          } else {
+            g <- ggplot(df, aes(
+              x = Var2, y = Var1, color = significant,
+              fill = means, size = means, alpha = interaction_ranking
+            ))
+          }
         } else {
-            g <- g + scale_fill_manual(values = highlight_col, na.value = "#ffffff",
-                na.translate = TRUE) + guides(colour = guide_colourbar(barwidth = 4,
-                label = TRUE, ticks = TRUE, draw.ulim = TRUE, draw.llim = TRUE, order = 1),
-                size = guide_legend(reverse = TRUE, order = 2), stroke = guide_legend(reverse = TRUE,
-                  order = 3))
-            df2 <- df
+          if (all(df$significant == "no")) {
             if (standard_scale) {
-                df2$scaled_means[df$pvals < 0.05] <- NA
-                g <- g + geom_point(aes(x = Var2, y = Var1, colour = scaled_means,
-                  size = scaled_means), data = df2, inherit_aes = FALSE, na_rm = TRUE)
+              g <- ggplot(df, aes(
+                x = Var2, y = Var1, color = significant,
+                fill = scaled_means, size = scaled_means, alpha = interaction_ranking
+              ))
             } else {
-                df2$means[df$pvals < 0.05] <- NA
-                g <- g + geom_point(aes(x = Var2, y = Var1, colour = means, size = means),
-                  data = df2, inherit_aes = FALSE, na_rm = TRUE)
+              g <- ggplot(df, aes(
+                x = Var2, y = Var1, color = significant,
+                fill = means, size = means, alpha = interaction_ranking
+              ))
             }
-            if (length(col_option) == 1) {
-                g <- g + scale_colour_gradientn(colors = (grDevices::colorRampPalette(c("white",
-                  col_option)))(100), na.value = "white")
+            default_style <- TRUE
+          } else {
+            highlight_col <- "#FFFFFF" # enforce this
+            if (standard_scale) {
+              if (!is.null(highlight_size)) {
+                g <- ggplot(df, aes(
+                  x = Var2, y = Var1, fill = significant,
+                  colour = scaled_means, size = scaled_means, stroke = highlight_size,
+                  alpha = interaction_ranking
+                ))
+              } else {
+                g <- ggplot(df, aes(
+                  x = Var2, y = Var1, fill = significant,
+                  colour = scaled_means, size = scaled_means, stroke = x_stroke,
+                  alpha = interaction_ranking
+                ))
+              }
             } else {
-                g <- g + scale_colour_gradientn(colors = c("white", (grDevices::colorRampPalette(col_option))(99)),
-                  na.value = "white")
+              if (!is.null(highlight_size)) {
+                g <- ggplot(df, aes(
+                  x = Var2, y = Var1, fill = significant,
+                  colour = means, size = means, stroke = highlight_size,
+                  alpha = interaction_ranking
+                ))
+              } else {
+                g <- ggplot(df, aes(
+                  x = Var2, y = Var1, fill = significant,
+                  colour = means, size = means, stroke = x_stroke, alpha = interaction_ranking
+                ))
+              }
             }
+          }
         }
-        if (!is.null(interaction_scores) & (scale_alpha_by_interaction_scores ==
-            TRUE)) {
-            g <- g + scale_alpha_continuous(breaks = c(0, 25, 50, 75, 100))
-        }
-        if (!is.null(cellsign) & (scale_alpha_by_cellsign == TRUE)) {
-            g <- g + scale_alpha_continuous(breaks = c(0, 1))
-        }
-        if (!is.null(highlight_size)) {
-            g <- g + guides(stroke = "none")
-        }
-        if (title != "") {
-            g <- g + ggtitle(title)
-        } else if (!is.null(gene_family) & is.null(genes)) {
-            if (length(gene_family) > 1) {
-                gene_family <- paste(gene_family, collapse = ", ")
+      } else {
+        if (default_style) {
+          if (standard_scale) {
+            g <- ggplot(df, aes(
+              x = Var2, y = Var1, color = significant,
+              fill = scaled_means, size = scaled_means
+            ))
+          } else {
+            g <- ggplot(df, aes(
+              x = Var2, y = Var1, color = significant,
+              fill = means, size = means
+            ))
+          }
+        } else {
+          if (all(df$significant == "no")) {
+            if (standard_scale) {
+              g <- ggplot(df, aes(
+                x = Var2, y = Var1, color = significant,
+                fill = scaled_means, size = scaled_means
+              ))
+            } else {
+              g <- ggplot(df, aes(
+                x = Var2, y = Var1, color = significant,
+                fill = means, size = means
+              ))
             }
-            g <- g + ggtitle(gene_family)
+            default_style <- TRUE
+          } else {
+            highlight_col <- "#FFFFFF" # enforce this
+            if (standard_scale) {
+              if (!is.null(highlight_size)) {
+                g <- ggplot(df, aes(
+                  x = Var2, y = Var1, fill = significant,
+                  colour = scaled_means, size = scaled_means, stroke = highlight_size
+                ))
+              } else {
+                g <- ggplot(df, aes(
+                  x = Var2, y = Var1, fill = significant,
+                  colour = scaled_means, size = scaled_means, stroke = x_stroke
+                ))
+              }
+            } else {
+              if (!is.null(highlight_size)) {
+                g <- ggplot(df, aes(
+                  x = Var2, y = Var1, fill = significant,
+                  colour = means, size = means, stroke = highlight_size
+                ))
+              } else {
+                g <- ggplot(df, aes(
+                  x = Var2, y = Var1, fill = significant,
+                  colour = means, size = means, stroke = x_stroke
+                ))
+              }
+            }
+          }
         }
-        return(g)
+      }
+    } else if (!is.null(cellsign)) {
+      if (filter_by_cellsign == TRUE) {
+        requireNamespace("dplyr")
+        df <- df %>%
+          dplyr::filter(cellsign >= 1)
+      }
+      if (scale_alpha_by_cellsign == TRUE) {
+        if (default_style) {
+          if (standard_scale) {
+            g <- ggplot(df, aes(
+              x = Var2, y = Var1, color = significant,
+              fill = scaled_means, size = scaled_means, alpha = cellsign
+            ))
+          } else {
+            g <- ggplot(df, aes(
+              x = Var2, y = Var1, color = significant,
+              fill = means, size = means, alpha = cellsign
+            ))
+          }
+        } else {
+          if (all(df$significant == "no")) {
+            if (standard_scale) {
+              g <- ggplot(df, aes(
+                x = Var2, y = Var1, color = significant,
+                fill = scaled_means, size = scaled_means, alpha = cellsign
+              ))
+            } else {
+              g <- ggplot(df, aes(
+                x = Var2, y = Var1, color = significant,
+                fill = means, size = means, alpha = cellsign
+              ))
+            }
+            default_style <- TRUE
+          } else {
+            highlight_col <- "#FFFFFF" # enforce this
+            if (standard_scale) {
+              if (!is.null(highlight_size)) {
+                g <- ggplot(df, aes(
+                  x = Var2, y = Var1, fill = significant,
+                  colour = scaled_means, size = scaled_means, stroke = highlight_size,
+                  alpha = cellsign
+                ))
+              } else {
+                g <- ggplot(df, aes(
+                  x = Var2, y = Var1, fill = significant,
+                  colour = scaled_means, size = scaled_means, stroke = x_stroke,
+                  alpha = cellsign
+                ))
+              }
+            } else {
+              if (!is.null(highlight_size)) {
+                g <- ggplot(df, aes(
+                  x = Var2, y = Var1, fill = significant,
+                  colour = means, size = means, stroke = highlight_size,
+                  alpha = cellsign
+                ))
+              } else {
+                g <- ggplot(df, aes(
+                  x = Var2, y = Var1, fill = significant,
+                  colour = means, size = means, stroke = x_stroke, alpha = cellsign
+                ))
+              }
+            }
+          }
+        }
+      } else {
+        if (default_style) {
+          if (standard_scale) {
+            g <- ggplot(df, aes(
+              x = Var2, y = Var1, color = significant,
+              fill = scaled_means, size = scaled_means
+            ))
+          } else {
+            g <- ggplot(df, aes(
+              x = Var2, y = Var1, color = significant,
+              fill = means, size = means
+            ))
+          }
+        } else {
+          if (all(df$significant == "no")) {
+            if (standard_scale) {
+              g <- ggplot(df, aes(
+                x = Var2, y = Var1, color = significant,
+                fill = scaled_means, size = scaled_means
+              ))
+            } else {
+              g <- ggplot(df, aes(
+                x = Var2, y = Var1, color = significant,
+                fill = means, size = means
+              ))
+            }
+            default_style <- TRUE
+          } else {
+            highlight_col <- "#FFFFFF" # enforce this
+            if (standard_scale) {
+              if (!is.null(highlight_size)) {
+                g <- ggplot(df, aes(
+                  x = Var2, y = Var1, fill = significant,
+                  colour = scaled_means, size = scaled_means, stroke = highlight_size
+                ))
+              } else {
+                g <- ggplot(df, aes(
+                  x = Var2, y = Var1, fill = significant,
+                  colour = scaled_means, size = scaled_means, stroke = x_stroke
+                ))
+              }
+            } else {
+              if (!is.null(highlight_size)) {
+                g <- ggplot(df, aes(
+                  x = Var2, y = Var1, fill = significant,
+                  colour = means, size = means, stroke = highlight_size
+                ))
+              } else {
+                g <- ggplot(df, aes(
+                  x = Var2, y = Var1, fill = significant,
+                  colour = means, size = means, stroke = x_stroke
+                ))
+              }
+            }
+          }
+        }
+      }
+    } else {
+      if (default_style) {
+        if (standard_scale) {
+          g <- ggplot(df, aes(
+            x = Var2, y = Var1, color = significant, fill = scaled_means,
+            size = scaled_means
+          ))
+        } else {
+          g <- ggplot(df, aes(
+            x = Var2, y = Var1, color = significant, fill = means,
+            size = means
+          ))
+        }
+      } else {
+        if (all(df$significant == "no")) {
+          if (standard_scale) {
+            g <- ggplot(df, aes(
+              x = Var2, y = Var1, color = significant,
+              fill = scaled_means, size = scaled_means
+            ))
+          } else {
+            g <- ggplot(df, aes(
+              x = Var2, y = Var1, color = significant,
+              fill = means, size = means
+            ))
+          }
+          default_style <- TRUE
+        } else {
+          highlight_col <- "#FFFFFF" # enforce this
+          if (standard_scale) {
+            if (!is.null(highlight_size)) {
+              g <- ggplot(df, aes(
+                x = Var2, y = Var1, fill = significant,
+                colour = scaled_means, size = scaled_means, stroke = highlight_size
+              ))
+            } else {
+              g <- ggplot(df, aes(
+                x = Var2, y = Var1, fill = significant,
+                colour = scaled_means, size = scaled_means, stroke = x_stroke
+              ))
+            }
+          } else {
+            if (!is.null(highlight_size)) {
+              g <- ggplot(df, aes(
+                x = Var2, y = Var1, fill = significant,
+                colour = means, size = means, stroke = highlight_size
+              ))
+            } else {
+              g <- ggplot(df, aes(
+                x = Var2, y = Var1, fill = significant,
+                colour = means, size = means, stroke = x_stroke
+              ))
+            }
+          }
+        }
+      }
     }
+    g <- g + geom_point(pch = 21, na.rm = TRUE) + theme_bw() + theme(
+      axis.text.x = element_text(
+        angle = 45,
+        hjust = 0, color = "#000000"
+      ), axis.text.y = element_text(color = "#000000"),
+      axis.title.x = element_blank(), axis.title.y = element_blank(), legend.direction = "vertical",
+      legend.box = "horizontal"
+    ) + scale_x_discrete(position = "top") +
+      scale_radius(range = c(0, max_size)) + scale_linewidth(range = c(0, max_highlight_size))
+    if (default_style) {
+      g <- g + scale_colour_manual(
+        values = c(yes = highlight_col, no = "#ffffff"),
+        na.value = NA, na.translate = FALSE
+      ) + guides(
+        fill = guide_colourbar(
+          barwidth = 4,
+          label = TRUE, ticks = TRUE, draw.ulim = TRUE, draw.llim = TRUE, order = 1
+        ),
+        size = guide_legend(reverse = TRUE, order = 2), stroke = guide_legend(
+          reverse = TRUE,
+          order = 3
+        )
+      )
+      if (length(col_option) == 1) {
+        g <- g + scale_fill_gradientn(colors = (grDevices::colorRampPalette(c(
+          "white",
+          col_option
+        )))(100), na.value = "white")
+      } else {
+        g <- g + scale_fill_gradientn(
+          colors = c("white", (grDevices::colorRampPalette(col_option))(99)),
+          na.value = "white"
+        )
+      }
+    } else {
+      g <- g + scale_fill_manual(
+        values = highlight_col, na.value = "#ffffff",
+        na.translate = TRUE
+      ) + guides(
+        colour = guide_colourbar(
+          barwidth = 4,
+          label = TRUE, ticks = TRUE, draw.ulim = TRUE, draw.llim = TRUE, order = 1
+        ),
+        size = guide_legend(reverse = TRUE, order = 2), stroke = guide_legend(
+          reverse = TRUE,
+          order = 3
+        )
+      )
+      df2 <- df
+      if (standard_scale) {
+        df2$scaled_means[df$pvals < 0.05] <- NA
+        g <- g + geom_point(aes(
+          x = Var2, y = Var1, colour = scaled_means,
+          size = scaled_means
+        ), data = df2, inherit_aes = FALSE, na_rm = TRUE)
+      } else {
+        df2$means[df$pvals < 0.05] <- NA
+        g <- g + geom_point(aes(x = Var2, y = Var1, colour = means, size = means),
+          data = df2, inherit_aes = FALSE, na_rm = TRUE
+        )
+      }
+      if (length(col_option) == 1) {
+        g <- g + scale_colour_gradientn(colors = (grDevices::colorRampPalette(c(
+          "white",
+          col_option
+        )))(100), na.value = "white")
+      } else {
+        g <- g + scale_colour_gradientn(
+          colors = c("white", (grDevices::colorRampPalette(col_option))(99)),
+          na.value = "white"
+        )
+      }
+    }
+    if (!is.null(interaction_scores) & (scale_alpha_by_interaction_scores ==
+      TRUE)) {
+      g <- g + scale_alpha_continuous(breaks = c(0, 25, 50, 75, 100))
+    }
+    if (!is.null(cellsign) & (scale_alpha_by_cellsign == TRUE)) {
+      g <- g + scale_alpha_continuous(breaks = c(0, 1))
+    }
+    if (!is.null(highlight_size)) {
+      g <- g + guides(stroke = "none")
+    }
+    if (title != "") {
+      g <- g + ggtitle(title)
+    } else if (!is.null(gene_family) & is.null(genes)) {
+      if (length(gene_family) > 1) {
+        gene_family <- paste(gene_family, collapse = ", ")
+      }
+      g <- g + ggtitle(gene_family)
+    }
+    return(g)
+  }
 }
