@@ -271,17 +271,6 @@ plot_cpdb <- function(
             d <- stats::dist(as.data.frame(means_mat))
             h <- stats::hclust(d)
             means_mat <- means_mat[h$order, , drop = FALSE]
-            pvals_mat <- pvals_mat[h$order, , drop = FALSE]
-            if (!is.null(interaction_scores)) {
-                interaction_scores_mat <- interaction_scores_mat[h$order, , drop = FALSE]
-            } else if (!is.null(cellsign)) {
-                h_order <- h$order[h$order %in% rownames(cellsign_mat)]
-                if (length(h_order) > 0) {
-                    cellsign_mat <- cellsign_mat[h_order, , drop = FALSE]
-                } else {
-                    stop("Your cellsign data may not contain significant hits.")
-                }
-            }
         }
     }
     # scaling
@@ -291,30 +280,10 @@ plot_cpdb <- function(
     } else {
         means_mat2 <- means_mat
     }
-    pvals_mat2 <- as.matrix(pvals_mat)
-    means_mat2 <- as.matrix(means_mat2)
-    if (!is.null(interaction_scores)) {
-        interaction_scores_mat2 <- as.matrix(interaction_scores_mat)
-    } else if (!is.null(cellsign)) {
-        cellsign_mat2 <- as.matrix(cellsign_mat)
-    }
-    xx <- which(means_mat == 0)
-    if (length(xx) > 0) {
-        means_mat2[which(means_mat == 0)] <- NA
-    }
-    # remove rows that are entirely NA
-    whichnotnas <- which(rowSums(is.na(means_mat2)) != ncol(means_mat2))
-    if (length(whichnotnas) > 0) {
-        pvals_mat2 <- pvals_mat2[whichnotnas, , drop = FALSE]
-        means_mat2 <- means_mat2[whichnotnas, , drop = FALSE]
-        if (!is.null(interaction_scores)) {
-            interaction_scores_mat2 <- interaction_scores_mat2[whichnotnas, , drop = FALSE]
-        } else if (!is.null(cellsign)) {
-            cs_nas <- rownames(cellsign_mat2) %in% rownames(means_mat2)
-            if (any(cs_nas)) {
-                cellsign_mat2 <- cellsign_mat2[cs_nas, , drop = FALSE]
-            }
-        }
+    # remove rows that are entirely 0
+    whichempty <- which(rowSums(means_mat2) == 0)
+    if (length(whichempty) > 0) {
+        means_mat2 <- means_mat2[whichempty, , drop = FALSE]
     }
     requireNamespace("reshape2")
     if (standard_scale) {
@@ -322,11 +291,11 @@ plot_cpdb <- function(
     } else {
         df_means <- reshape2::melt(means_mat2, value.name = "means")
     }
-    df_pvals <- reshape2::melt(pvals_mat2, value.name = "pvals")
+    df_pvals <- reshape2::melt(pvals_mat, value.name = "pvals")
     if (!is.null(interaction_scores)) {
-        df_interaction_scores <- reshape2::melt(interaction_scores_mat2, value.name = "interaction_scores")
+        df_interaction_scores <- reshape2::melt(interaction_scores_mat, value.name = "interaction_scores")
     } else if (!is.null(cellsign)) {
-        df_cellsign <- reshape2::melt(cellsign_mat2, value.name = "cellsign")
+        df_cellsign <- reshape2::melt(cellsign_mat, value.name = "cellsign")
     }
     # use dplyr left_join to combine df_means and the pvals column in df_pvals.
     # df_means and df_pvals should have the same Var1 and Var2. non-mathc
