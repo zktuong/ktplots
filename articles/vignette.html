@@ -211,15 +211,14 @@ interactions.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_cpdb.html">plot_cpdb</a></span><span class="op">(</span></span>
 <span>    scdata <span class="op">=</span> <span class="va">kidneyimmune</span>,</span>
 <span>    cell_type1 <span class="op">=</span> <span class="st">"B cell"</span>,</span>
-<span>    cell_type2 <span class="op">=</span> <span class="st">"CD4T cell"</span>,</span>
+<span>    cell_type2 <span class="op">=</span> <span class="st">"Neutrophil|MNPc|NK cell"</span>,</span>
 <span>    celltype_key <span class="op">=</span> <span class="st">"celltype"</span>,</span>
 <span>    means <span class="op">=</span> <span class="va">means</span>,</span>
 <span>    pvals <span class="op">=</span> <span class="va">pvals</span>,</span>
 <span>    splitby_key <span class="op">=</span> <span class="st">"Experiment"</span>,</span>
-<span>    gene_family <span class="op">=</span> <span class="st">"chemokines"</span>,</span>
-<span>    keep_significant_only <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>    gene_family <span class="op">=</span> <span class="st">"chemokines"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="vignette_files/figure-html/unnamed-chunk-10-1.png" width="576"></p>
+<p><img src="vignette_files/figure-html/unnamed-chunk-10-1.png" width="960"></p>
 <p>if <code>genes</code> and <code>gene_family</code> are both not
 specified, the function will try to plot everything.</p>
 <p>Specifying <code>keep_significant_only</code> will only keep those
