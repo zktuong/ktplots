@@ -75,7 +75,7 @@ plot_cpdb <- function(scdata, cell_type1, cell_type2, celltype_key, means, pvals
     pvals_mat[, col_start:ncol(pvals_mat)] <- 1 - pvals_mat[, col_start:ncol(pvals_mat)]
   }
   # ok front load a 'dictionary' here.
-  if (col_start == DEFAULT_CLASS_COL) {
+  if (col_start == DEFAULT_V5_COL_START) {
     tmp <- reshape2::melt(means_v5, id.vars = colnames(means_v5)[1:col_start])
     special_sep <- paste0(rep(DEFAULT_SEP, 3), collapse = "")
     direc <- as.list(1:nrow(tmp))
