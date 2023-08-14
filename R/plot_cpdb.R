@@ -39,6 +39,7 @@
 #' plot_cpdb(kidneyimmune, 'B cell', 'CD4T cell', 'celltype', means, pvals, splitby_key = 'Experiment', gene_family = 'chemokines')
 #' }
 #' @include utils.R
+#' @import dplyr
 #' @import viridis
 #' @import ggplot2
 #' @import reshape2
@@ -76,16 +77,11 @@ plot_cpdb <- function(scdata, cell_type1, cell_type2, celltype_key, means, pvals
   }
   # ok front load a 'dictionary' here.
   if (col_start == DEFAULT_V5_COL_START) {
-    tmp <- reshape2::melt(means_mat, id.vars = colnames(means_mat)[1:col_start])
+    v5tmp <- reshape2::melt(means_mat, id.vars = colnames(means_mat)[1:col_start])
     special_sep <- paste0(rep(DEFAULT_SEP, 3), collapse = "")
-    direc <- as.list(1:nrow(tmp))
-    names(direc) <- paste0(tmp$interacting_pair, special_sep, tmp$variable)
-    is_int <- classif <- direc
-    for (i in 1:nrow(tmp)) {
-      direc[[i]] <- tmp[i, "directionality"]
-      classif[[i]] <- tmp[i, "classification"]
-      is_int[[i]] <- tmp[i, "is_integrin"]
-    }
+    row.names(v5tmp) <- paste0(gsub("_", "-", v5tmp$interacting_pair), special_sep,
+      v5tmp$variable)
+    v5tmp <- v5tmp[, c("is_integrin", "directionality", "classification")]
   }
   cell_type1 <- .sub_pattern(cell_type = cell_type1, pattern = special_character_regex_pattern)
   cell_type2 <- .sub_pattern(cell_type = cell_type2, pattern = special_character_regex_pattern)
@@ -356,10 +352,11 @@ plot_cpdb <- function(scdata, cell_type1, cell_type2, celltype_key, means, pvals
     df$significant[is.na(df$significant)] <- "no"
   }
   if (col_start == DEFAULT_V5_COL_START) {
-    row_names <- row.names(df)
-    df$is_integrin <- is_int[row_names]
-    df$directionality <- direc[row_names]
-    df$classification <- classif[row_names]
+    requireNamespace("tibble")
+    df <- dplyr::left_join(df %>%
+      tibble::rownames_to_column(), v5tmp %>%
+      tibble::rownames_to_column(), by = "rowname")
+    row.names(df) <- df$rowname
   }
 
   if (return_table) {
