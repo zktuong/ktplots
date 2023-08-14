@@ -5,6 +5,9 @@
 
 DEFAULT_SEP <- ">@<"
 DEFAULT_SPEC_PAT <- "/|:|\\?|\\*|\\+|[\\]|\\(|\\)|\\/"
+DEFAULT_V5_COL_START <- 14
+DEFAULT_CLASS_COL <- 13
+DEFAULT_COL_start <- 12
 
 
 .prep_table <- function(data) {
