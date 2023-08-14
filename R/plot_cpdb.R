@@ -355,7 +355,7 @@ plot_cpdb <- function(scdata, cell_type1, cell_type2, celltype_key, means, pvals
   if (default_style) {
     df$significant[is.na(df$significant)] <- "no"
   }
-  if (col_start == DEFAULT_CLASS_COL) {
+  if (col_start == DEFAULT_V5_COL_START) {
     row_names <- row.names(df)
     df$is_integrin <- is_int[row_names]
     df$directionality <- direc[row_names]
