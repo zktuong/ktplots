@@ -245,6 +245,33 @@ provided, you can toggle the filter the interactions by the results</p>
 <span><span class="op">)</span></span></code></pre></div>
 <p><img src="vignette_v5_files/figure-html/unnamed-chunk-8-1.png" width="768"></p>
 </div>
+<div class="section level4">
+<h4 id="additional-plotting-data">Additional plotting data<a class="anchor" aria-label="anchor" href="#additional-plotting-data"></a>
+</h4>
+<p>From now on, <code>is_integrin</code>, <code>directionality</code>
+and <code>classification</code> are transferred to final output table in
+<code>plot_cpdb</code>. This means you will be able to use something
+like <code>facet_grid</code>/`facet_wrap`` to plot them!</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
+<span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_cpdb.html">plot_cpdb</a></span><span class="op">(</span></span>
+<span>        scdata <span class="op">=</span> <span class="va">sce_v5</span>,</span>
+<span>        cell_type1 <span class="op">=</span> <span class="st">"PV MYH11|PV STEAP4|PV MMPP11"</span>,</span>
+<span>        cell_type2 <span class="op">=</span> <span class="st">"EVT_1|EVT_2|GC|iEVT|eEVT|VCT_CCC"</span>,</span>
+<span>        means <span class="op">=</span> <span class="va">means_v5</span>,</span>
+<span>        pvals <span class="op">=</span> <span class="va">relevant_interactions_v5</span>,</span>
+<span>        celltype_key <span class="op">=</span> <span class="st">"cell_labels"</span>,</span>
+<span>        genes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TGFB2"</span>, <span class="st">"CSF1R"</span>, <span class="st">"COL1A1"</span><span class="op">)</span>,</span>
+<span>        max_size <span class="op">=</span> <span class="fl">6</span>,</span>
+<span>        highlight_size <span class="op">=</span> <span class="fl">0.75</span>,</span>
+<span>        degs_analysis <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>        standard_scale <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>        interaction_scores <span class="op">=</span> <span class="va">interaction_scores_v5</span></span>
+<span>        <span class="co"># return_table = TRUE</span></span>
+<span>    <span class="op">)</span></span>
+<span><span class="va">p</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">classification</span>, ncol <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<p><img src="vignette_v5_files/figure-html/unnamed-chunk-9-1.png" width="1920"></p>
+</div>
 </div>
   </div>
 
