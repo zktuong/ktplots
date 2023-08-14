@@ -176,7 +176,7 @@ plot_cpdb(
 
 ### Additional plotting data
 
-From now on, `is_integrin`, `directionality` and `classification` are transferred to final output table in `plot_cpdb`. This means you will be able to use something like `facet_grid`/`facet_wrap`` to plot them!
+From now on, `is_integrin`, `directionality` and `classification` are transferred to final output table in `plot_cpdb`. This means you will be able to use something like `facet_grid`/`facet_wrap` to plot them!
 
 ```{r, message = FALSE, warning = FALSE, fig.height=3, fig.width=20}
 library(ggplot2)
