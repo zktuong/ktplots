@@ -356,14 +356,10 @@ plot_cpdb <- function(scdata, cell_type1, cell_type2, celltype_key, means, pvals
     df$significant[is.na(df$significant)] <- "no"
   }
   if (col_start == DEFAULT_CLASS_COL) {
-    df["is_integrin"] <- NA
-    df["directionality"] <- NA
-    df["classification"] <- NA
-    for (i in row.names(df)) {
-      df[i, "is_integrin"] <- is_int[[i]]
-      df[i, "directionality"] <- direc[[i]]
-      df[i, "classification"] <- classif[[i]]
-    }
+    row_names <- row.names(df)
+    df$is_integrin <- is_int[row_names]
+    df$directionality <- direc[row_names]
+    df$classification <- classif[row_names]
   }
 
   if (return_table) {
