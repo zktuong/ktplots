@@ -55,7 +55,7 @@ The data is downsampled from the [kidney cell atlas](https://kidneycellatlas.org
 
 For more info, please see [Stewart et al. kidney single cell data set published in Science 2019](https://science.sciencemag.org/content/365/6460/1461).
 
-## prepare input
+## Prepare input
 We will need 3 files to use this package, a `SingleCellExperiment` (or `Seurat`; some functions only accepts the former) object that correspond to the object you used for `CellPhoneDB` and the `means.txt` and `pvalues.txt` output.
 If you are using results from `CellPhoneDB` `deg_analysis` mode from version >= 3, the `pvalues.txt` is `relevant_interactions.txt` and also add `degs_analysis = TRUE` into all the functions below. `deconvoluted` is only used for `plot_cpdb2/3/4`.
 

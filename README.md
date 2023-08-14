@@ -40,9 +40,9 @@ For the legacy version of the `README.md` file, please go [here](https://github.
 ## Citation
 If you find these functions useful, please consider leaving a star, citing this repository, and/or citing the following [DOI](https://doi.org/10.5281/zenodo.5717922):
 
-To cite a specific version of `ktplots`, please follow the links on the zenodo repository. e.g. v1.2.3:
+To cite a specific version of `ktplots`, please follow the links on the zenodo repository. e.g. v2.0.0:
 ```
-Zewen Kelvin Tuong. (2021). zktuong/ktplots: 1.2.3 (v1.2.3). Zenodo. https://doi.org/10.5281/zenodo.5717922
+ZK Tuong. (2021). zktuong/ktplots: 2.0.0 (v2.0.0). Zenodo. https://doi.org/10.5281/zenodo.5717922
 ```
 
 Thank you!
