@@ -197,3 +197,11 @@ p <- plot_cpdb(
     )
 p + facet_wrap(~classification, ncol = 3)
 ```
+
+```{r, message = FALSE, warning = FALSE, fig.height=3, fig.width=20}
+p + facet_wrap(~classification + is_integrin, ncol = 3)
+```
+
+```{r, message = FALSE, warning = FALSE, fig.height=3, fig.width=20}
+p + facet_wrap(~directionality, ncol = 2)
+```
