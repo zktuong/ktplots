@@ -29,7 +29,9 @@ To score interactions CellPhoneDB v5 employs the following protocol:
 4.    Scale mean gene/heteromer expression across cell types between 0 and 100.
 5.    Calculate the product of the scale mean expression of the interaction proteins as a proxy of the interaction relevance.
 
-`cellsign`: accepts the new `CellSign` data. # TODO: ask Kevin for result description
+`cellsign`: accepts the new `CellSign` data.
+
+The aim of the CellSign module is to identify activated receptors and prioritise high-confidence interactions by leveraging the activity of the downstream transcription factors (TFs). CellSign relies on a database of receptors linked to their putative downstream TFs.
 
 `ktplots` will support these output via inclusion into the existing `plot_cpdb` function. We will gradually enable their functionality across the other functions, as well as with in the python package eventually.
 
