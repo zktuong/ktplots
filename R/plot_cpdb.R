@@ -340,9 +340,6 @@ plot_cpdb <- function(scdata, cell_type1, cell_type2, celltype_key, means, pvals
   } else if (!is.null(cellsign)) {
     df$cellsign[which(df$cellsign < 1)] <- 0.5
   }
-  if (!is.null(interaction_scores)) {
-    df$interaction_ranking <- df$interaction_scores
-  }
   df$significant <- ifelse(df$pvals < 0.05, "yes", NA)
   if (all(is.na(df$significant))) {
     df$significant <- "no"
@@ -370,19 +367,19 @@ plot_cpdb <- function(scdata, cell_type1, cell_type2, celltype_key, means, pvals
         if (default_style) {
           if (standard_scale) {
           g <- ggplot(df, aes(x = Var2, y = Var1, color = significant,
-            fill = scaled_means, size = scaled_means, alpha = interaction_ranking))
+            fill = scaled_means, size = scaled_means, alpha = interaction_scores))
           } else {
           g <- ggplot(df, aes(x = Var2, y = Var1, color = significant,
-            fill = means, size = means, alpha = interaction_ranking))
+            fill = means, size = means, alpha = interaction_scores))
           }
         } else {
           if (all(df$significant == "no")) {
           if (standard_scale) {
             g <- ggplot(df, aes(x = Var2, y = Var1, color = significant,
-            fill = scaled_means, size = scaled_means, alpha = interaction_ranking))
+            fill = scaled_means, size = scaled_means, alpha = interaction_scores))
           } else {
             g <- ggplot(df, aes(x = Var2, y = Var1, color = significant,
-            fill = means, size = means, alpha = interaction_ranking))
+            fill = means, size = means, alpha = interaction_scores))
           }
           default_style <- TRUE
           } else {
@@ -391,20 +388,20 @@ plot_cpdb <- function(scdata, cell_type1, cell_type2, celltype_key, means, pvals
             if (!is.null(highlight_size)) {
             g <- ggplot(df, aes(x = Var2, y = Var1, fill = significant,
               colour = scaled_means, size = scaled_means, stroke = highlight_size,
-              alpha = interaction_ranking))
+              alpha = interaction_scores))
             } else {
             g <- ggplot(df, aes(x = Var2, y = Var1, fill = significant,
               colour = scaled_means, size = scaled_means, stroke = x_stroke,
-              alpha = interaction_ranking))
+              alpha = interaction_scores))
             }
           } else {
             if (!is.null(highlight_size)) {
             g <- ggplot(df, aes(x = Var2, y = Var1, fill = significant,
               colour = means, size = means, stroke = highlight_size,
-              alpha = interaction_ranking))
+              alpha = interaction_scores))
             } else {
             g <- ggplot(df, aes(x = Var2, y = Var1, fill = significant,
-              colour = means, size = means, stroke = x_stroke, alpha = interaction_ranking))
+              colour = means, size = means, stroke = x_stroke, alpha = interaction_scores))
             }
           }
           }
