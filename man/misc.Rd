@@ -56,7 +56,7 @@ miscellaneous functions
 miscellaneous functions
 }
 \examples{
-x <-  range01(runif(100))
+x <- range01(runif(100))
 \donttest{
 data$width <- data$width \%nin\% params$width
 }

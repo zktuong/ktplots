@@ -1,26 +1,26 @@
 Package: ktplots
 Title: Plot single-cell data dotplots
-Version: 1.2.5
+Version: 2.0.0
 Authors@R: person("Kelvin", "Tuong", email = c("z.tuong@uq.edu.au"), role = c("aut", "cre"))
 Description: Plotting tools for scData.
-License: MIT
+License: MIT + file LICENSE
 Encoding: UTF-8
 biocViews:
 Imports:
-	devtools,
-	Matrix,
-	dplyr,
-	ggplot2,
-	ggraph,
-	ggrepel,
-	reshape2,
-	viridis,
-	gtools,	
-	RColorBrewer,
-	purrr,
-	circlize,
-	ComplexHeatmap,
-	pheatmap
+    devtools,
+    Matrix,
+    dplyr,
+    ggplot2,
+    ggraph,
+    ggrepel,
+    reshape2,
+    viridis,
+    gtools,
+    RColorBrewer,
+    purrr,
+    circlize,
+    ComplexHeatmap,
+    pheatmap
 Suggests:
 	SummarizedExperiment,
 	SingleCellExperiment,
@@ -28,8 +28,6 @@ Suggests:
 	testthat,
 	covr,
 	plyr
-Depends:
-	ggplot2
 LazyData: true
 RoxygenNote: 7.2.3
 Collate: 

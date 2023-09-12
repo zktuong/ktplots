@@ -20,7 +20,6 @@ init_ktplots <- function() {
 
 init <- function(package, dependencies = FALSE) {
     setwd(paste0("~/Documents/GitHub/", package))
-    requireNamespace("roxygen2")
     requireNamespace("devtools")
     devtools::document()
     setwd("..")

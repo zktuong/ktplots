@@ -1,0 +1,209 @@
+---
+title: "New CellPhoneDB v5 results"
+output: rmarkdown::html_vignette
+date: "`r Sys.Date()`"
+vignette: >
+  %\VignetteIndexEntry{New CellPhoneDB v5 results}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![codecov](https://codecov.io/gh/zktuong/ktplots/branch/master/graph/badge.svg)](https://codecov.io/gh/zktuong/ktplots)
+[![R](https://github.com/zktuong/ktplots/actions/workflows/r.yml/badge.svg)](https://github.com/zktuong/ktplots/actions/workflows/r.yml)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6728350.svg)](https://doi.org/10.5281/zenodo.5717922)
+
+# CellPhoneDB v5 results
+
+From version 5 of [CellPhoneDB](https://www.github.com/ventolab/cellphonedb), there is a new output file - `interaction_scores`. 
+
+According to the official repository, this table corresponds to:
+
+`interaction_scores`: stores the new score generated. This score ranges from 0-100.
+ 
+To score interactions CellPhoneDB v5 employs the following protocol:
+ 
+1.    Exclude genes not participating in any interaction and those expressed in less than k% of cells within a given cell type.
+2.    Calculate the mean expression (G) of each gene (i) within each cell type (j).
+3.    For heteromeric proteins, aggregate the mean gene expression of each subunit (n) employing the geometric mean.
+4.    Scale mean gene/heteromer expression across cell types between 0 and 100.
+5.    Calculate the product of the scale mean expression of the interaction proteins as a proxy of the interaction relevance.
+
+`cellsign`: accepts the new `CellSign` data.
+
+The aim of the CellSign module is to identify activated receptors and prioritise high-confidence interactions by leveraging the activity of the downstream transcription factors (TFs). CellSign relies on a database of receptors linked to their putative downstream TFs.
+
+`ktplots` will support these output via inclusion into the existing `plot_cpdb` function. We will gradually enable their functionality across the other functions, as well as with in the python package eventually.
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+    collapse = TRUE,
+    comment = "#>"
+)
+```
+
+### Load packages
+```{r, message = FALSE, warning = FALSE}
+library(ktplots)
+data(cpdb_output_v5)
+
+plot_cpdb_heatmap(pvals=relevant_interactions_v5, degs_analysis=TRUE, title="Sum of significant interactions")
+```
+
+```{r, message = FALSE, warning = FALSE, fig.height=3, fig.width=10}
+plot_cpdb(
+    scdata=sce_v5,
+    cell_type1="PV MYH11|PV STEAP4|PV MMPP11",
+    cell_type2="EVT_1|EVT_2|GC|iEVT|eEVT|VCT_CCC",
+    means=means_v5,
+    pvals=relevant_interactions_v5,
+    celltype_key="cell_labels",
+    genes=c("TGFB2", "CSF1R"),
+    title="Interactions between PV and trophoblast ",
+    max_size=6,
+    highlight_size=0.75,
+    degs_analysis=TRUE,
+    standard_scale=TRUE
+)
+```
+
+### Interaction scores
+
+Let's start with interaction scores. If a dataframe corresponding to the `interaction_scores` file is provided, you can toggle the alpha transparency of the interactions by the interaction score (interaction ranking is simply the score/100).
+
+```{r, message = FALSE, warning = FALSE, fig.height=3, fig.width=12}
+plot_cpdb(
+    scdata=sce_v5,
+    cell_type1="PV MYH11|PV STEAP4|PV MMPP11",
+    cell_type2="EVT_1|EVT_2|GC|iEVT|eEVT|VCT_CCC",
+    means=means_v5,
+    pvals=relevant_interactions_v5,
+    celltype_key="cell_labels",
+    genes=c("TGFB2", "CSF1R"),
+    title="Interactions between PV and trophoblast ",
+    max_size=6,
+    highlight_size=0.75,
+    degs_analysis=TRUE,
+    standard_scale=TRUE,
+    interaction_scores=interaction_scores_v5,
+    scale_alpha_by_interaction_scores=TRUE
+)
+```
+
+You can also specify a minimum interaction score to keep, removing all interactions lesser than this value.
+
+```{r, message = FALSE, warning = FALSE, fig.height=3, fig.width=8}
+plot_cpdb(
+    scdata=sce_v5,
+    cell_type1="PV MYH11|PV STEAP4|PV MMPP11",
+    cell_type2="EVT_1|EVT_2|GC|iEVT|eEVT|VCT_CCC",
+    means=means_v5,
+    pvals=relevant_interactions_v5,
+    celltype_key="cell_labels",
+    genes=c("TGFB2", "CSF1R"),
+    title="Interactions between\nPV and trophoblast ",
+    max_size=6,
+    highlight_size=0.75,
+    degs_analysis=TRUE,
+    standard_scale=TRUE,
+    interaction_scores=interaction_scores_v5,
+    min_interaction_score=20
+)
+```
+
+or specify both to have the alpha transparency shown too.
+
+```{r, message = FALSE, warning = FALSE, fig.height=3, fig.width=10}
+plot_cpdb(
+    scdata=sce_v5,
+    cell_type1="PV MYH11|PV STEAP4|PV MMPP11",
+    cell_type2="EVT_1|EVT_2|GC|iEVT|eEVT|VCT_CCC",
+    means=means_v5,
+    pvals=relevant_interactions_v5,
+    celltype_key="cell_labels",
+    genes=c("TGFB2", "CSF1R"),
+    title="Interactions between\nPV and trophoblast ",
+    max_size=6,
+    highlight_size=0.75,
+    degs_analysis=TRUE,
+    standard_scale=TRUE,
+    interaction_scores=interaction_scores_v5,
+    scale_alpha_by_interaction_scores=TRUE,
+    min_interaction_score=20
+)
+```
+
+### CellSign
+
+If a dataframe corresponding to the `cellsign` file is provided, you can toggle the filter the interactions by the results
+
+```{r, message = FALSE, warning = FALSE, fig.height=4, fig.width=8}
+plot_cpdb(
+    scdata=sce_v5,
+    cell_type1="PV MYH11",
+    cell_type2="EVT_1|EVT_2|GC|iEVT|eEVT|VCT_CCC",
+    means=means_v5,
+    pvals=relevant_interactions_v5,
+    celltype_key="cell_labels",
+    title="Interactions between\nPV and trophoblast with\ndownstream significance",
+    max_size=6,
+    highlight_size=0.75,
+    degs_analysis=TRUE,
+    standard_scale=TRUE,
+    cellsign=cellsign_v5,
+    filter_by_cellsign=TRUE
+)
+```
+
+and also scale the alpha value (50% for 0 and 100% for 1).
+
+```{r, message = FALSE, warning = FALSE, fig.height=4, fig.width=8}
+plot_cpdb(
+    scdata=sce_v5,
+    cell_type1="PV MYH11",
+    cell_type2="EVT_1|EVT_2|GC|iEVT|eEVT|VCT_CCC",
+    means=means_v5,
+    pvals=relevant_interactions_v5,
+    celltype_key="cell_labels",
+    title="Interactions between\nPV and trophoblast with\ndownstream significance",
+    max_size=6,
+    highlight_size=0.75,
+    degs_analysis=TRUE,
+    standard_scale=TRUE,
+    cellsign=cellsign_v5,
+    filter_by_cellsign=TRUE,
+    scale_alpha_by_cellsign=TRUE
+)
+```
+
+### Additional plotting data
+
+From now on, `is_integrin`, `directionality` and `classification` are transferred to final output table in `plot_cpdb`. This means you will be able to use something like `facet_grid`/`facet_wrap` to plot them!
+
+```{r, message = FALSE, warning = FALSE, fig.height=3, fig.width=20}
+library(ggplot2)
+p <- plot_cpdb(
+        scdata = sce_v5,
+        cell_type1 = "PV MYH11|PV STEAP4|PV MMPP11",
+        cell_type2 = "EVT_1|EVT_2|GC|iEVT|eEVT|VCT_CCC",
+        means = means_v5,
+        pvals = relevant_interactions_v5,
+        celltype_key = "cell_labels",
+        genes = c("TGFB2", "CSF1R", "COL1A1"),
+        max_size = 6,
+        highlight_size = 0.75,
+        degs_analysis = TRUE,
+        standard_scale = TRUE,
+        interaction_scores = interaction_scores_v5
+        # return_table = TRUE
+    )
+p + facet_wrap(~classification, ncol = 3)
+```
+
+```{r, message = FALSE, warning = FALSE, fig.height=3, fig.width=20}
+p + facet_wrap(~classification + is_integrin, ncol = 3)
+```
+
+```{r, message = FALSE, warning = FALSE, fig.height=3, fig.width=20}
+p + facet_wrap(~directionality, ncol = 2)
+```

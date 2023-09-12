@@ -6,9 +6,9 @@
 \usage{
 geneDotPlot(
   scdata,
-  idents,
+  celltype_key,
   genes,
-  split.by = NULL,
+  splitby_key = NULL,
   pct.threshold = 0.05,
   scale = NULL,
   standard_scale = NULL,
@@ -28,11 +28,11 @@ geneDotPlot(
 \arguments{
 \item{scdata}{single-cell data. can be seurat/summarizedexperiment object}
 
-\item{idents}{column name holding the idents for each cell}
+\item{celltype_key}{column name holding the celltype for each cell}
 
 \item{genes}{genes you want to plot}
 
-\item{split.by}{column name in the metadata/coldata table to split the spots by. If not provided, it will plot via idents provided.}
+\item{splitby_key}{column name in the metadata/coldata table to split the spots by. If not provided, it will plot via celltype_key provided.}
 
 \item{pct.threshold}{float. required to keep gene expressed by minimum percentage of cells}
 
@@ -40,7 +40,7 @@ geneDotPlot(
 
 \item{standard_scale}{logical. scale the expression to range from 0 to 1. NULL defaults to FALSE.}
 
-\item{keepLevels}{logical. keep the original factor of the levels of the idents (for plotting)}
+\item{keepLevels}{logical. keep the original factor of the levels of the celltype_key (for plotting)}
 
 \item{save.plot}{logical. will try to save the pdf}
 
@@ -69,6 +69,6 @@ Plotting genes as dotplot
 \examples{
 \donttest{
 data(kidneyimmune)
-geneDotPlot(kidneyimmune, genes = c("CD68", "CD80", "CD86", "CD74", "CD2", "CD5"), idents = "celltype", split.by = 'Project', standard_scale = TRUE) + theme(strip.text.x = element_text(angle=45, hjust = 0))
+geneDotPlot(kidneyimmune, genes = c('CD68', 'CD80', 'CD86', 'CD74', 'CD2', 'CD5'), celltype_key = 'celltype', splitby_key = 'Project', standard_scale = TRUE) + theme(strip.text.x = element_text(angle = 45, hjust = 0))
 }
 }

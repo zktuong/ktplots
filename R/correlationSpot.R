@@ -20,22 +20,10 @@
 #' @return SpatialFeaturePlot
 #' @export
 
-correlationSpot <- function(
-    st,
-    genes = NULL,
-    celltypes = NULL,
-    geneset = NULL,
-    mode = c("high", "low", "both"),
-    cutoff = 0.5,
-    standardize = TRUE,
-    dims = 1:30,
-    k.params = 10,
-    resolution = 1,
-    rna_slot = "SCT",
-    label_slot = "predictions",
-    by = c("image", "expression"),
-    average_by_cluster = FALSE,
-    ...) {
+correlationSpot <- function(st, genes = NULL, celltypes = NULL, geneset = NULL, mode = c("high",
+    "low", "both"), cutoff = 0.5, standardize = TRUE, dims = 1:30, k.params = 10,
+    resolution = 1, rna_slot = "SCT", label_slot = "predictions", by = c("image",
+        "expression"), average_by_cluster = FALSE, ...) {
     requireNamespace("Seurat")
     requireNamespace("FNN")
 
@@ -44,7 +32,7 @@ correlationSpot <- function(
     st1 <- Seurat::FindNeighbors(st1, reduction = "pca", dims = dims, k.param = k.params)
     if (average_by_cluster) {
         st1 <- Seurat::FindClusters(st1, verbose = FALSE, resolution = resolution)
-        st1 <- Seurat::AddMetaData(st1, Idents(st1), "main_cluster")
+        st1 <- Seurat::AddMetaData(st1, Seurat::Idents(st1), "main_cluster")
     }
 
     # extract SNN graph
@@ -53,7 +41,8 @@ correlationSpot <- function(
         knn_idx <- FNN::get.knn(graph, k = k.params)$nn.index
     } else if (by == "image") {
         mat <- st1@images$slice1@coordinates[, c("row", "col")]
-        graph <- as.matrix(dist(mat))
+        requireNamespace("stats")
+        graph <- as.matrix(stats::dist(mat))
         knn_idx <- FNN::get.knn(graph, k = k.params)$nn.index
     }
 
@@ -109,7 +98,8 @@ correlationSpot <- function(
     }
 
     # get the nth percentile of each column
-    r1 <- apply(df, 2, quantile, cutoff)
+    requireNamespace("stats")
+    r1 <- apply(df, 2, stats::quantile, cutoff)
     if (mode != "both") {
         if (mode == "high") {
             for (i in seq_along(r1)) {
@@ -126,28 +116,29 @@ correlationSpot <- function(
         if (ncol(df) == 2) {
             df <- cbind(as.data.frame(df), main_cluster = st1@meta.data[, c("main_cluster")])
         } else {
+            requireNamespace("stats")
             if (length(genes) > 1 && length(celltypes) > 1) {
-                dx_g <- prcomp(df[, genes])
-                dx_c <- prcomp(df[, celltypes])
+                dx_g <- stats::prcomp(df[, genes])
+                dx_c <- stats::prcomp(df[, celltypes])
                 dx_g <- as.data.frame(dx_g$x)[, 1]
                 dx_c <- as.data.frame(dx_c$x)[, 1]
                 df <- cbind(dx_g, dx_c, main_cluster = st1@meta.data[, "main_cluster"])
             } else if (length(genes) > 1 && length(celltypes) < 1) {
-                dx_g <- prcomp(df[, genes])
+                dx_g <- stats::prcomp(df[, genes])
                 dx_g <- as.data.frame(dx_g$x)[, 1]
                 df <- cbind(dx_g, main_cluster = st1@meta.data[, "main_cluster"])
             } else if (length(celltypes) > 1 && length(genes) == 1) {
                 dx_g <- df[, genes]
-                dx_c <- prcomp(df[, celltypes])
+                dx_c <- stats::prcomp(df[, celltypes])
                 dx_c <- as.data.frame(dx_c$x)[, 1]
                 df <- cbind(dx_g, dx_c, main_cluster = st1@meta.data[, c("main_cluster")])
             } else if (length(celltypes) == 1 && length(genes) > 1) {
                 dx_c <- df[, celltypes]
-                dx_g <- prcomp(df[, genes])
+                dx_g <- stats::prcomp(df[, genes])
                 dx_g <- as.data.frame(dx_g$x)[, 1]
                 df <- cbind(dx_g, dx_c, main_cluster = st1@meta.data[, c("main_cluster")])
             } else if (length(celltypes) > 1 && length(genes) < 1) {
-                dx_c <- prcomp(df[, celltypes])
+                dx_c <- stats::prcomp(df[, celltypes])
                 dx_c <- as.data.frame(dx_c$x)[, 1]
                 df <- cbind(dx_c, main_cluster = st1@meta.data[, "main_cluster"])
             }
@@ -156,28 +147,29 @@ correlationSpot <- function(
         if (ncol(df) == 2) {
             df <- as.data.frame(df)
         } else {
+            requireNamespace("stats")
             if (length(genes) > 1 && length(celltypes) > 1) {
-                dx_g <- prcomp(df[, genes])
-                dx_c <- prcomp(df[, celltypes])
+                dx_g <- stats::prcomp(df[, genes])
+                dx_c <- stats::prcomp(df[, celltypes])
                 dx_g <- as.data.frame(dx_g$x)[, 1]
                 dx_c <- as.data.frame(dx_c$x)[, 1]
                 df <- cbind(dx_g, dx_c)
             } else if (length(celltypes) > 1 && length(genes) == 1) {
                 dx_g <- df[, genes]
-                dx_c <- prcomp(df[, celltypes])
+                dx_c <- stats::prcomp(df[, celltypes])
                 dx_c <- as.data.frame(dx_c$x)[, 1]
                 df <- cbind(dx_g, dx_c)
             } else if (length(celltypes) == 1 && length(genes) > 1) {
                 dx_c <- dx_g[, celltypes]
-                dx_g <- prcomp(df[, genes])
+                dx_g <- stats::prcomp(df[, genes])
                 dx_g <- as.data.frame(dx_g$x)[, 1]
                 df <- cbind(dx_g, dx_c)
             } else if (length(genes) > 1 && length(celltypes) < 1) {
-                dx_g <- prcomp(df[, genes])
+                dx_g <- stats::prcomp(df[, genes])
                 dx_g <- as.data.frame(dx_g$x)[, 1]
                 df <- dx_g
             } else if (length(celltypes) > 1 && length(genes) < 1) {
-                dx_c <- prcomp(df[, celltypes])
+                dx_c <- stats::prcomp(df[, celltypes])
                 dx_c <- as.data.frame(dx_c$x)[, 1]
                 df <- dx_c
             }
@@ -193,13 +185,15 @@ correlationSpot <- function(
 
     if (average_by_cluster) {
         nn_list <- lapply(nn_list, function(x) {
+            requireNamespace("stats")
             tmp <- x[, -which(colnames(x) %in% c("main_cluster"))]
-            res <- cor(tmp[, 1], tmp[, 2])
+            res <- stats::cor(tmp[, 1], tmp[, 2])
             return(res)
         })
     } else {
         nn_list <- lapply(nn_list, function(tmp) {
-            res <- cor(tmp[, 1], tmp[, 2])
+            requireNamespace("stats")
+            res <- stats::cor(tmp[, 1], tmp[, 2])
             return(res)
         })
     }

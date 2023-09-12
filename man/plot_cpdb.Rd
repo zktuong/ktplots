@@ -2,67 +2,70 @@
 % Please edit documentation in R/plot_cpdb.R
 \name{plot_cpdb}
 \alias{plot_cpdb}
-\title{Plotting cellphonedb results}
+\title{Plotting CellPhoneDB results}
 \usage{
 plot_cpdb(
+  scdata,
   cell_type1,
   cell_type2,
-  scdata,
-  idents,
+  celltype_key,
   means,
   pvals,
+  interaction_scores = NULL,
+  cellsign = NULL,
   max_size = 8,
-  p.adjust.method = NULL,
-  keep_significant_only = FALSE,
-  split.by = NULL,
-  gene.family = NULL,
+  keep_significant_only = TRUE,
+  splitby_key = NULL,
+  gene_family = NULL,
   custom_gene_family = NULL,
   genes = NULL,
-  scale = NULL,
-  standard_scale = NULL,
+  standard_scale = TRUE,
   cluster_rows = TRUE,
   col_option = viridis::viridis(50),
   default_style = TRUE,
-  noir = FALSE,
-  highlight = "red",
+  highlight_col = "red",
   highlight_size = NULL,
-  separator = NULL,
-  special_character_search_pattern = NULL,
+  max_highlight_size = 2,
+  special_character_regex_pattern = NULL,
   degs_analysis = FALSE,
-  verbose = FALSE,
   return_table = FALSE,
   exclude_interactions = NULL,
+  min_interaction_score = 0,
+  scale_alpha_by_interaction_scores = FALSE,
+  scale_alpha_by_cellsign = FALSE,
+  filter_by_cellsign = FALSE,
+  title = "",
   ...
 )
 }
 \arguments{
-\item{cell_type1}{cell type 1}
+\item{scdata}{single-cell data. can be Seurat/SingleCellExperiment object}
 
-\item{cell_type2}{cell type 2}
+\item{cell_type1}{Name of cell type 1. Accepts regex pattern.}
 
-\item{scdata}{single-cell data. can be seurat/summarizedexperiment object}
+\item{cell_type2}{Name of cell type 2. Accepts regex pattern.}
 
-\item{idents}{vector holding the idents for each cell or column name of scdata's metadata. MUST match cpdb's columns}
+\item{celltype_key}{Column name in metadata/colData storing the celltype annotations. Values in this column should match the second column of the input `meta.txt` used for CellPhoneDB.}
 
-\item{means}{object holding means.txt from cpdb output}
+\item{means}{Data frame corresponding to `means.txt` from CellPhoneDB.}
 
-\item{pvals}{object holding pvals.txt from cpdb output. Use relevant_interactions.txt if degs_analysis mode.}
+\item{pvals}{Data frame corresponding to `pvalues.txt` or `relevant_interactions.txt` from CellPhoneDB.}
+
+\item{interaction_scores}{Data frame corresponding to `interaction_scores.txt` from CellPhoneDB version 5 onwards.}
+
+\item{cellsign}{Data frame corresponding to `CellSign.txt` from CellPhoneDB version 5 onwards.}
 
 \item{max_size}{max size of points.}
 
-\item{p.adjust.method}{correction method. p.adjust.methods of one of these options: c('holm', 'hochberg', 'hommel', 'bonferroni', 'BH', 'BY', 'fdr', 'none')}
-
 \item{keep_significant_only}{logical. Default is FALSE. Switch to TRUE if you only want to plot the significant hits from cpdb.}
 
-\item{split.by}{column name in the metadata/coldata table to split the spots by. Can only take columns with binary options. If specified, name to split by MUST be specified in the meta file provided to cpdb prior to analysis.}
+\item{splitby_key}{column name in the metadata/coldata table to split the spots by. Can only take columns with binary options. If specified, name to split by MUST be specified in the meta file provided to cpdb prior to analysis.}
 
-\item{gene.family}{default = NULL. some predefined group of genes. can take one (or several) of these default options: 'chemokines', 'Th1', 'Th2', 'Th17', 'Treg', 'costimulatory', 'coinhibitory', 'niche'. Also accepts name(s) of custom gene families.}
+\item{gene_family}{default = NULL. some predefined group of genes. can take one (or several) of these default options: 'chemokines', 'Th1', 'Th2', 'Th17', 'Treg', 'costimulatory', 'coinhibitory', 'niche'. Also accepts name(s) of custom gene families.}
 
-\item{custom_gene_family}{default = NULL. If provided, will update the gene.family function with this custom entry. Both `gene.family` (name of the custom family) and `custom_gene_family` must be specified for this to work. Provide either a data.frame with column names as name of family and genes in rows or a named likes like : list("customfamily" = c("genea", "geneb", "genec"))}
+\item{custom_gene_family}{default = NULL. If provided, will update the gene_family function with this custom entry. Both `gene_family` (name of the custom family) and `custom_gene_family` must be specified for this to work. Provide either a data.frame with column names as name of family and genes in rows or a named likes like : list('customfamily' = c('genea', 'geneb', 'genec'))}
 
-\item{genes}{default = NULL. can specify custom list of genes if gene.family is NULL}
-
-\item{scale}{logical. scale the expression to mean +/- SD. NULL defaults to TRUE.}
+\item{genes}{default = NULL. can specify custom list of genes if gene_family is NULL}
 
 \item{standard_scale}{logical. scale the expression to range from 0 to 1. NULL defaults to FALSE.}
 
@@ -70,39 +73,43 @@ plot_cpdb(
 
 \item{col_option}{specify plotting colours}
 
-\item{noir}{default = FALSE. makes it b/w}
+\item{default_style}{default = TRUE. Show all mean values and trace significant interactions with `higlight` colour. If FALSE, significant interactions will be presented as a white ring.}
 
-\item{highlight}{colour for highlighting p <0.05}
+\item{highlight_col}{colour for highlighting p <0.05}
 
 \item{highlight_size}{stroke size for highlight if p < 0.05. if NULL, scales to -log10(pval).}
 
-\item{separator}{separator to use to split between celltypes. Unless otherwise specified, the separator will be `>@<`. Make sure the idents and split.by doesn't overlap with this.}
+\item{max_highlight_size}{max size of stroke for highlight.}
 
-\item{special_character_search_pattern}{search pattern if the cell type names contains special character. NULL defaults to '/|:|\\?|\\*|\\+|[\\]|\\(|\\)'.}
+\item{special_character_regex_pattern}{search pattern if the cell type names contains special character. NULL defaults to '/|:|\\?|\\*|\\+|[\\]|\\(|\\)'.}
 
-\item{degs_analysis}{if is cellphonedb degs_analysis mode.}
-
-\item{verbose}{prints cat/print statements if TRUE.}
+\item{degs_analysis}{if is CellPhoneDB degs_analysis mode.}
 
 \item{return_table}{whether or not to return as a table rather than to plot.}
 
 \item{exclude_interactions}{if provided, the interactions will be removed from the output.}
 
-\item{...}{passes arguments to grep for cell_type1 and cell_type2.}
+\item{min_interaction_score}{Filtering the interactions shown by including only those above the given interaction score.}
 
-\item{default_stlye}{default = TRUE. Show all mean values and trace significant interactions with `higlight` colour. If FALSE, significant interactions will be presented as a white ring.}
+\item{scale_alpha_by_interaction_scores}{Whether or not to filter values by the interaction score.}
+
+\item{scale_alpha_by_cellsign}{Whether or not to filter the transparency of interactions by the cellsign.}
+
+\item{filter_by_cellsign}{Filter out interactions with a 0 value cellsign.}
+
+\item{...}{passes arguments to grep for cell_type1 and cell_type2.}
 }
 \value{
 ggplot dot plot object of cellphone db output
 }
 \description{
-Plotting cellphonedb results
+Plotting CellPhoneDB results
 }
 \examples{
 \donttest{
 data(kidneyimmune)
 data(cpdb_output)
-plot_cpdb('B cell', 'CD4T cell', kidneyimmune, 'celltype', means, pvals, split.by = 'Experiment', genes = c('CXCL13', 'CD274', 'CXCR5'))
-plot_cpdb('B cell', 'CD4T cell', kidneyimmune, 'celltype', means, pvals, split.by = 'Experiment', gene.family = 'chemokines')
+plot_cpdb(kidneyimmune, 'B cell', 'CD4T cell', 'celltype', means, pvals, splitby_key = 'Experiment', genes = c('CXCL13', 'CD274', 'CXCR5'))
+plot_cpdb(kidneyimmune, 'B cell', 'CD4T cell', 'celltype', means, pvals, splitby_key = 'Experiment', gene_family = 'chemokines')
 }
 }
