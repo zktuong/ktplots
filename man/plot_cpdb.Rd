@@ -57,7 +57,7 @@ plot_cpdb(
 
 \item{max_size}{max size of points.}
 
-\item{keep_significant_only}{logical. Default is FALSE. Switch to TRUE if you only want to plot the significant hits from cpdb.}
+\item{keep_significant_only}{logical. Default is TRUE. Switch to FALSE if you want to plot all results from cpdb.}
 
 \item{splitby_key}{column name in the metadata/coldata table to split the spots by. Can only take columns with binary options. If specified, name to split by MUST be specified in the meta file provided to cpdb prior to analysis.}
 
@@ -109,7 +109,7 @@ Plotting CellPhoneDB results
 \donttest{
 data(kidneyimmune)
 data(cpdb_output)
-plot_cpdb(kidneyimmune, 'B cell', 'CD4T cell', 'celltype', means, pvals, splitby_key = 'Experiment', genes = c('CXCL13', 'CD274', 'CXCR5'))
-plot_cpdb(kidneyimmune, 'B cell', 'CD4T cell', 'celltype', means, pvals, splitby_key = 'Experiment', gene_family = 'chemokines')
+plot_cpdb(kidneyimmune, "B cell", "CD4T cell", "celltype", means, pvals, splitby_key = "Experiment", genes = c("CXCL13", "CD274", "CXCR5"))
+plot_cpdb(kidneyimmune, "B cell", "CD4T cell", "celltype", means, pvals, splitby_key = "Experiment", gene_family = "chemokines")
 }
 }
