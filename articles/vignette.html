@@ -73,7 +73,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Plotting CellPhoneDB results</h1>
             
-            <h4 data-toc-skip class="date">2023-09-12</h4>
+            <h4 data-toc-skip class="date">2023-10-31</h4>
       
       
       <div class="hidden name"><code>vignette.rmd</code></div>
@@ -140,8 +140,8 @@ you used for <code>CellPhoneDB</code> and the <code>means.txt</code> and
 <span><span class="co"># decon = pd.read_csv("deconvoluted.txt", sep="\t")</span></span>
 <span></span>
 <span><span class="co"># I've provided an example datasets</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">cpdb_output</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">cpdb_output2</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">cpdb_output_stat</span><span class="op">)</span> <span class="co"># ran with CellPhoneDB statistical analysis mode</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">cpdb_output_degs</span><span class="op">)</span> <span class="co"># ran with CellPhoneDB degs analysis mode</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="heatmap">Heatmap<a class="anchor" aria-label="anchor" href="#heatmap"></a>
@@ -149,26 +149,29 @@ you used for <code>CellPhoneDB</code> and the <code>means.txt</code> and
 <p>The original heatmap plot from <code>CellPhoneDB</code> can be
 achieved with this reimplemented function.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_cpdb_heatmap.html">plot_cpdb_heatmap</a></span><span class="op">(</span>pvals <span class="op">=</span> <span class="va">pvals2</span>, cellheight <span class="op">=</span> <span class="fl">10</span>, cellwidth <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_cpdb_heatmap.html">plot_cpdb_heatmap</a></span><span class="op">(</span>pvals <span class="op">=</span> <span class="va">pvals_stat</span>, cellheight <span class="op">=</span> <span class="fl">10</span>, cellwidth <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
 <p><img src="vignette_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_cpdb_heatmap.html">plot_cpdb_heatmap</a></span><span class="op">(</span>pvals <span class="op">=</span> <span class="va">rel_int_degs</span>, cellheight <span class="op">=</span> <span class="fl">10</span>, cellwidth <span class="op">=</span> <span class="fl">10</span>, degs_analysis <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p><img src="vignette_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
 <p>The current heatmap is directional (check <code>count_network</code>
 and <code>interaction_edges</code> for more details in
 <code>return_tables = True</code>).</p>
 <p>To obtain the heatmap where the interaction counts are not
 symmetrical, do:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_cpdb_heatmap.html">plot_cpdb_heatmap</a></span><span class="op">(</span>pvals <span class="op">=</span> <span class="va">pvals2</span>, cellheight <span class="op">=</span> <span class="fl">10</span>, cellwidth <span class="op">=</span> <span class="fl">10</span>, symmetrical <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="vignette_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_cpdb_heatmap.html">plot_cpdb_heatmap</a></span><span class="op">(</span>pvals <span class="op">=</span> <span class="va">pvals_stat</span>, cellheight <span class="op">=</span> <span class="fl">10</span>, cellwidth <span class="op">=</span> <span class="fl">10</span>, symmetrical <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<p><img src="vignette_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
 <p>The values for the <code>symmetrical=FALSE</code> mode follow the
-direction of the L-R direction where it’s always moleculeA:celltypeA
--&gt; moleculeB:celltypeB.</p>
+direction of the L-R direction where it’s always</p>
+<p>moleculeA:celltypeA -&gt; moleculeB:celltypeB.</p>
 <p>Therefore, if you trace on the <code>x-axis</code> for
 <code>celltype A</code> [MNPa(mono)] to <code>celltype B</code> [CD8T
-cell] on the <code>y-axis</code>:</p>
+cell] on the <code>y-axis</code>, for example:</p>
 <p>A -&gt; B is 18 interactions</p>
 <p>Whereas if you trace on the <code>y-axis</code> for
 <code>celltype A</code> [MNPa(mono)] to <code>celltype B</code> [CD8T
-cell] on the <code>x-axis</code>:</p>
+cell] on the <code>x-axis</code>, for example:</p>
 <p>A -&gt; B is 9 interactions</p>
 <p><code>symmetrical=TRUE</code> mode will return 18+9 = 27</p>
 </div>
@@ -179,36 +182,89 @@ cell] on the <code>x-axis</code>:</p>
 <h4 id="plot_cpdb">plot_cpdb<a class="anchor" aria-label="anchor" href="#plot_cpdb"></a>
 </h4>
 <p>A simple usage of <code>plot_cpdb</code> is as follows:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_cpdb.html">plot_cpdb</a></span><span class="op">(</span></span>
 <span>    scdata<span class="op">=</span><span class="va">kidneyimmune</span>,</span>
 <span>    cell_type1<span class="op">=</span><span class="st">"B cell"</span>,</span>
 <span>    cell_type2<span class="op">=</span><span class="st">"."</span>,  <span class="co"># this means all cell-types</span></span>
 <span>    celltype_key<span class="op">=</span><span class="st">"celltype"</span>,</span>
-<span>    means<span class="op">=</span><span class="va">means2</span>,</span>
-<span>    pvals<span class="op">=</span><span class="va">pvals2</span>,</span>
+<span>    means<span class="op">=</span><span class="va">means_stat</span>,</span>
+<span>    pvals<span class="op">=</span><span class="va">pvals_stat</span>,</span>
 <span>    genes<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PTPRC"</span>, <span class="st">"TNFSF13"</span><span class="op">)</span>,</span>
 <span>    title<span class="op">=</span><span class="st">"interacting interactions!"</span>,</span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="vignette_files/figure-html/unnamed-chunk-8-1.png" width="960"></p>
+<p><img src="vignette_files/figure-html/unnamed-chunk-9-1.png" width="960"></p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_cpdb.html">plot_cpdb</a></span><span class="op">(</span></span>
+<span>    scdata<span class="op">=</span><span class="va">kidneyimmune</span>,</span>
+<span>    cell_type1<span class="op">=</span><span class="st">"B cell"</span>,</span>
+<span>    cell_type2<span class="op">=</span><span class="st">"."</span>,  <span class="co"># this means all cell-types</span></span>
+<span>    celltype_key<span class="op">=</span><span class="st">"celltype"</span>,</span>
+<span>    means<span class="op">=</span><span class="va">means_degs</span>,</span>
+<span>    pvals<span class="op">=</span><span class="va">rel_int_degs</span>,</span>
+<span>    degs_analysis<span class="op">=</span><span class="cn">TRUE</span>,</span>
+<span>    genes<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PTPRC"</span>, <span class="st">"TNFSF13"</span><span class="op">)</span>,</span>
+<span>    title<span class="op">=</span><span class="st">"interacting interactions!"</span>,</span>
+<span><span class="op">)</span></span></code></pre></div>
+<p><img src="vignette_files/figure-html/unnamed-chunk-10-1.png" width="960"></p>
 <p>Or don’t specify either and it will try to plot all significant
 interactions.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_cpdb.html">plot_cpdb</a></span><span class="op">(</span></span>
 <span>    scdata<span class="op">=</span><span class="va">kidneyimmune</span>,</span>
 <span>    cell_type1<span class="op">=</span><span class="st">"B cell"</span>,</span>
 <span>    cell_type2<span class="op">=</span><span class="st">"."</span>,</span>
 <span>    celltype_key<span class="op">=</span><span class="st">"celltype"</span>,</span>
-<span>    means<span class="op">=</span><span class="va">means2</span>,</span>
-<span>    pvals<span class="op">=</span><span class="va">pvals2</span>,</span>
+<span>    means<span class="op">=</span><span class="va">means_stat</span>,</span>
+<span>    pvals<span class="op">=</span><span class="va">pvals_stat</span>,</span>
+<span><span class="op">)</span></span></code></pre></div>
+<p><img src="vignette_files/figure-html/unnamed-chunk-11-1.png" width="960"></p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_cpdb.html">plot_cpdb</a></span><span class="op">(</span></span>
+<span>    scdata<span class="op">=</span><span class="va">kidneyimmune</span>,</span>
+<span>    cell_type1<span class="op">=</span><span class="st">"B cell"</span>,</span>
+<span>    cell_type2<span class="op">=</span><span class="st">"."</span>,  <span class="co"># this means all cell-types</span></span>
+<span>    celltype_key<span class="op">=</span><span class="st">"celltype"</span>,</span>
+<span>    means<span class="op">=</span><span class="va">means_degs</span>,</span>
+<span>    pvals<span class="op">=</span><span class="va">rel_int_degs</span>,</span>
+<span>    degs_analysis<span class="op">=</span><span class="cn">TRUE</span>,</span>
+<span>    title<span class="op">=</span><span class="st">"interacting interactions!"</span>,</span>
+<span><span class="op">)</span></span></code></pre></div>
+<p><img src="vignette_files/figure-html/unnamed-chunk-12-1.png" width="960"></p>
+<p>You can also try an alternative visualisation inspired by how
+<code>squidpy</code> displays the results:</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_cpdb.html">plot_cpdb</a></span><span class="op">(</span></span>
+<span>    scdata<span class="op">=</span><span class="va">kidneyimmune</span>,</span>
+<span>    cell_type1<span class="op">=</span><span class="st">"B cell"</span>,</span>
+<span>    cell_type2<span class="op">=</span><span class="st">"."</span>,</span>
+<span>    celltype_key<span class="op">=</span><span class="st">"celltype"</span>,</span>
+<span>    means<span class="op">=</span><span class="va">means_stat</span>,</span>
+<span>    pvals<span class="op">=</span><span class="va">pvals_stat</span>,</span>
 <span>    genes<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PTPRC"</span>, <span class="st">"CD40"</span>, <span class="st">"CLEC2D"</span><span class="op">)</span>,</span>
 <span>    default_style<span class="op">=</span><span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="vignette_files/figure-html/unnamed-chunk-9-1.png" width="960"></p>
+<p><img src="vignette_files/figure-html/unnamed-chunk-13-1.png" width="960"></p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_cpdb.html">plot_cpdb</a></span><span class="op">(</span></span>
+<span>    scdata<span class="op">=</span><span class="va">kidneyimmune</span>,</span>
+<span>    cell_type1<span class="op">=</span><span class="st">"B cell"</span>,</span>
+<span>    cell_type2<span class="op">=</span><span class="st">"."</span>,  <span class="co"># this means all cell-types</span></span>
+<span>    celltype_key<span class="op">=</span><span class="st">"celltype"</span>,</span>
+<span>    means<span class="op">=</span><span class="va">means_degs</span>,</span>
+<span>    pvals<span class="op">=</span><span class="va">rel_int_degs</span>,</span>
+<span>    degs_analysis<span class="op">=</span><span class="cn">TRUE</span>,</span>
+<span>    genes<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PTPRC"</span>, <span class="st">"CD40"</span>, <span class="st">"CLEC2D"</span><span class="op">)</span>,</span>
+<span>    title<span class="op">=</span><span class="st">"interacting interactions!"</span>,</span>
+<span>    default_style<span class="op">=</span><span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p><img src="vignette_files/figure-html/unnamed-chunk-14-1.png" width="960"></p>
 <p>you can also toggle options to <code>splitby_key</code> and
 <code>gene_family</code>:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_cpdb.html">plot_cpdb</a></span><span class="op">(</span></span>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">cpdb_output</span><span class="op">)</span> <span class="co"># this is a different dataset where the "Experiment" was appended to the "celltype" </span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/plot_cpdb.html">plot_cpdb</a></span><span class="op">(</span></span>
 <span>    scdata <span class="op">=</span> <span class="va">kidneyimmune</span>,</span>
 <span>    cell_type1 <span class="op">=</span> <span class="st">"B cell"</span>,</span>
 <span>    cell_type2 <span class="op">=</span> <span class="st">"Neutrophil|MNPc|NK cell"</span>,</span>
@@ -218,13 +274,13 @@ interactions.</p>
 <span>    splitby_key <span class="op">=</span> <span class="st">"Experiment"</span>,</span>
 <span>    gene_family <span class="op">=</span> <span class="st">"chemokines"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="vignette_files/figure-html/unnamed-chunk-10-1.png" width="960"></p>
+<p><img src="vignette_files/figure-html/unnamed-chunk-15-1.png" width="960"></p>
 <p>if <code>genes</code> and <code>gene_family</code> are both not
 specified, the function will try to plot everything.</p>
 <p>Specifying <code>keep_significant_only</code> will only keep those
 that are p&lt;0.05.</p>
 <p>You can also specify more than 1 gene families:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_cpdb.html">plot_cpdb</a></span><span class="op">(</span></span>
 <span>    scdata <span class="op">=</span> <span class="va">kidneyimmune</span>,</span>
 <span>    cell_type1 <span class="op">=</span> <span class="st">"B cell"</span>,</span>
@@ -236,9 +292,9 @@ that are p&lt;0.05.</p>
 <span>    gene_family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Coinhibitory"</span>, <span class="st">"Costimulatory"</span><span class="op">)</span>,</span>
 <span>    cluster_rows <span class="op">=</span> <span class="cn">FALSE</span> <span class="co"># ensures that the families are separate,</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="vignette_files/figure-html/unnamed-chunk-11-1.png" width="960"></p>
+<p><img src="vignette_files/figure-html/unnamed-chunk-16-1.png" width="960"></p>
 <p>And also provide custom families as a <code>data.frame</code>.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>set1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CCR6"</span>, <span class="st">"CCL20"</span>, <span class="st">"CXCL10"</span>, <span class="st">"CCR3"</span>, <span class="st">"TNFRSF13C"</span><span class="op">)</span>, set2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CCL5"</span>, <span class="st">"CCR4"</span>, <span class="st">"PTPRC"</span>, <span class="st">"CD40"</span>, <span class="st">"CLEC2D"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/plot_cpdb.html">plot_cpdb</a></span><span class="op">(</span></span>
 <span>    scdata<span class="op">=</span><span class="va">kidneyimmune</span>,</span>
@@ -251,20 +307,20 @@ that are p&lt;0.05.</p>
 <span>    gene_family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"set1"</span>, <span class="st">"set2"</span><span class="op">)</span>,</span>
 <span>    custom_gene_family <span class="op">=</span> <span class="va">df</span>,</span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="vignette_files/figure-html/unnamed-chunk-12-1.png" width="960"></p>
+<p><img src="vignette_files/figure-html/unnamed-chunk-17-1.png" width="960"></p>
 </div>
 <div class="section level4">
 <h4 id="combine_cpdb">combine_cpdb<a class="anchor" aria-label="anchor" href="#combine_cpdb"></a>
 </h4>
 <p>For the <code>splitby_key</code> option to work, the annotation in
 the meta file must be defined in the following format:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>{splitby_key}_{celltype_key}</span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>{splitby_key}_{celltype_key}</span></code></pre></div>
 <p>so to set up an example vector, it would be something like:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">annotation</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">kidneyimmune</span><span class="op">$</span><span class="va">Experiment</span>, <span class="st">"_"</span>, <span class="va">kidneyimmune</span><span class="op">$</span><span class="va">celltype</span><span class="op">)</span></span></code></pre></div>
 <p>The recommended way to use <code>splitby_key</code> is to prepare the
 data with <code>combine_cpdb</code> like in this example:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Assume you have 2 cellphonedb runs, one where it's just naive and the other is treated, you will end up with 2 cellphonedb out folders</span></span>
 <span><span class="co"># remember, the celltype labels you provide to cellphonedb's meta.txt should already be like {splitby_key}_{celltype_key}</span></span>
 <span><span class="co"># so the two meta.txt should look like:</span></span>
@@ -309,15 +365,15 @@ results.</p>
 function and generates the results like this:</p>
 <p>Please help contribute to the interaction grouping list <a href="https://docs.google.com/spreadsheets/d/1O9OKU7J0NdeQNJAIMpsHtWAFvY014GDQ7aigdGUSTmc/edit?usp=sharing" class="external-link">here</a>!</p>
 <p>Credits to Ben Stewart for coming up with the base code!</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="fu"><a href="../reference/plot_cpdb2.html">plot_cpdb2</a></span><span class="op">(</span></span>
 <span>    scdata <span class="op">=</span> <span class="va">kidneyimmune</span>,</span>
 <span>    cell_type1 <span class="op">=</span> <span class="st">"B cell"</span>,</span>
 <span>    cell_type2 <span class="op">=</span> <span class="st">"."</span>,</span>
 <span>    celltype_key <span class="op">=</span> <span class="st">"celltype"</span>, <span class="co"># column name where the cell ids are located in the metadata</span></span>
-<span>    means <span class="op">=</span> <span class="va">means2</span>,</span>
-<span>    pvals <span class="op">=</span> <span class="va">pvals2</span>,</span>
+<span>    means <span class="op">=</span> <span class="va">means_stat</span>,</span>
+<span>    pvals <span class="op">=</span> <span class="va">pvals_stat</span>,</span>
 <span>    deconvoluted <span class="op">=</span> <span class="va">decon2</span>, <span class="co"># new options from here on specific to plot_cpdb2</span></span>
 <span>    desiredInteractions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>        <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CD4T cell"</span>, <span class="st">"B cell"</span><span class="op">)</span>,</span>
@@ -337,7 +393,7 @@ function and generates the results like this:</p>
 <span>        <span class="st">"B cell"</span> <span class="op">=</span> <span class="st">"blue"</span></span>
 <span>    <span class="op">)</span>,</span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="vignette_files/figure-html/unnamed-chunk-16-1.png" width="960"></p>
+<p><img src="vignette_files/figure-html/unnamed-chunk-21-1.png" width="960"></p>
 </div>
 <div class="section level4">
 <h4 id="plot_cpdb3">plot_cpdb3<a class="anchor" aria-label="anchor" href="#plot_cpdb3"></a>
@@ -346,17 +402,17 @@ function and generates the results like this:</p>
 the data!</p>
 <p>Usage is similar to <code>plot_cpdb2</code> but with reduced options.
 Additional kwargs are passed to <code>plot_cpdb</code>.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_cpdb3.html">plot_cpdb3</a></span><span class="op">(</span></span>
 <span>    scdata <span class="op">=</span> <span class="va">kidneyimmune</span>,</span>
 <span>    cell_type1 <span class="op">=</span> <span class="st">"B cell"</span>,</span>
 <span>    cell_type2 <span class="op">=</span> <span class="st">"CD4T cell|MNPd"</span>,</span>
 <span>    celltype_key <span class="op">=</span> <span class="st">"celltype"</span>, <span class="co"># column name where the cell ids are located in the metadata</span></span>
-<span>    means <span class="op">=</span> <span class="va">means2</span>,</span>
-<span>    pvals <span class="op">=</span> <span class="va">pvals2</span>,</span>
+<span>    means <span class="op">=</span> <span class="va">means_stat</span>,</span>
+<span>    pvals <span class="op">=</span> <span class="va">pvals_stat</span>,</span>
 <span>    deconvoluted <span class="op">=</span> <span class="va">decon2</span> <span class="co"># new options from here on specific to plot_cpdb3</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="vignette_files/figure-html/unnamed-chunk-17-1.png" width="960"></p>
+<p><img src="vignette_files/figure-html/unnamed-chunk-22-1.png" width="960"></p>
 </div>
 <div class="section level4">
 <h4 id="plot_cpdb4">plot_cpdb4<a class="anchor" aria-label="anchor" href="#plot_cpdb4"></a>
@@ -366,28 +422,28 @@ interactions!</p>
 <p>Usage is similar to <code>plot_cpdb3</code> but with additional
 required <code>interaction</code> option. Additional kwargs are passed
 to <code>plot_cpdb</code>.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_cpdb4.html">plot_cpdb4</a></span><span class="op">(</span></span>
 <span>    scdata <span class="op">=</span> <span class="va">kidneyimmune</span>,</span>
 <span>    interaction <span class="op">=</span> <span class="st">"CLEC2D-KLRB1"</span>,</span>
 <span>    cell_type1 <span class="op">=</span> <span class="st">"NK"</span>,</span>
 <span>    cell_type2 <span class="op">=</span> <span class="st">"Mast"</span>,</span>
 <span>    celltype_key <span class="op">=</span> <span class="st">"celltype"</span>,</span>
-<span>    means <span class="op">=</span> <span class="va">means2</span>,</span>
-<span>    pvals <span class="op">=</span> <span class="va">pvals2</span>,</span>
+<span>    means <span class="op">=</span> <span class="va">means_stat</span>,</span>
+<span>    pvals <span class="op">=</span> <span class="va">pvals_stat</span>,</span>
 <span>    deconvoluted <span class="op">=</span> <span class="va">decon2</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="vignette_files/figure-html/unnamed-chunk-18-1.png" width="960"></p>
+<p><img src="vignette_files/figure-html/unnamed-chunk-23-1.png" width="960"></p>
 <p>or specify more than 1 interactions + only show specific cell-type
 type interactions!</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_cpdb4.html">plot_cpdb4</a></span><span class="op">(</span></span>
 <span>    interaction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CLEC2D-KLRB1"</span>, <span class="st">"CD40-CD40LG"</span><span class="op">)</span>,</span>
 <span>    cell_type1 <span class="op">=</span> <span class="st">"NK|B"</span>, cell_type2 <span class="op">=</span> <span class="st">"Mast|CD4T"</span>,</span>
 <span>    scdata <span class="op">=</span> <span class="va">kidneyimmune</span>,</span>
 <span>    celltype_key <span class="op">=</span> <span class="st">"celltype"</span>,</span>
-<span>    means <span class="op">=</span> <span class="va">means2</span>,</span>
-<span>    pvals <span class="op">=</span> <span class="va">pvals2</span>,</span>
+<span>    means <span class="op">=</span> <span class="va">means_stat</span>,</span>
+<span>    pvals <span class="op">=</span> <span class="va">pvals_stat</span>,</span>
 <span>    deconvoluted <span class="op">=</span> <span class="va">decon2</span>,</span>
 <span>    desiredInteractions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>        <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"NK cell"</span>, <span class="st">"Mast cell"</span><span class="op">)</span>,</span>
@@ -397,7 +453,7 @@ type interactions!</p>
 <span>    <span class="op">)</span>,</span>
 <span>    keep_significant_only <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="vignette_files/figure-html/unnamed-chunk-19-1.png" width="700"></p>
+<p><img src="vignette_files/figure-html/unnamed-chunk-24-1.png" width="700"></p>
 </div>
 </div>
 <div class="section level3">
@@ -407,7 +463,7 @@ type interactions!</p>
 <h4 id="genedotplot">geneDotPlot<a class="anchor" aria-label="anchor" href="#genedotplot"></a>
 </h4>
 <p>Plotting gene expression dot plots heatmaps.</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="co"># Note, this conflicts with tidyr devel version</span></span>
 <span><span class="fu"><a href="../reference/geneDotPlot.html">geneDotPlot</a></span><span class="op">(</span></span>
@@ -425,7 +481,7 @@ type interactions!</p>
 <span><span class="co">#&gt; setting minimum percentage of cells expressing gene to be 5% of cluster/cell-type</span></span>
 <span><span class="co">#&gt; the following genes are removed</span></span>
 <span><span class="co">#&gt; NULL</span></span></code></pre></div>
-<p><img src="vignette_files/figure-html/unnamed-chunk-20-1.png" width="700"></p>
+<p><img src="vignette_files/figure-html/unnamed-chunk-25-1.png" width="700"></p>
 </div>
 </div>
 <div class="section level3">
