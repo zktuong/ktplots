@@ -241,20 +241,24 @@ plot_cpdb <- function(
       .data = pvals_mat, .query = query,
       .cell_type = cell_type, .celltype = celltype, ...
     )
-    if (!is.null(interaction_scores)) {
-      interaction_scores_mat <- .prep_data_query_celltype(
-        .data = interaction_scores_mat,
-        .cell_type = cell_type, .celltype = celltype, ...
-      )
-    } else if (!is.null(cellsign)) {
-      cellsign_mat <- .prep_data_query_celltype(
-        .data = cellsign_mat, .cell_type = cell_type,
-        .celltype = celltype, ...
-      )
-    }
+    # if (!is.null(interaction_scores)) {
+    #   interaction_scores_mat <- .prep_data_query_celltype(
+    #     .data = interaction_scores_mat, .query = query,
+    #     .cell_type = cell_type, .celltype = celltype, ...
+    #   )
+    # } else if (!is.null(cellsign)) {
+    #   cellsign_mat <- .prep_data_query_celltype(
+    #     .data = cellsign_mat, .query = query,
+    #     .cell_type = cell_type, .celltype = celltype, ...
+    #   )
+    # }
   }
   if (length(means_mat) == 0) {
     stop("Please check your options for splitby_key and your celltypes.")
+  } else {
+    if (!all(dim(pvals_mat) == dim(means_mat))) {
+      pvals_mat <- .prep_dimensions(pvals_mat, means_mat)
+    }
   }
   # rearrange the columns so that it interleaves the two groups
   if (!is.null(splitby_key)) {
