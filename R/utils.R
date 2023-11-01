@@ -9,6 +9,22 @@ DEFAULT_V5_COL_START <- 14
 DEFAULT_CLASS_COL <- 13
 DEFAULT_COL_START <- 12
 
+.prep_dimensions <- function(input, reference) {
+    requireNamespace("reshape2")
+    tmp_mat <- reference
+    tmp_mat <- (tmp_mat * 0) + 1
+    melted_A <- reshape2::melt(as.matrix(tmp_mat))
+    melted_B <- reshape2::melt(as.matrix(input))
+    rownames(melted_A) <- paste0(melted_A$Var1, DEFAULT_SEP, melted_A$Var2)
+    rownames(melted_B) <- paste0(melted_B$Var1, DEFAULT_SEP, melted_B$Var2)
+    melted_A[row.names(melted_B), ] <- melted_B
+    tmp_mat <- reshape2::dcast(melted_A, Var1 ~ Var2, value.var = "value")
+    rownames(tmp_mat) <- tmp_mat$Var1
+    tmp_mat <- tmp_mat[, -1]
+    tmp_mat <- tmp_mat[rownames(reference), colnames(reference)]
+    return(tmp_mat)
+}
+
 
 .prep_table <- function(data) {
     dat <- data
@@ -36,18 +52,18 @@ DEFAULT_COL_START <- 12
 .prep_query_group <- function(data, genes = NULL, gene_family = NULL, custom_gene_family = NULL) {
     if (is.null(gene_family) & is.null(genes)) {
         query_group <- NULL
-        query_id <- grep("", data$interacting_pair)
-        query <- row.names(data)[query_id]
+        query_id <- grep("", data$interacting_pair, value = TRUE)
+        query <- row.names(data[data$interacting_pair %in% query_id, ])
     } else if (!is.null(gene_family) & !is.null(genes)) {
         stop("Please specify either genes or gene_family, not both")
     } else if (!is.null(gene_family) & is.null(genes)) {
-        chemokines <- grep("^CXC|CCL|CCR|CX3|XCL|XCR", data$interacting_pair)
-        th1 <- grep("IL2|IL12|IL18|IL27|IFNG|IL10|TNF$|TNF |LTA|LTB|STAT1|CCR5|CXCR3|IL12RB1|IFNGR1|TBX21|STAT4", data$interacting_pair)
-        th2 <- grep("IL4|IL5|IL25|IL10|IL13|AREG|STAT6|GATA3|IL4R", data$interacting_pair)
-        th17 <- grep("IL21|IL22|IL24|IL26|IL17A|IL17A|IL17F|IL17RA|IL10|RORC|RORA|STAT3|CCR4|CCR6|IL23RA|TGFB", data$interacting_pair)
-        treg <- grep("IL35|IL10|FOXP3|IL2RA|TGFB", data$interacting_pair)
-        costimulatory <- grep("CD86|CD80|CD48|LILRB2|LILRB4|TNF|CD2|ICAM|SLAM|LT[AB]|NECTIN2|CD40|CD70|CD27|CD28|CD58|TSLP|PVR|CD44|CD55|CD[1-9]", data$interacting_pair)
-        coinhibitory <- grep("SIRP|CD47|ICOS|TIGIT|CTLA4|PDCD1|CD274|LAG3|HAVCR|VSIR", data$interacting_pair)
+        chemokines <- grep("^CXC|CCL|CCR|CX3|XCL|XCR", data$interacting_pair, value = TRUE)
+        th1 <- grep("IL2|IL12|IL18|IL27|IFNG|IL10|TNF$|TNF |LTA|LTB|STAT1|CCR5|CXCR3|IL12RB1|IFNGR1|TBX21|STAT4", data$interacting_pair, value = TRUE)
+        th2 <- grep("IL4|IL5|IL25|IL10|IL13|AREG|STAT6|GATA3|IL4R", data$interacting_pair, value = TRUE)
+        th17 <- grep("IL21|IL22|IL24|IL26|IL17A|IL17A|IL17F|IL17RA|IL10|RORC|RORA|STAT3|CCR4|CCR6|IL23RA|TGFB", data$interacting_pair, value = TRUE)
+        treg <- grep("IL35|IL10|FOXP3|IL2RA|TGFB", data$interacting_pair, value = TRUE)
+        costimulatory <- grep("CD86|CD80|CD48|LILRB2|LILRB4|TNF|CD2|ICAM|SLAM|LT[AB]|NECTIN2|CD40|CD70|CD27|CD28|CD58|TSLP|PVR|CD44|CD55|CD[1-9]", data$interacting_pair, value = TRUE)
+        coinhibitory <- grep("SIRP|CD47|ICOS|TIGIT|CTLA4|PDCD1|CD274|LAG3|HAVCR|VSIR", data$interacting_pair, value = TRUE)
         query_group <- list(
             chemokines = chemokines,
             chemokine = chemokines,
@@ -63,17 +79,18 @@ DEFAULT_COL_START <- 12
         if (!is.null(custom_gene_family)) {
             cgf <- as.list(custom_gene_family)
             cgf <- lapply(cgf, function(x) {
-                q_id <- grep(paste(x, collapse = "|"), data$interacting_pair)
-                q <- row.names(data)[q_id]
+                q_id <- grep(paste(x, collapse = "|"), data$interacting_pair, value = TRUE)
+                q <- row.names(data[data$interacting_pair %in% q_id, ])
                 return(q)
             })
             query_group <- c(query_group, cgf)
         }
+        query_group <- lapply(query_group, function(x) row.names(data[data$interacting_pair %in% x, ]))
         query <- NULL
     } else if (is.null(gene_family) & !is.null(genes)) {
         query_group <- NULL
-        query_id <- grep(paste(genes, collapse = "|"), data$interacting_pair)
-        query <- row.names(data)[query_id]
+        query_id <- grep(paste(genes, collapse = "|"), data$interacting_pair, value = TRUE)
+        query <- row.names(data[data$interacting_pair %in% query_id, ])
     }
     out <- list("query_group" = query_group, "query" = query)
     return(out)

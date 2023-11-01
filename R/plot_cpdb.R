@@ -255,6 +255,19 @@ plot_cpdb <- function(
   }
   if (length(means_mat) == 0) {
     stop("Please check your options for splitby_key and your celltypes.")
+  } else {
+    if (!all(dim(pvals_mat) == dim(means_mat))) {
+      pvals_mat <- .prep_dimensions(pvals_mat, means_mat)
+    }
+    if (!is.null(interaction_scores)) {
+      if (!all(dim(interaction_scores_mat) == dim(means_mat))) {
+        interaction_scores_mat <- .prep_dimensions(interaction_scores_mat, means_mat)
+      }
+    } else if (!is.null(cellsign)) {
+      if (!all(dim(cellsign_mat) == dim(means_mat))) {
+        cellsign_mat <- .prep_dimensions(cellsign_mat, means_mat)
+      }
+    }
   }
   # rearrange the columns so that it interleaves the two groups
   if (!is.null(splitby_key)) {
@@ -266,7 +279,7 @@ plot_cpdb <- function(
       })
       group_id <- do.call(c, group_i)
       means_mat <- means_mat[, as.vector(group_id), drop = FALSE]
-      if (dim(pvals_mat)[2] > 0) {
+      if (dim(pvals_mat)[1] > 0) {
         pvals_mat <- pvals_mat[, as.vector(group_id), drop = FALSE]
       } else {
         stop("No significant hits.")
@@ -274,7 +287,7 @@ plot_cpdb <- function(
     }
   }
   if (keep_significant_only) {
-    if (dim(pvals_mat)[2] == 0) {
+    if (dim(pvals_mat)[1] == 0) {
       stop("No significant hits.")
     }
   }
