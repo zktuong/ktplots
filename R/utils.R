@@ -76,6 +76,7 @@ DEFAULT_COL_START <- 12
             costimulation = costimulatory,
             coinhibition = coinhibitory
         )
+        query_group <- lapply(query_group, function(x) row.names(data[data$interacting_pair %in% x, ]))
         if (!is.null(custom_gene_family)) {
             cgf <- as.list(custom_gene_family)
             cgf <- lapply(cgf, function(x) {
@@ -85,7 +86,6 @@ DEFAULT_COL_START <- 12
             })
             query_group <- c(query_group, cgf)
         }
-        query_group <- lapply(query_group, function(x) row.names(data[data$interacting_pair %in% x, ]))
         query <- NULL
     } else if (is.null(gene_family) & !is.null(genes)) {
         query_group <- NULL
