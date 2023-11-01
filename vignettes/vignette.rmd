@@ -284,15 +284,15 @@ Please help contribute to the interaction grouping list [here](https://docs.goog
 Credits to Ben Stewart for coming up with the base code!
 
 ```{r, message = FALSE, warning = FALSE, fig.width = 10, fig.height = 10}
-
+data(cpdb_output2) # legacy reasons
 plot_cpdb2(
     scdata = kidneyimmune,
     cell_type1 = "B cell",
     cell_type2 = ".",
     celltype_key = "celltype", # column name where the cell ids are located in the metadata
-    means = means_stat,
-    pvals = pvals_stat,
-    deconvoluted = decon_stat, # new options from here on specific to plot_cpdb2
+    means = means2,
+    pvals = pvals2,
+    deconvoluted = decon2, # new options from here on specific to plot_cpdb2
     desiredInteractions = list(
         c("CD4T cell", "B cell"),
         c("B cell", "CD4T cell")
