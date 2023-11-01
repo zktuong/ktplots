@@ -259,15 +259,15 @@ plot_cpdb <- function(
     if (!all(dim(pvals_mat) == dim(means_mat))) {
       pvals_mat <- .prep_dimensions(pvals_mat, means_mat)
     }
-    if (!is.null(interaction_scores)) {
-      if (!all(dim(interaction_scores_mat) == dim(means_mat))) {
-        interaction_scores_mat <- .prep_dimensions(interaction_scores_mat, means_mat)
-      }
-    } else if (!is.null(cellsign)) {
-      if (!all(dim(cellsign_mat) == dim(means_mat))) {
-        cellsign_mat <- .prep_dimensions(cellsign_mat, means_mat)
-      }
-    }
+    # if (!is.null(interaction_scores)) {
+    #   if (!all(dim(interaction_scores_mat) == dim(means_mat))) {
+    #     interaction_scores_mat <- .prep_dimensions(interaction_scores_mat, means_mat)
+    #   }
+    # } else if (!is.null(cellsign)) {
+    #   if (!all(dim(cellsign_mat) == dim(means_mat))) {
+    #     cellsign_mat <- .prep_dimensions(cellsign_mat, means_mat)
+    #   }
+    # }
   }
   # rearrange the columns so that it interleaves the two groups
   if (!is.null(splitby_key)) {
