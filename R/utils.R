@@ -116,7 +116,7 @@ DEFAULT_COL_START <- 12
 
 .prep_data_querygroup_celltype1 <- function(.data, .query_group, .gene_family, .cell_type, .celltype, ...) {
     dat <- suppressWarnings(tryCatch(
-        .data[.query_group[[tolower(.gene_family)]],
+        .data[rownames(.data) %in% .query_group[[tolower(.gene_family)]],
             grep(.cell_type, colnames(.data), useBytes = TRUE, ...),
             drop = FALSE,
         ],
@@ -127,7 +127,7 @@ DEFAULT_COL_START <- 12
                 )
             })
             colidx <- unique(do.call(c, colidx))
-            tmpm <- .data[.query_group[[tolower(.gene_family)]], colidx, drop = FALSE]
+            tmpm <- .data[rownames(.data) %in% .query_group[[tolower(.gene_family)]], colidx, drop = FALSE]
             return(tmpm)
         }
     ))
@@ -137,7 +137,7 @@ DEFAULT_COL_START <- 12
 
 .prep_data_querygroup_celltype2 <- function(.data, .query_group, .gene_family, .cell_type, .celltype, ...) {
     dat <- suppressWarnings(tryCatch(
-        .data[unlist(.query_group[c(tolower(.gene_family))], use.names = FALSE),
+        .data[rownames(.data) %in% unlist(.query_group[c(tolower(.gene_family))], use.names = FALSE),
             grep(.cell_type, colnames(.data), useBytes = TRUE, ...),
             drop = FALSE
         ],
@@ -148,7 +148,7 @@ DEFAULT_COL_START <- 12
                 )
             })
             colidx <- unique(do.call(c, colidx))
-            tmpm <- .data[unlist(.query_group[c(tolower(.gene_family))], use.names = FALSE), colidx, drop = FALSE]
+            tmpm <- .data[rownames(.data) %in% unlist(.query_group[c(tolower(.gene_family))], use.names = FALSE), colidx, drop = FALSE]
             return(tmpm)
         }
     ))
@@ -157,7 +157,7 @@ DEFAULT_COL_START <- 12
 }
 
 .prep_data_query_celltype <- function(.data, .query, .cell_type, .celltype, ...) {
-    dat <- suppressWarnings(tryCatch(.data[.query, grep(.cell_type, colnames(.data),
+    dat <- suppressWarnings(tryCatch(.data[rownames(.data) %in% .query, grep(.cell_type, colnames(.data),
         useBytes = TRUE, ...
     ), drop = FALSE], error = function(e) {
         colidx <- lapply(.celltype, function(z) {
@@ -167,7 +167,7 @@ DEFAULT_COL_START <- 12
             )
         })
         colidx <- unique(do.call(c, colidx))
-        tmpm <- .data[.query, colidx, drop = FALSE]
+        tmpm <- .data[rownames(.data) %in% .query, colidx, drop = FALSE]
         return(tmpm)
     }))
     dat <- dat[rowSums(is.na(dat)) == 0, ]
