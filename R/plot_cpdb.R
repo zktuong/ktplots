@@ -68,8 +68,7 @@ plot_cpdb <- function(
   pvals_mat <- .prep_table(pvals)
   if (!is.null(interaction_scores)) {
     interaction_scores_mat <- .prep_table(interaction_scores)
-  }
-  if (!is.null(cellsign)) {
+  } else if (!is.null(cellsign)) {
     cellsign_mat <- .prep_table(cellsign)
   }
   col_start <- ifelse(colnames(pvals_mat)[DEFAULT_CLASS_COL] == "classification",
@@ -201,8 +200,7 @@ plot_cpdb <- function(
           .query_group = query_group, .gene_family = gene_family, .cell_type = cell_type,
           .celltype = celltype, ...
         )
-      }
-      if (!is.null(cellsign)) {
+      } else if (!is.null(cellsign)) {
         cellsign_mat <- .prep_data_querygroup_celltype1(
           .data = cellsign_mat,
           .query_group = query_group, .gene_family = gene_family, .cell_type = cell_type,
@@ -226,8 +224,7 @@ plot_cpdb <- function(
           .query_group = query_group, .gene_family = gene_family, .cell_type = cell_type,
           .celltype = celltype, ...
         )
-      }
-      if (!is.null(cellsign)) {
+      } else if (!is.null(cellsign)) {
         cellsign_mat <- .prep_data_querygroup_celltype2(
           .data = cellsign_mat,
           .query_group = query_group, .gene_family = gene_family, .cell_type = cell_type,
@@ -262,11 +259,6 @@ plot_cpdb <- function(
     if (!all(dim(pvals_mat) == dim(means_mat))) {
       pvals_mat <- .prep_dimensions(pvals_mat, means_mat)
     }
-    # if (!is.null(interaction_scores)) { if (!all(dim(interaction_scores_mat)
-    # == dim(means_mat))) { interaction_scores_mat <-
-    # .prep_dimensions(interaction_scores_mat, means_mat) } } else if
-    # (!is.null(cellsign)) { if (!all(dim(cellsign_mat) == dim(means_mat))) {
-    # cellsign_mat <- .prep_dimensions(cellsign_mat, means_mat) } }
   }
   # rearrange the columns so that it interleaves the two groups
   if (!is.null(splitby_key)) {
@@ -322,8 +314,7 @@ plot_cpdb <- function(
   if (!is.null(interaction_scores)) {
     interaction_scores_mat2 <- as.matrix(interaction_scores_mat)
     df_interaction_scores <- reshape2::melt(interaction_scores_mat2, value.name = "interaction_scores")
-  }
-  if (!is.null(cellsign)) {
+  } else if (!is.null(cellsign)) {
     cellsign_mat2 <- as.matrix(cellsign_mat)
     df_cellsign <- reshape2::melt(cellsign_mat2, value.name = "cellsign")
   }
@@ -332,10 +323,17 @@ plot_cpdb <- function(
   # fill with NA.
   df <- dplyr::left_join(df_means, df_pvals, by = c("Var1", "Var2"))
   if (!is.null(interaction_scores)) {
-    df <- dplyr::left_join(df, df_interaction_scores, by = c("Var1", "Var2"))
-  }
-  if (!is.null(cellsign)) {
-    df <- dplyr::left_join(df, df_cellsign, by = c("Var1", "Var2"))
+    if (dim(df_interaction_scores)[1] < 1) {
+      df <- dplyr::left_join(df, df_interaction_scores, by = c("Var1", "Var2"))
+    } else {
+      df$interaction_scores <- NA
+    }
+  } else if (!is.null(cellsign)) {
+    if (dim(df_cellsign)[1] < 1) {
+      df <- dplyr::left_join(df, df_cellsign, by = c("Var1", "Var2"))
+    } else {
+      df$cellsign <- 0.5 # make them all not important
+    }
   }
   xp <- which(df$pvals == 1)
   if (length(xp) > 0) {
@@ -395,8 +393,7 @@ plot_cpdb <- function(
   }
   if (!is.null(interaction_scores)) {
     df$x_means_[which(df$interaction_scores < 0)] <- NA
-  }
-  if (!is.null(cellsign)) {
+  } else if (!is.null(cellsign)) {
     df$cellsign[which(df$cellsign < 1)] <- 0.5
   }
   df$significant <- ifelse(df$pvals < 0.05, "yes", NA)
@@ -795,8 +792,7 @@ plot_cpdb <- function(
     if (!is.null(interaction_scores) & (scale_alpha_by_interaction_scores ==
       TRUE)) {
       g <- g + scale_alpha_continuous(breaks = c(0, 25, 50, 75, 100))
-    }
-    if (!is.null(cellsign) & (scale_alpha_by_cellsign == TRUE)) {
+    } else if (!is.null(cellsign) & (scale_alpha_by_cellsign == TRUE)) {
       g <- g + scale_alpha_continuous(breaks = c(0, 1))
     }
     if (!is.null(highlight_size)) {
