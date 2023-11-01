@@ -352,15 +352,15 @@ function and generates the results like this:</p>
 <p>Please help contribute to the interaction grouping list <a href="https://docs.google.com/spreadsheets/d/1O9OKU7J0NdeQNJAIMpsHtWAFvY014GDQ7aigdGUSTmc/edit?usp=sharing" class="external-link">here</a>!</p>
 <p>Credits to Ben Stewart for coming up with the base code!</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">cpdb_output2</span><span class="op">)</span> <span class="co"># legacy reasons</span></span>
 <span><span class="fu"><a href="../reference/plot_cpdb2.html">plot_cpdb2</a></span><span class="op">(</span></span>
 <span>    scdata <span class="op">=</span> <span class="va">kidneyimmune</span>,</span>
 <span>    cell_type1 <span class="op">=</span> <span class="st">"B cell"</span>,</span>
 <span>    cell_type2 <span class="op">=</span> <span class="st">"."</span>,</span>
 <span>    celltype_key <span class="op">=</span> <span class="st">"celltype"</span>, <span class="co"># column name where the cell ids are located in the metadata</span></span>
-<span>    means <span class="op">=</span> <span class="va">means_stat</span>,</span>
-<span>    pvals <span class="op">=</span> <span class="va">pvals_stat</span>,</span>
-<span>    deconvoluted <span class="op">=</span> <span class="va">decon_stat</span>, <span class="co"># new options from here on specific to plot_cpdb2</span></span>
+<span>    means <span class="op">=</span> <span class="va">means2</span>,</span>
+<span>    pvals <span class="op">=</span> <span class="va">pvals2</span>,</span>
+<span>    deconvoluted <span class="op">=</span> <span class="va">decon2</span>, <span class="co"># new options from here on specific to plot_cpdb2</span></span>
 <span>    desiredInteractions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>        <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CD4T cell"</span>, <span class="st">"B cell"</span><span class="op">)</span>,</span>
 <span>        <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"B cell"</span>, <span class="st">"CD4T cell"</span><span class="op">)</span></span>
