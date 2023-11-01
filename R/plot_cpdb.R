@@ -241,11 +241,14 @@ plot_cpdb <- function(
       .data = pvals_mat, .query = query,
       .cell_type = cell_type, .celltype = celltype, ...
     )
-    # if (!is.null(interaction_scores)) {
-    #   interaction_scores_mat <- .prep_data_query_celltype(
-    #     .data = interaction_scores_mat, .query = query,
-    #     .cell_type = cell_type, .celltype = celltype, ...
-    #   )
+    if (!is.null(interaction_scores)) {
+      interaction_scores_mat <- .prep_data_query_celltype(
+        .data = interaction_scores_mat, .query = query,
+        .cell_type = cell_type, .celltype = celltype, ...
+      )
+    } else if (!is.null(cellsign)) {
+      cellsign_mat <- cellsign_mat[, col_start:ncol(cellsign_mat)] # too difficult to code is properly?
+    }
     # } else if (!is.null(cellsign)) {
     #   cellsign_mat <- .prep_data_query_celltype(
     #     .data = cellsign_mat, .query = query,
