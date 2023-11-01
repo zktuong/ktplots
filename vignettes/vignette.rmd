@@ -65,14 +65,18 @@ If you are using results from `CellPhoneDB` `deg_analysis` mode from version >= 
 # decon = pd.read_csv("deconvoluted.txt", sep="\t")
 
 # I've provided an example datasets
-data(cpdb_output)
-data(cpdb_output2)
+data(cpdb_output_stat) # ran with CellPhoneDB statistical analysis mode
+data(cpdb_output_degs) # ran with CellPhoneDB degs analysis mode
 ```
 
 ## Heatmap
 The original heatmap plot from `CellPhoneDB` can be achieved with this reimplemented function.
 ```{r, message = FALSE, warning = FALSE}
-plot_cpdb_heatmap(pvals = pvals2, cellheight = 10, cellwidth = 10)
+plot_cpdb_heatmap(pvals = pvals_stat, cellheight = 10, cellwidth = 10)
+```
+
+```{r, message = FALSE, warning = FALSE}
+plot_cpdb_heatmap(pvals = rel_int_degs, cellheight = 10, cellwidth = 10, degs_analysis = TRUE)
 ```
 
 The current heatmap is directional (check `count_network` and `interaction_edges` for more details in `return_tables = True`).
@@ -80,7 +84,7 @@ The current heatmap is directional (check `count_network` and `interaction_edges
 To obtain the heatmap where the interaction counts are not symmetrical, do:
 
 ```{r, message = FALSE, warning = FALSE}
-plot_cpdb_heatmap(pvals = pvals2, cellheight = 10, cellwidth = 10, symmetrical = FALSE)
+plot_cpdb_heatmap(pvals = pvals_stat, cellheight = 10, cellwidth = 10, symmetrical = FALSE)
 ```
 
 The values for the `symmetrical=FALSE` mode follow the direction of the L-R direction where it's always moleculeA:celltypeA -> moleculeB:celltypeB.
@@ -105,8 +109,22 @@ plot_cpdb(
     cell_type1="B cell",
     cell_type2=".",  # this means all cell-types
     celltype_key="celltype",
-    means=means2,
-    pvals=pvals2,
+    means=means_stat,
+    pvals=pvals_stat,
+    genes=c("PTPRC", "TNFSF13"),
+    title="interacting interactions!",
+)
+```
+
+```{r, message = FALSE, warning = FALSE, fig.width = 10, fig.height = 4}
+plot_cpdb(
+    scdata=kidneyimmune,
+    cell_type1="B cell",
+    cell_type2=".",  # this means all cell-types
+    celltype_key="celltype",
+    means=means_degs,
+    pvals=rel_int_degs,
+    degs_analysis=TRUE,
     genes=c("PTPRC", "TNFSF13"),
     title="interacting interactions!",
 )
@@ -114,14 +132,40 @@ plot_cpdb(
 
 Or don't specify either and it will try to plot all significant interactions.
 
+```{r, message = FALSE, warning = FALSE, fig.width = 10, fig.height = 10}
+plot_cpdb(
+    scdata=kidneyimmune,
+    cell_type1="B cell",
+    cell_type2=".",
+    celltype_key="celltype",
+    means=means_stat,
+    pvals=pvals_stat,
+)
+```
+
+```{r, message = FALSE, warning = FALSE, fig.width = 10, fig.height = 10}
+plot_cpdb(
+    scdata=kidneyimmune,
+    cell_type1="B cell",
+    cell_type2=".",  # this means all cell-types
+    celltype_key="celltype",
+    means=means_degs,
+    pvals=rel_int_degs,
+    degs_analysis=TRUE,
+    title="interacting interactions!",
+)
+```
+
+You can also try an alternative visualisation inspired by how `squidpy` displays the results:
+
 ```{r, message = FALSE, warning = FALSE, fig.width = 10, fig.height = 3}
 plot_cpdb(
     scdata=kidneyimmune,
     cell_type1="B cell",
     cell_type2=".",
     celltype_key="celltype",
-    means=means2,
-    pvals=pvals2,
+    means=means_stat,
+    pvals=pvals_stat,
     genes=c("PTPRC", "CD40", "CLEC2D"),
     default_style=FALSE
 )
@@ -130,6 +174,8 @@ plot_cpdb(
 you can also toggle options to `splitby_key` and `gene_family`:
 
 ```{r, message = FALSE, warning = FALSE, fig.width = 10, fig.height = 6}
+data(cpdb_output) # this is a different dataset where the "Experiment" was appended to the "celltype" 
+
 plot_cpdb(
     scdata = kidneyimmune,
     cell_type1 = "B cell",
@@ -244,9 +290,9 @@ plot_cpdb2(
     cell_type1 = "B cell",
     cell_type2 = ".",
     celltype_key = "celltype", # column name where the cell ids are located in the metadata
-    means = means2,
-    pvals = pvals2,
-    deconvoluted = decon2, # new options from here on specific to plot_cpdb2
+    means = means_stat,
+    pvals = pvals_stat,
+    deconvoluted = decon_stat, # new options from here on specific to plot_cpdb2
     desiredInteractions = list(
         c("CD4T cell", "B cell"),
         c("B cell", "CD4T cell")
@@ -277,9 +323,9 @@ plot_cpdb3(
     cell_type1 = "B cell",
     cell_type2 = "CD4T cell|MNPd",
     celltype_key = "celltype", # column name where the cell ids are located in the metadata
-    means = means2,
-    pvals = pvals2,
-    deconvoluted = decon2 # new options from here on specific to plot_cpdb3
+    means = means_stat,
+    pvals = pvals_stat,
+    deconvoluted = decon_stat # new options from here on specific to plot_cpdb3
 )
 ```
 
@@ -295,9 +341,9 @@ plot_cpdb4(
     cell_type1 = "NK",
     cell_type2 = "Mast",
     celltype_key = "celltype",
-    means = means2,
-    pvals = pvals2,
-    deconvoluted = decon2
+    means = means_stat,
+    pvals = pvals_stat,
+    deconvoluted = decon_stat
 )
 ```
 
