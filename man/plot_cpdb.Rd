@@ -109,7 +109,7 @@ Plotting CellPhoneDB results
 \donttest{
 data(kidneyimmune)
 data(cpdb_output)
-plot_cpdb(kidneyimmune, 'B cell', 'CD4T cell', 'celltype', means, pvals, splitby_key = 'Experiment', genes = c('CXCL13', 'CD274', 'CXCR5'))
-plot_cpdb(kidneyimmune, 'B cell', 'CD4T cell', 'celltype', means, pvals, splitby_key = 'Experiment', gene_family = 'chemokines')
+plot_cpdb(kidneyimmune, "B cell", "CD4T cell", "celltype", means, pvals, splitby_key = "Experiment", genes = c("CXCL13", "CD274", "CXCR5"))
+plot_cpdb(kidneyimmune, "B cell", "CD4T cell", "celltype", means, pvals, splitby_key = "Experiment", gene_family = "chemokines")
 }
 }
