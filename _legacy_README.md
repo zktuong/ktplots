@@ -406,11 +406,10 @@ g + g1
 
 
 ## Citation
-If you find these functions useful, please consider leaving a star, citing this repository, and/or citing the following [DOI](https://doi.org/10.5281/zenodo.5717922):
+If you find these functions useful, please consider leaving a star and cite this preprint:
 
-To cite a specific version of `ktplots`, please follow the links on the zenodo repository. e.g. v1.2.3:
 ```
-Zewen Kelvin Tuong. (2021). zktuong/ktplots: 1.2.3 (v1.2.3). Zenodo. https://doi.org/10.5281/zenodo.5717922
+Troulé K, Petryszak R, Prete M, Cranley J, Harasty A, Tuong ZK, Teichmann SA, Garcia-Alonso L, Vento-Tormo R. CellPhoneDB v5: inferring cell-cell communication from single-cell multiomics data. arXiv preprint arXiv:2311.04567. 2023 Nov 8.
 ```
 
 Thank you!

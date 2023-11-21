@@ -38,11 +38,10 @@ Please go to the official [vignette](https://zktuong.github.io/ktplots/articles/
 For the legacy version of the `README.md` file, please go [here](https://github.com/zktuong/ktplots/blob/master/_legacy_README.md).
 
 ## Citation
-If you find these functions useful, please consider leaving a star, citing this repository, and/or citing the following [DOI](https://doi.org/10.5281/zenodo.5717922):
+If you find these functions useful, please consider leaving a star and cite this preprint:
 
-To cite a specific version of `ktplots`, please follow the links on the zenodo repository. e.g. v2.0.0:
 ```
-ZK Tuong. (2021). zktuong/ktplots: 2.0.0 (v2.0.0). Zenodo. https://doi.org/10.5281/zenodo.5717922
+Troulé K, Petryszak R, Prete M, Cranley J, Harasty A, Tuong ZK, Teichmann SA, Garcia-Alonso L, Vento-Tormo R. CellPhoneDB v5: inferring cell-cell communication from single-cell multiomics data. arXiv preprint arXiv:2311.04567. 2023 Nov 8.
 ```
 
 Thank you!
