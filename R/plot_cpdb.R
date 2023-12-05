@@ -1,4 +1,4 @@
-a #' Plotting CellPhoneDB results
+#' Plotting CellPhoneDB results
 #'
 #' @param scdata single-cell data. can be Seurat/SingleCellExperiment object
 #' @param cell_type1 Name of cell type 1. Accepts regex pattern.
