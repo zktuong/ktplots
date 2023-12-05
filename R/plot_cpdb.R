@@ -1,4 +1,4 @@
-#' Plotting CellPhoneDB results
+a #' Plotting CellPhoneDB results
 #'
 #' @param scdata single-cell data. can be Seurat/SingleCellExperiment object
 #' @param cell_type1 Name of cell type 1. Accepts regex pattern.
@@ -81,10 +81,10 @@ plot_cpdb <- function(
   if (col_start == DEFAULT_V5_COL_START) {
     v5tmp <- reshape2::melt(means_mat, id.vars = colnames(means_mat)[1:col_start])
     special_sep <- paste0(rep(DEFAULT_SEP, 3), collapse = "")
-    row.names(v5tmp) <- paste0(
-      gsub("_", "-", v5tmp$interacting_pair), special_sep,
-      v5tmp$variable
-    )
+    row.names(v5tmp) <- paste0(v5tmp$id_cp_interaction, special_sep, gsub(
+      "_",
+      "-", v5tmp$interacting_pair
+    ), special_sep, v5tmp$variable)
     v5tmp <- v5tmp[, c("is_integrin", "directionality", "classification")]
   }
   cell_type1 <- .sub_pattern(cell_type = cell_type1, pattern = special_character_regex_pattern)

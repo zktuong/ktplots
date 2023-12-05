@@ -28,7 +28,7 @@ DEFAULT_COL_START <- 12
 
 .prep_table <- function(data) {
     dat <- data
-    rownames(dat) <- make.names(dat$interacting_pair, unique = TRUE)
+    rownames(dat) <- paste0(dat$id_cp_interaction, special_sep, dat$interacting_pair)
     colnames(dat) <- gsub("\\|", DEFAULT_SEP, colnames(dat))
     rownames(dat) <- gsub("_", "-", rownames(dat))
     rownames(dat) <- gsub("[.]", " ", rownames(dat))
