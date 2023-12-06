@@ -29,6 +29,7 @@
 #' @param scale_alpha_by_interaction_scores Whether or not to filter values by the interaction score.
 #' @param scale_alpha_by_cellsign Whether or not to filter the transparency of interactions by the cellsign.
 #' @param filter_by_cellsign Filter out interactions with a 0 value cellsign.
+#' @param keep_id_cp_interaction Whether or not to keep the id_cp_interaction in the plot.
 #' @param ... passes arguments to grep for cell_type1 and cell_type2.
 #' @return ggplot dot plot object of cellphone db output
 #' @examples
@@ -53,7 +54,7 @@ plot_cpdb <- function(
     default_style = TRUE, highlight_col = "red", highlight_size = NULL, max_highlight_size = 2,
     special_character_regex_pattern = NULL, degs_analysis = FALSE, return_table = FALSE,
     exclude_interactions = NULL, min_interaction_score = 0, scale_alpha_by_interaction_scores = FALSE,
-    scale_alpha_by_cellsign = FALSE, filter_by_cellsign = FALSE, title = "", ...) {
+    scale_alpha_by_cellsign = FALSE, filter_by_cellsign = FALSE, title = "", keep_id_cp_interaction = FALSE ...) {
   requireNamespace("SingleCellExperiment")
   requireNamespace("grDevices")
   if (is.null(special_character_regex_pattern)) {
@@ -409,6 +410,12 @@ plot_cpdb <- function(
   if (return_table) {
     return(df)
   } else {
+    # change the label of Var1
+    if (keep_id_cp_interaction){
+      df$Var1 <- gsub(SPECIAL_SEP, "_", df$Var1)
+    } else {
+      df$Var1 <- gsub(paste0(".*", SPECIAL_SEP), "", df$Var1)
+    }
     if (!is.null(interaction_scores)) {
       requireNamespace("dplyr")
       df <- df %>%
