@@ -393,8 +393,8 @@ SPECIAL_SEP <- paste0(rep(DEFAULT_SEP, 3), collapse = "")
 .swap_ligand_receptor <- function(df) {
     is_r_a <- as.logical(df$receptor_a)
     is_r_b <- as.logical(df$receptor_b)
-    lg <- df$ligand
-    rp <- df$receptor
+    lg <- gsub(paste0(".*", SPECIAL_SEP), "", df$ligand)
+    rp <- gsub(paste0(".*", SPECIAL_SEP), "", df$receptor)
     from <- df$from
     to <- df$to
     prd <- df$producer
