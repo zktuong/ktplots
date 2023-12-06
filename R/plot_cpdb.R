@@ -371,11 +371,10 @@ plot_cpdb <- function(
     }
   }
   row.names(df) <- paste0(
-    df$Var1, SPECIAL_SEP,
+    df$Var1, paste0(rep(DEFAULT_SEP, 3), collapse = ""),
     df$Var2
   )
   df$Var2 <- gsub(DEFAULT_SEP, "-", df$Var2)
-  df$Var1 <- gsub(paste0(".*", SPECIAL_SEP), "", df$Var1)
   final_levels <- unique(df$Var2)
   df$Var2 <- factor(df$Var2, unique(df$Var2))
   df$x_means_ <- df[, colnames(df_means)[3]]

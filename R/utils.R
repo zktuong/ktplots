@@ -801,7 +801,7 @@ SPECIAL_SEP <- paste0(rep(DEFAULT_SEP, 3), collapse = "")
     tmp_dfx$value <- interactions_items[tmp_dfx$barcode]
     tmp_dfx$pval <- pvals_items[tmp_dfx$barcode]
     edge_color <- .scPalette(length(unique(tmp_dfx$pair_swap)))
-    names(edge_color) <- gsub(paste0(".*", SPECIAL_SEP), "", unique(tmp_dfx$pair_swap))
+    names(edge_color) <- unique(tmp_dfx$pair_swap)
     if (!is.null(edge_cols)) {
         edge_color[names(edge_cols)] <- edge_cols
     }
