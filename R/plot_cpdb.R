@@ -54,7 +54,7 @@ plot_cpdb <- function(
     default_style = TRUE, highlight_col = "red", highlight_size = NULL, max_highlight_size = 2,
     special_character_regex_pattern = NULL, degs_analysis = FALSE, return_table = FALSE,
     exclude_interactions = NULL, min_interaction_score = 0, scale_alpha_by_interaction_scores = FALSE,
-    scale_alpha_by_cellsign = FALSE, filter_by_cellsign = FALSE, title = "", keep_id_cp_interaction = FALSE ...) {
+    scale_alpha_by_cellsign = FALSE, filter_by_cellsign = FALSE, title = "", keep_id_cp_interaction = FALSE, ...) {
   requireNamespace("SingleCellExperiment")
   requireNamespace("grDevices")
   if (is.null(special_character_regex_pattern)) {
