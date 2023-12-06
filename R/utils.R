@@ -8,6 +8,7 @@ DEFAULT_SPEC_PAT <- "/|:|\\?|\\*|\\+|[\\]|\\(|\\)|\\/"
 DEFAULT_V5_COL_START <- 14
 DEFAULT_CLASS_COL <- 13
 DEFAULT_COL_START <- 12
+SPECIAL_SEP <- paste0(rep(DEFAULT_SEP, 3), collapse = "")
 
 
 .prep_dimensions <- function(input, reference) {
@@ -28,8 +29,7 @@ DEFAULT_COL_START <- 12
 
 .prep_table <- function(data) {
     dat <- data
-    special_sep <- paste0(rep(DEFAULT_SEP, 3), collapse = "")
-    rownames(dat) <- paste0(dat$id_cp_interaction, special_sep, dat$interacting_pair)
+    rownames(dat) <- paste0(dat$id_cp_interaction, SPECIAL_SEP, dat$interacting_pair)
     colnames(dat) <- gsub("\\|", DEFAULT_SEP, colnames(dat))
     rownames(dat) <- gsub("_", "-", rownames(dat))
     rownames(dat) <- gsub("[.]", " ", rownames(dat))
