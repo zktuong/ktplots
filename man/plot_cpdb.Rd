@@ -35,6 +35,7 @@ plot_cpdb(
   scale_alpha_by_cellsign = FALSE,
   filter_by_cellsign = FALSE,
   title = "",
+  keep_id_cp_interaction = FALSE,
   ...
 )
 }
@@ -96,6 +97,8 @@ plot_cpdb(
 \item{scale_alpha_by_cellsign}{Whether or not to filter the transparency of interactions by the cellsign.}
 
 \item{filter_by_cellsign}{Filter out interactions with a 0 value cellsign.}
+
+\item{keep_id_cp_interaction}{Whether or not to keep the id_cp_interaction in the plot.}
 
 \item{...}{passes arguments to grep for cell_type1 and cell_type2.}
 }
