@@ -116,6 +116,21 @@ plot_cpdb(
 )
 ```
 
+You can keep the original `id_cp_interaction` value in the name too.
+```{r, message = FALSE, warning = FALSE, fig.width = 12, fig.height = 4}
+plot_cpdb(
+    scdata=kidneyimmune,
+    cell_type1="B cell",
+    cell_type2=".",  # this means all cell-types
+    celltype_key="celltype",
+    means=means_stat,
+    pvals=pvals_stat,
+    genes=c("PTPRC", "TNFSF13"),
+    title="interacting interactions!",
+    keep_id_cp_interaction=TRUE,
+)
+```
+
 ```{r, message = FALSE, warning = FALSE, fig.width = 10, fig.height = 4}
 plot_cpdb(
     scdata=kidneyimmune,

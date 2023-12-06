@@ -8,6 +8,7 @@ DEFAULT_SPEC_PAT <- "/|:|\\?|\\*|\\+|[\\]|\\(|\\)|\\/"
 DEFAULT_V5_COL_START <- 14
 DEFAULT_CLASS_COL <- 13
 DEFAULT_COL_START <- 12
+SPECIAL_SEP <- paste0(rep(DEFAULT_SEP, 3), collapse = "")
 
 
 .prep_dimensions <- function(input, reference) {
@@ -28,7 +29,7 @@ DEFAULT_COL_START <- 12
 
 .prep_table <- function(data) {
     dat <- data
-    rownames(dat) <- make.names(dat$interacting_pair, unique = TRUE)
+    rownames(dat) <- paste0(dat$id_cp_interaction, SPECIAL_SEP, dat$interacting_pair)
     colnames(dat) <- gsub("\\|", DEFAULT_SEP, colnames(dat))
     rownames(dat) <- gsub("_", "-", rownames(dat))
     rownames(dat) <- gsub("[.]", " ", rownames(dat))
@@ -392,8 +393,8 @@ DEFAULT_COL_START <- 12
 .swap_ligand_receptor <- function(df) {
     is_r_a <- as.logical(df$receptor_a)
     is_r_b <- as.logical(df$receptor_b)
-    lg <- df$ligand
-    rp <- df$receptor
+    lg <- gsub(paste0(".*", SPECIAL_SEP), "", df$ligand)
+    rp <- gsub(paste0(".*", SPECIAL_SEP), "", df$receptor)
     from <- df$from
     to <- df$to
     prd <- df$producer
