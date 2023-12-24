@@ -50,6 +50,7 @@ plot_cpdb3 <- function(
     )
     requireNamespace("SummarizedExperiment")
     requireNamespace("SingleCellExperiment")
+    lr_interactions[, 3] <- as.character(lr_interactions[, 3])
     if (is.null(splitby_key)) {
         if (any(lr_interactions[, 3] > 0)) {
             if (any(is.na(lr_interactions[, 3]))) {
