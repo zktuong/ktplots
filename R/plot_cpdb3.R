@@ -50,15 +50,16 @@ plot_cpdb3 <- function(
     )
     requireNamespace("SummarizedExperiment")
     requireNamespace("SingleCellExperiment")
+    means_col <- grep("scaled_means|means", names(lr_interactions), value = TRUE)[1]
     if (is.null(splitby_key)) {
-        if (any(lr_interactions[, 3] > 0)) {
-            if (any(is.na(lr_interactions[, 3]))) {
-                lr_interactions <- lr_interactions[lr_interactions[, 3] > 0 & !is.na(lr_interactions[
+        if (any(lr_interactions[, means_col] > 0)) {
+            if (any(is.na(lr_interactions[, means_col]))) {
+                lr_interactions <- lr_interactions[lr_interactions[, means_col] > 0 & !is.na(lr_interactions[
                     ,
-                    3
+                    means_col
                 ]), ]
             } else {
-                lr_interactions <- lr_interactions[lr_interactions[, 3] > 0, ]
+                lr_interactions <- lr_interactions[lr_interactions[, means_col] > 0, ]
             }
         }
     }

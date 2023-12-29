@@ -49,15 +49,16 @@ plot_cpdb2 <- function(
     )
     requireNamespace("SummarizedExperiment")
     requireNamespace("SingleCellExperiment")
+    means_col <- grep("scaled_means|means", names(lr_interactions), value = TRUE)[1]
     if (is.null(splitby_key)) {
-        if (any(lr_interactions[, 3] > 0)) {
-            if (any(is.na(lr_interactions[, 3]))) {
-                lr_interactions <- lr_interactions[lr_interactions[, 3] > 0 & !is.na(lr_interactions[
+        if (any(lr_interactions[, means_col] > 0)) {
+            if (any(is.na(lr_interactions[, means_col]))) {
+                lr_interactions <- lr_interactions[lr_interactions[, means_col] > 0 & !is.na(lr_interactions[
                     ,
-                    3
+                    means_col
                 ]), ]
             } else {
-                lr_interactions <- lr_interactions[lr_interactions[, 3] > 0, ]
+                lr_interactions <- lr_interactions[lr_interactions[, means_col] > 0, ]
             }
         }
     }
@@ -324,7 +325,7 @@ plot_cpdb2 <- function(
                     gl[[i]] <- .constructGraph(
                         input_group = names(dfx)[i], sep = DEFAULT_SEP,
                         el = dfx[[i]], el0 = df0[[i]], unique_id = cells_test, interactions_df = interactions_subset,
-                        plot_cpdb_out = lr_interactions, celltype_key = celltype_key,
+                        plot_cpdb_out = lr_interactions, celltype_key = celltype_key, meta = meta,
                         edge_group = edge_group, edge_group_colors = edge_group_colors,
                         node_group_color = node_group_colors, plot_score_as_thickness = plot_score_as_thickness
                     )
@@ -337,7 +338,7 @@ plot_cpdb2 <- function(
                     gl[[i]] <- .constructGraph(
                         input_group = NULL, sep = DEFAULT_SEP,
                         el = dfx[[i]], el0 = df0[[i]], unique_id = cells_test, interactions_df = interactions_subset,
-                        plot_cpdb_out = lr_interactions, celltype_key = celltype_key,
+                        plot_cpdb_out = lr_interactions, celltype_key = celltype_key, meta = meta,
                         edge_group = edge_group, edge_group_colors = edge_group_colors,
                         node_group_color = node_group_colors, plot_score_as_thickness = plot_score_as_thickness
                     )
