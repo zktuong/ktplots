@@ -480,7 +480,7 @@ SPECIAL_SEP <- paste0(rep(DEFAULT_SEP, 3), collapse = "")
 }
 
 .constructGraph <- function(input_group, sep, el, el0, unique_id, interactions_df,
-                            plot_cpdb_out, celltype_key, edge_group = FALSE, edge_group_colors = NULL, node_group_colors = NULL, plot_score_as_thickness = TRUE) {
+                            plot_cpdb_out, celltype_key, meta, edge_group = FALSE, edge_group_colors = NULL, node_group_colors = NULL, plot_score_as_thickness = TRUE) {
     requireNamespace("igraph")
     celltypes <- unique(c(as.character(el$producer), as.character(el$receiver)))
     el1 <- data.frame(

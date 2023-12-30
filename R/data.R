@@ -6,7 +6,7 @@
 #' @format A SingleCellExperiment object with the following slots filled
 #' \describe{
 #'   \item{assays}{
-#'   \itemize{Currently only contains "counts" and "logcounts"
+#'   \itemize{Currently only contains 'counts' and 'logcounts'
 #'   \item{counts - Raw expression data}
 #'   \item{logcounts - Normalized expression data}}
 #' }
