@@ -67,6 +67,19 @@ plot_cpdb <- function(scdata, cell_type1, cell_type2, celltype_key, means, pvals
   }
   means_mat <- .prep_table(means)
   pvals_mat <- .prep_table(pvals)
+  missing_cols <- c()
+  for (col in colnames(means_mat)) {
+    if (!(col %in% colnames(pvals_mat))) {
+      missing_cols <- c(missing_cols, col)
+    }
+  }
+  if (length(missing_cols) > 0) {
+    epty <- matrix(1, nrow = nrow(pvals_mat), ncol = length(missing_cols))
+    colnames(epty) <- missing_cols
+    missing_df <- as.data.frame(epty)
+    rownames(missing_df) <- rownames(pvals_mat)
+    pvals_mat <- cbind(pvals_mat, missing_df)
+  }
   if (!is.null(interaction_scores)) {
     interaction_scores_mat <- .prep_table(interaction_scores)
   } else if (!is.null(cellsign)) {
