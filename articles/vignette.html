@@ -156,7 +156,7 @@ achieved with this reimplemented function.</p>
 <p><img src="vignette_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
 <p>You can also specify specific celltypes to plot.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_cpdb_heatmap.html">plot_cpdb_heatmap</a></span><span class="op">(</span>pvals<span class="op">=</span><span class="va">pvals_stat</span>, cell_types<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"NK cell"</span>, <span class="st">"pDC"</span>, <span class="st">"B cell"</span>, <span class="st">"CD8T cell"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_cpdb_heatmap.html">plot_cpdb_heatmap</a></span><span class="op">(</span>pvals<span class="op">=</span><span class="va">pvals_stat</span>, cell_types<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"NK cell"</span>, <span class="st">"pDC"</span>, <span class="st">"B cell"</span>, <span class="st">"CD8T cell"</span><span class="op">)</span>, cellheight <span class="op">=</span> <span class="fl">10</span>, cellwidth <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
 <p><img src="vignette_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
 <p>The current heatmap is directional (check <code>count_network</code>
 and <code>interaction_edges</code> for more details in
