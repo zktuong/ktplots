@@ -188,6 +188,12 @@ test_that("plot_cpdb_heatmap works", {
     expect_that(class(p), equals("pheatmap"))
 })
 
+test_that("plot_cpdb_heatmap works2", {
+    p <- plot_cpdb_heatmap(pvals2, cell_types = c("B cell", "CD4T cell", "NK cell"))
+    expect_that(class(p), equals("pheatmap"))
+})
+
+
 test_that("plot_cpdb v5 1", {
     p <- plot_cpdb(scdata = sce_v5, cell_type1 = "PV MYH11|PV STEAP4|PV MMPP11",
         cell_type2 = "EVT_1|EVT_2|GC|iEVT|eEVT|VCT_CCC", means = means_v5, pvals = relevant_interactions_v5,
