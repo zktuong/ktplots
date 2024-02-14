@@ -59,15 +59,15 @@ plot_cpdb_heatmap <- function(
       .sub_pattern(cell_type = cell_type, pattern = special_character_regex_pattern)
     })
     cell_types_comb <- apply(expand.grid(cell_types, cell_types), 1, function(z) paste(z, collapse = "|"))
-    cell_types_keep <- row.names(all_int)[row.names(all_int) %in% cell_types_comb]
+    cell_types_keep <- row.names(all_intr)[row.names(all_intr) %in% cell_types_comb]
     empty_celltypes <- setdiff(cell_types_comb, cell_types_keep)
-    all_int <- all_int[row.names(all_int) %in% cell_types_keep, ]
+    all_intr <- all_intr[row.names(all_intr) %in% cell_types_keep, ]
     if (length(empty_celltypes) > 0) {
-      tmp_ <- matrix(0, nrow = length(empty_celltypes), ncol = ncol(all_int))
-      colnames(tmp_) <- colnames(all_int)
+      tmp_ <- matrix(0, nrow = length(empty_celltypes), ncol = ncol(all_intr))
+      colnames(tmp_) <- colnames(all_intr)
       rownames(tmp_) <- empty_celltypes
       tmp_ <- as.data.frame(tmp_)
-      all_int <- rbind(all_int, tmp_)
+      all_intr <- rbind(all_intr, tmp_)
     }
   }
   all_count <- reshape2::melt(all_intr)
