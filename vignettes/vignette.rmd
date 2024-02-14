@@ -79,6 +79,12 @@ plot_cpdb_heatmap(pvals = pvals_stat, cellheight = 10, cellwidth = 10)
 plot_cpdb_heatmap(pvals = rel_int_degs, cellheight = 10, cellwidth = 10, degs_analysis = TRUE)
 ```
 
+You can also specify specific celltypes to plot.
+
+```{r, message  = FALSE, warning = FALSE}
+plot_cpdb_heatmap(pvals=pvals_stat, cell_types=c("NK cell", "pDC", "B cell", "CD8T cell"), cellheight = 10, cellwidth = 10)
+```
+
 The current heatmap is directional (check `count_network` and `interaction_edges` for more details in `return_tables = True`).
 
 To obtain the heatmap where the interaction counts are not symmetrical, do:
