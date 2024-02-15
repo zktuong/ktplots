@@ -67,10 +67,18 @@ plot_cpdb <- function(scdata, cell_type1, cell_type2, celltype_key, means, pvals
   }
   means_mat <- .prep_table(means)
   pvals_mat <- .prep_table(pvals)
+  col_start <- ifelse(colnames(pvals_mat)[DEFAULT_CLASS_COL] == "classification",
+    DEFAULT_V5_COL_START, DEFAULT_COL_START)
   missing_cols <- c()
+  missing_rows <- c()
   for (col in colnames(means_mat)) {
     if (!(col %in% colnames(pvals_mat))) {
       missing_cols <- c(missing_cols, col)
+    }
+  }
+  for (row in rownames(means_mat)) {
+    if (!(row %in% rownames(pvals_mat))) {
+      missing_rows <- c(missing_rows, row)
     }
   }
   if (length(missing_cols) > 0) {
@@ -80,13 +88,20 @@ plot_cpdb <- function(scdata, cell_type1, cell_type2, celltype_key, means, pvals
     rownames(missing_df) <- rownames(pvals_mat)
     pvals_mat <- cbind(pvals_mat, missing_df)
   }
+  if (length(missing_rows) > 0) {
+    epty <- matrix(1, nrow = length(missing_rows), ncol = ncol(pvals_mat))
+    missing_df1 <- means_mat[missing_rows, colnames(means_mat)[1:col_start]]
+    colnames(epty) <- colnames(pvals_mat)
+    rownames(epty) <- missing_rows
+    missing_df <- as.data.frame(epty)
+    missing_df[missing_rows, ] <- missing_df1
+    pvals_mat <- rbind(pvals_mat, missing_df)
+  }
   if (!is.null(interaction_scores)) {
     interaction_scores_mat <- .prep_table(interaction_scores)
   } else if (!is.null(cellsign)) {
     cellsign_mat <- .prep_table(cellsign)
   }
-  col_start <- ifelse(colnames(pvals_mat)[DEFAULT_CLASS_COL] == "classification",
-    DEFAULT_V5_COL_START, DEFAULT_COL_START)
   if (degs_analysis) {
     pvals_mat[, col_start:ncol(pvals_mat)] <- 1 - pvals_mat[, col_start:ncol(pvals_mat)]
   }
