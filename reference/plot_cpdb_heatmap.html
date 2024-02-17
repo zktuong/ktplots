@@ -59,6 +59,7 @@
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">plot_cpdb_heatmap</span><span class="op">(</span></span>
 <span>  <span class="va">pvals</span>,</span>
+<span>  cell_types <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  degs_analysis <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  log1p_transform <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  show_rownames <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -87,6 +88,10 @@
     <h2>Arguments</h2>
     <dl><dt>pvals</dt>
 <dd><p>Dataframe corresponding to `pvalues.txt` or `relevant_interactions.txt` from CellPhoneDB.</p></dd>
+
+
+<dt>cell_types</dt>
+<dd><p>vector of cell types to plot. If NULL, all cell types will be plotted.</p></dd>
 
 
 <dt>degs_analysis</dt>
