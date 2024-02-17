@@ -51,7 +51,7 @@ plot_cpdb_heatmap <- function(
   all_intr <- t(all_intr[, -c(1:col_start - 1)])
   colnames(all_intr) <- intr_pairs
   if (is.null(cell_types)) {
-    cell_types <- unique(unlist(strsplit(colnames(all_intr)[col_start] intr_pairs, DEFAULT_CPDB_SEP)))
+    cell_types <- sort(unique(unlist(strsplit(all_intr.columns[col_start:], DEFAULT_CPDB_SEP))))
   }
   cell_types_comb <- apply(expand.grid(cell_types, cell_types), 1, function(z) paste(z, collapse = "|"))
   cell_types_keep <- row.names(all_intr)[row.names(all_intr) %in% cell_types_comb]
