@@ -780,11 +780,11 @@ plot_cpdb <- function(
         g <- g + geom_point(aes(
           x = Var2, y = Var1, colour = scaled_means,
           size = scaled_means
-        ), data = df2, inherit_aes = FALSE, na_rm = TRUE)
+        ), data = df2, inherit.aes = FALSE, na.rm = TRUE)
       } else {
         df2$means[df$pvals < 0.05] <- NA
         g <- g + geom_point(aes(x = Var2, y = Var1, colour = means, size = means),
-          data = df2, inherit_aes = FALSE, na_rm = TRUE
+          data = df2, inherit.aes = FALSE, na.rm = TRUE
         )
       }
       if (length(col_option) == 1) {
