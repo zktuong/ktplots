@@ -22,7 +22,6 @@
 #' @param alpha pvalue threshold to trim.
 #' @param return_tables whether or not to return the results as a table rather than the heatmap
 #' @param symmetrical whether or not to return as symmetrical matrix
-#' @param special_character_regex_pattern search pattern if the cell type names contains special character. NULL defaults to '/|:|\\?|\\*|\\+|[\\]|\\(|\\)'.
 #' @param ... passed to pheatmap::pheatmap.
 #' @return pheatmap object of cellphone db output
 #' @examples
@@ -35,40 +34,39 @@
 #' @include utils.R
 #' @export
 
-plot_cpdb_heatmap <- function(
-    pvals, cell_types = NULL, degs_analysis = FALSE, log1p_transform = FALSE,
-    show_rownames = TRUE, show_colnames = TRUE, scale = "none", cluster_cols = TRUE,
-    cluster_rows = TRUE, border_color = "white", fontsize_row = 11, fontsize_col = 11,
-    family = "Arial", main = "", treeheight_col = 0, treeheight_row = 0, low_col = "dodgerblue4",
-    mid_col = "peachpuff", high_col = "deeppink4", alpha = 0.05, return_tables = FALSE,
-    symmetrical = TRUE, special_character_regex_pattern = NULL, ...) {
+plot_cpdb_heatmap <- function(pvals, cell_types = NULL, degs_analysis = FALSE, log1p_transform = FALSE,
+  show_rownames = TRUE, show_colnames = TRUE, scale = "none", cluster_cols = TRUE,
+  cluster_rows = TRUE, border_color = "white", fontsize_row = 11, fontsize_col = 11,
+  family = "Arial", main = "", treeheight_col = 0, treeheight_row = 0, low_col = "dodgerblue4",
+  mid_col = "peachpuff", high_col = "deeppink4", alpha = 0.05, return_tables = FALSE,
+  symmetrical = TRUE, ...) {
   requireNamespace("reshape2")
   requireNamespace("grDevices")
-  if (is.null(special_character_regex_pattern)) {
-    special_character_regex_pattern <- DEFAULT_SPEC_PAT
-  }
   all_intr <- pvals
   col_start <- ifelse(colnames(all_intr)[DEFAULT_CLASS_COL] == "classification",
-    DEFAULT_V5_COL_START, DEFAULT_COL_START
-  )
+    DEFAULT_V5_COL_START, DEFAULT_COL_START)
   intr_pairs <- all_intr$interacting_pair
   all_intr <- t(all_intr[, -c(1:col_start - 1)])
   colnames(all_intr) <- intr_pairs
-  if (!is.null(cell_types)) {
-    cell_types <- lapply(cell_types, function(cell_type) {
-      .sub_pattern(cell_type = cell_type, pattern = special_character_regex_pattern)
-    })
-    cell_types_comb <- apply(expand.grid(cell_types, cell_types), 1, function(z) paste(z, collapse = "|"))
-    cell_types_keep <- row.names(all_intr)[row.names(all_intr) %in% cell_types_comb]
-    empty_celltypes <- setdiff(cell_types_comb, cell_types_keep)
-    all_intr <- all_intr[row.names(all_intr) %in% cell_types_keep, ]
-    if (length(empty_celltypes) > 0) {
-      tmp_ <- matrix(0, nrow = length(empty_celltypes), ncol = ncol(all_intr))
-      colnames(tmp_) <- colnames(all_intr)
-      rownames(tmp_) <- empty_celltypes
-      tmp_ <- as.data.frame(tmp_)
-      all_intr <- rbind(all_intr, tmp_)
+  if (is.null(cell_types)) {
+    cell_types <- sort(unique(unlist(strsplit(colnames(pvals)[col_start:ncol(pvals)],
+      paste0("\\", DEFAULT_CPDB_SEP)))))
+  }
+  cell_types_comb <- apply(expand.grid(cell_types, cell_types), 1, function(z) {
+    paste(z, collapse = "|")
+  })
+  cell_types_keep <- row.names(all_intr)[row.names(all_intr) %in% cell_types_comb]
+  empty_celltypes <- setdiff(cell_types_comb, cell_types_keep)
+  all_intr <- all_intr[row.names(all_intr) %in% cell_types_keep, ]
+  if (length(empty_celltypes) > 0) {
+    tmp_ <- matrix(0, nrow = length(empty_celltypes), ncol = ncol(all_intr))
+    colnames(tmp_) <- colnames(all_intr)
+    rownames(tmp_) <- empty_celltypes
+    if (!degs_analysis) {
+      tmp_ <- tmp_ + 1
     }
+    tmp_ <- as.data.frame(tmp_)
+    all_intr <- as.matrix(rbind(all_intr, tmp_))
   }
   all_count <- reshape2::melt(all_intr)
   if (!degs_analysis) {
@@ -101,20 +99,18 @@ plot_cpdb_heatmap <- function(
       count_mat <- log1p(count_mat)
     }
 
-    p <- pheatmap(count_mat,
-      show_rownames = show_rownames, show_colnames = show_colnames,
+    p <- pheatmap(count_mat, show_rownames = show_rownames, show_colnames = show_colnames,
       scale = scale, cluster_cols = cluster_cols, border_color = border_color,
       cluster_rows = cluster_rows, fontsize_row = fontsize_row, fontsize_col = fontsize_col,
       main = main, treeheight_row = treeheight_row, family = family, color = col.heatmap,
-      treeheight_col = treeheight_col, ...
-    )
+      treeheight_col = treeheight_col, ...)
     if (return_tables) {
       if (symmetrical) {
         all_sum <- rowSums(count_mat)
         all_sum <- data.frame(all_sum)
         return(list(count_network = count_mat, interaction_count = all_sum))
       } else {
-        count_mat <- t(count_mat) # so that the table output is the same layout as the plot
+        count_mat <- t(count_mat)  # so that the table output is the same layout as the plot
         row_sum <- rowSums(count_mat)
         col_sum <- colSums(count_mat)
         all_sum <- data.frame(row_sum, col_sum)
