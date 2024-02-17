@@ -45,10 +45,12 @@ test_that("plot_cpdb_heatmap works2", {
 })
 
 
-test_that("plot_cpdb_heatmap works2", {
+test_that("plot_cpdb_heatmap return table not symmetrical", {
     p <- plot_cpdb_heatmap(relevant_interactions_v5, cell_types = c(
         "iEVT", "PV MYH11",
         "PV STEAP4", "EVT_1"
-    ), degs_analysis = TRUE, symmetrical = FALSE)
-    expect_that(class(p), equals("pheatmap"))
+    ), degs_analysis = TRUE, return_tables = TRUE, symmetrical = FALSE)
+    expect_true(is.list(p))
+    expect_true(is.matrix(p[[1]]))
+    expect_true(is.data.frame(p[[2]]))
 })
