@@ -43,3 +43,12 @@ test_that("plot_cpdb_heatmap works2", {
     ), degs_analysis = FALSE)
     expect_that(class(p), equals("pheatmap"))
 })
+
+
+test_that("plot_cpdb_heatmap works2", {
+    p <- plot_cpdb_heatmap(relevant_interactions_v5, cell_types = c(
+        "iEVT", "PV MYH11",
+        "PV STEAP4", "EVT_1"
+    ), degs_analysis = TRUE, symmetrical = FALSE)
+    expect_that(class(p), equals("pheatmap"))
+})
