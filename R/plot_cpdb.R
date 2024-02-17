@@ -77,8 +77,8 @@ plot_cpdb <- function(
     colnames(tmp_pvals_mat) <- colnames(means_mat)
 
     # Copy the values from means_mat to tmp_pvals_mat
-    tmp_pvals_mat[, 1:col_start] <- means_mat[, 1:col_start]
-    tmp_pvals_mat[is.na(tmp_pvals_mat)] <- pvals_mat[is.na(tmp_pvals_mat)]
+    tmp_pvals_mat[, 1:(col_start - 1)] <- means_mat[, 1:(col_start - 1)]
+    tmp_pvals_mat[rownames(pvals_mat), colnames(pvals_mat)] <- pvals_mat
 
     if (degs_analysis) {
       tmp_pvals_mat[is.na(tmp_pvals_mat)] <- 0
