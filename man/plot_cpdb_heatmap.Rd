@@ -6,6 +6,7 @@
 \usage{
 plot_cpdb_heatmap(
   pvals,
+  cell_types = NULL,
   degs_analysis = FALSE,
   log1p_transform = FALSE,
   show_rownames = TRUE,
@@ -31,6 +32,8 @@ plot_cpdb_heatmap(
 }
 \arguments{
 \item{pvals}{Dataframe corresponding to `pvalues.txt` or `relevant_interactions.txt` from CellPhoneDB.}
+
+\item{cell_types}{vector of cell types to plot. If NULL, all cell types will be plotted.}
 
 \item{degs_analysis}{Whether `CellPhoneDB` was run in `deg_analysis` mode}
 

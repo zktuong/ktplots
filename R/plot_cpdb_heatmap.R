@@ -52,8 +52,9 @@ plot_cpdb_heatmap <- function(pvals, cell_types = NULL, degs_analysis = FALSE, l
     cell_types <- sort(unique(unlist(strsplit(colnames(all_intr)[col_start:ncol(all_intr)],
       paste0("\\", DEFAULT_CPDB_SEP)))))
   }
-  cell_types_comb <- apply(expand.grid(cell_types, cell_types), 1, function(z) paste(z,
-    collapse = "|"))
+  cell_types_comb <- apply(expand.grid(cell_types, cell_types), 1, function(z) {
+    paste(z, collapse = "|")
+  })
   cell_types_keep <- row.names(all_intr)[row.names(all_intr) %in% cell_types_comb]
   empty_celltypes <- setdiff(cell_types_comb, cell_types_keep)
   all_intr <- all_intr[row.names(all_intr) %in% cell_types_keep, ]
@@ -61,8 +62,11 @@ plot_cpdb_heatmap <- function(pvals, cell_types = NULL, degs_analysis = FALSE, l
     tmp_ <- matrix(0, nrow = length(empty_celltypes), ncol = ncol(all_intr))
     colnames(tmp_) <- colnames(all_intr)
     rownames(tmp_) <- empty_celltypes
+    if (!degs_analysis) {
+      tmp_ <- tmp_ + 1
+    }
     tmp_ <- as.data.frame(tmp_)
-    all_intr <- rbind(all_intr, tmp_)
+    all_intr <- as.matrix(rbind(all_intr, tmp_))
   }
   all_count <- reshape2::melt(all_intr)
   if (!degs_analysis) {
