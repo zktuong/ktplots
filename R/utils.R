@@ -12,22 +12,6 @@ SPECIAL_SEP <- paste0(rep(DEFAULT_SEP, 3), collapse = "")
 DEFAULT_CPDB_SEP <- "|"
 
 
-.prep_dimensions <- function(input, reference) {
-    requireNamespace("reshape2")
-    tmp_mat <- reference
-    tmp_mat <- (tmp_mat * 0) + 1
-    melted_A <- reshape2::melt(as.matrix(tmp_mat))
-    melted_B <- reshape2::melt(as.matrix(input))
-    rownames(melted_A) <- paste0(melted_A$Var1, DEFAULT_SEP, melted_A$Var2)
-    rownames(melted_B) <- paste0(melted_B$Var1, DEFAULT_SEP, melted_B$Var2)
-    melted_A[row.names(melted_B), ] <- melted_B
-    tmp_mat <- reshape2::dcast(melted_A, Var1 ~ Var2, value.var = "value")
-    rownames(tmp_mat) <- tmp_mat$Var1
-    tmp_mat <- tmp_mat[, -1]
-    tmp_mat <- tmp_mat[rownames(reference), colnames(reference)]
-    return(tmp_mat)
-}
-
 .prep_table <- function(data) {
     dat <- data
     rownames(dat) <- paste0(dat$id_cp_interaction, SPECIAL_SEP, dat$interacting_pair)
