@@ -5,6 +5,7 @@ data(cpdb_output_v5)
 
 test_that("combine_cpdb works 1", {
     p <- combine_cpdb(decon, decon, decon)
+    expect_that(class(p), equals("data.frame"))
 })
 
 
