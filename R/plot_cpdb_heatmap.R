@@ -49,7 +49,7 @@ plot_cpdb_heatmap <- function(pvals, cell_types = NULL, degs_analysis = FALSE, l
   all_intr <- t(all_intr[, -c(1:col_start - 1)])
   colnames(all_intr) <- intr_pairs
   if (is.null(cell_types)) {
-    cell_types <- sort(unique(unlist(strsplit(colnames(all_intr)[col_start:ncol(all_intr)],
+    cell_types <- sort(unique(unlist(strsplit(colnames(pvals)[col_start:ncol(pvals)],
       paste0("\\", DEFAULT_CPDB_SEP)))))
   }
   cell_types_comb <- apply(expand.grid(cell_types, cell_types), 1, function(z) {
