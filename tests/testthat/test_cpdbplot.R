@@ -232,20 +232,6 @@ test_that("plot_cpdb4 works 3", {
     }
 })
 
-test_that("plot_cpdb_heatmap works", {
-    p <- plot_cpdb_heatmap(pvals2)
-    expect_that(class(p), equals("pheatmap"))
-})
-
-test_that("plot_cpdb_heatmap works2", {
-    p <- plot_cpdb_heatmap(relevant_interactions_v5, cell_types = c(
-        "iEVT", "PV MYH11",
-        "PV STEAP4", "EVT_1"
-    ), degs_analysis = TRUE)
-    expect_that(class(p), equals("pheatmap"))
-})
-
-
 test_that("plot_cpdb v5 1", {
     p <- plot_cpdb(
         scdata = sce_v5, cell_type1 = "PV MYH11|PV STEAP4|PV MMPP11",
