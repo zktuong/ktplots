@@ -9,6 +9,7 @@ DEFAULT_V5_COL_START <- 14
 DEFAULT_CLASS_COL <- 13
 DEFAULT_COL_START <- 12
 SPECIAL_SEP <- paste0(rep(DEFAULT_SEP, 3), collapse = "")
+DEFAULT_CPDB_SEP <- "|"
 
 
 .prep_dimensions <- function(input, reference) {
@@ -30,7 +31,7 @@ SPECIAL_SEP <- paste0(rep(DEFAULT_SEP, 3), collapse = "")
 .prep_table <- function(data) {
     dat <- data
     rownames(dat) <- paste0(dat$id_cp_interaction, SPECIAL_SEP, dat$interacting_pair)
-    colnames(dat) <- gsub("\\|", DEFAULT_SEP, colnames(dat))
+    colnames(dat) <- gsub(paste0("\\", DEFAULT_CPDB_SEP), DEFAULT_SEP, colnames(dat))
     rownames(dat) <- gsub("_", "-", rownames(dat))
     rownames(dat) <- gsub("[.]", " ", rownames(dat))
     return(dat)
