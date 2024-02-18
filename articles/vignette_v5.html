@@ -87,7 +87,8 @@
 <h2 id="cellphonedb-v5-results">CellPhoneDB v5 results<a class="anchor" aria-label="anchor" href="#cellphonedb-v5-results"></a>
 </h2>
 <p>From version 5 of <a href="https://www.github.com/ventolab/cellphonedb" class="external-link">CellPhoneDB</a>,
-there is a new output file - <code>interaction_scores</code>.</p>
+there are two new output files - <code>interaction_scores</code> and
+<code>CellSign</code>.</p>
 <p>According to the official repository, this table corresponds to:</p>
 <p><code>interaction_scores</code>: stores the new score generated. This
 score ranges from 0-100.</p>
@@ -110,7 +111,10 @@ data.</p>
 <p>The aim of the CellSign module is to identify activated receptors and
 prioritise high-confidence interactions by leveraging the activity of
 the downstream transcription factors (TFs). CellSign relies on a
-database of receptors linked to their putative downstream TFs.</p>
+database of receptors linked to their putative downstream TFs. This is a
+binary table where 1 means it’s a hit. In
+<code>ktplots/ktplotspy</code>, we convert all other values to 0.5 adn
+fit it to the <code>alpha</code> parameter for visualisation.</p>
 <p><code>ktplots</code> will support these output via inclusion into the
 existing <code>plot_cpdb</code> function. We will gradually enable their
 functionality across the other functions, as well as with in the python
