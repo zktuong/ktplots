@@ -549,7 +549,11 @@ plot_cpdb <- function(
       if (filter_by_cellsign == TRUE) {
         requireNamespace("dplyr")
         df <- df %>%
-          dplyr::filter(cellsign >= 1)
+          dplyr::filter(!is.na(cellsign))
+        df <- df %>%
+          dplyr::group_by(Var1) %>%
+          dplyr::filter(dplyr::n_distinct(significant) > 1) %>%
+          as.data.frame()
       }
       if (scale_alpha_by_cellsign == TRUE) {
         if (default_style) {
