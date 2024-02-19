@@ -271,13 +271,7 @@ plot_cpdb <- function(
     # .prep_data_query_celltype( .data = cellsign_mat, .query = query,
     # .cell_type = cell_type, .celltype = celltype, ...  ) }
   }
-  if (length(means_mat) == 0) {
-    stop("Please check your options for splitby_key and your celltypes.")
-  } else {
-    if (!all(dim(pvals_mat) == dim(means_mat))) {
-      pvals_mat <- .prep_dimensions(pvals_mat, means_mat)
-    }
-  }
+
   # rearrange the columns so that it interleaves the two groups
   if (!is.null(splitby_key)) {
     if (length(groups) > 0) {
@@ -555,7 +549,11 @@ plot_cpdb <- function(
       if (filter_by_cellsign == TRUE) {
         requireNamespace("dplyr")
         df <- df %>%
-          dplyr::filter(cellsign >= 1)
+          dplyr::filter(!is.na(cellsign))
+        df <- df %>%
+          dplyr::group_by(Var1) %>%
+          dplyr::filter(dplyr::n_distinct(significant) > 1) %>%
+          as.data.frame()
       }
       if (scale_alpha_by_cellsign == TRUE) {
         if (default_style) {
@@ -786,11 +784,11 @@ plot_cpdb <- function(
         g <- g + geom_point(aes(
           x = Var2, y = Var1, colour = scaled_means,
           size = scaled_means
-        ), data = df2, inherit_aes = FALSE, na_rm = TRUE)
+        ), data = df2, inherit.aes = FALSE, na.rm = TRUE)
       } else {
         df2$means[df$pvals < 0.05] <- NA
         g <- g + geom_point(aes(x = Var2, y = Var1, colour = means, size = means),
-          data = df2, inherit_aes = FALSE, na_rm = TRUE
+          data = df2, inherit.aes = FALSE, na.rm = TRUE
         )
       }
       if (length(col_option) == 1) {
