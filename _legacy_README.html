@@ -96,45 +96,45 @@
 <span>    means <span class="op">=</span> <span class="va">means</span>, pvals <span class="op">=</span> <span class="va">pvals</span>,</span>
 <span>    genes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"XCR1"</span>, <span class="st">"CXCL10"</span>, <span class="st">"CCL5"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span><span class="fu"><a href="reference/misc.html">small_axis</a></span><span class="op">(</span>fontsize <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="reference/misc.html">small_grid</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="reference/misc.html">small_guide</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="reference/misc.html">small_legend</a></span><span class="op">(</span>fontsize <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="co"># some helper functions included in ktplots to help with the plotting</span></span></code></pre></div>
-<div class="figure">
-<img src="exampleImages/plot_cpdb_example.png" alt=""><p class="caption">plot_cpdb</p>
+<div class="float">
+<img src="exampleImages/plot_cpdb_example.png" alt="plot_cpdb"><div class="figcaption">plot_cpdb</div>
 </div>
 <p>You can also try specifying <code>gene_family</code> option which will grep some pre-determined genes.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/plot_cpdb.html">plot_cpdb</a></span><span class="op">(</span>scdata <span class="op">=</span> <span class="va">kidneyimmune</span>, cell_type1 <span class="op">=</span> <span class="st">'B cell'</span>, cell_type2 <span class="op">=</span> <span class="st">'CD4T cell'</span>, </span>
 <span>    celltype_key <span class="op">=</span> <span class="st">'celltype'</span>, means <span class="op">=</span> <span class="va">means</span>, pvals <span class="op">=</span> <span class="va">pvals</span>, splitby_key <span class="op">=</span> <span class="st">'Experiment'</span>,</span>
 <span>    gene_family <span class="op">=</span> <span class="st">'chemokines'</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="reference/misc.html">small_guide</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="reference/misc.html">small_axis</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="reference/misc.html">small_legend</a></span><span class="op">(</span>keysize<span class="op">=</span><span class="fl">.5</span><span class="op">)</span></span></code></pre></div>
-<div class="figure">
-<img src="exampleImages/plot_cpdb_example1.png" alt=""><p class="caption">plot_cpdb</p>
+<div class="float">
+<img src="exampleImages/plot_cpdb_example1.png" alt="plot_cpdb"><div class="figcaption">plot_cpdb</div>
 </div>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/plot_cpdb.html">plot_cpdb</a></span><span class="op">(</span>scdata <span class="op">=</span> <span class="va">kidneyimmune</span>, cell_type1 <span class="op">=</span> <span class="st">'B cell'</span>, cell_type2 <span class="op">=</span> <span class="st">'CD4T cell'</span>, </span>
 <span>    celltype_key <span class="op">=</span> <span class="st">'celltype'</span>, means <span class="op">=</span> <span class="va">means</span>, pvals <span class="op">=</span> <span class="va">pvals</span>, splitby_key <span class="op">=</span> <span class="st">'Experiment'</span>,</span>
 <span>    gene_family <span class="op">=</span> <span class="st">'chemokines'</span>, col_option <span class="op">=</span> <span class="st">"maroon"</span>, highlight <span class="op">=</span> <span class="st">"blue"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="reference/misc.html">small_guide</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="reference/misc.html">small_axis</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="reference/misc.html">small_legend</a></span><span class="op">(</span>keysize<span class="op">=</span><span class="fl">.5</span><span class="op">)</span></span></code></pre></div>
-<div class="figure">
-<img src="exampleImages/plot_cpdb_example2.png" alt=""><p class="caption">plot_cpdb</p>
+<div class="float">
+<img src="exampleImages/plot_cpdb_example2.png" alt="plot_cpdb"><div class="figcaption">plot_cpdb</div>
 </div>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/plot_cpdb.html">plot_cpdb</a></span><span class="op">(</span>scdata <span class="op">=</span> <span class="va">kidneyimmune</span>, cell_type1 <span class="op">=</span> <span class="st">'B cell'</span>, cell_type2 <span class="op">=</span> <span class="st">'CD4T cell'</span>, </span>
 <span>    celltype_key <span class="op">=</span> <span class="st">'celltype'</span>, means <span class="op">=</span> <span class="va">means</span>, pvals <span class="op">=</span> <span class="va">pvals</span>, splitby_key <span class="op">=</span> <span class="st">'Experiment'</span>,</span>
 <span>    gene_family <span class="op">=</span> <span class="st">'chemokines'</span>, col_option <span class="op">=</span> <span class="fu">viridis</span><span class="fu">::</span><span class="fu"><a href="https://sjmgarnier.github.io/viridisLite/reference/viridis.html" class="external-link">cividis</a></span><span class="op">(</span><span class="fl">50</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="reference/misc.html">small_guide</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="reference/misc.html">small_axis</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="reference/misc.html">small_legend</a></span><span class="op">(</span>keysize<span class="op">=</span><span class="fl">.5</span><span class="op">)</span></span></code></pre></div>
-<div class="figure">
-<img src="exampleImages/plot_cpdb_example3.png" alt=""><p class="caption">plot_cpdb</p>
+<div class="float">
+<img src="exampleImages/plot_cpdb_example3.png" alt="plot_cpdb"><div class="figcaption">plot_cpdb</div>
 </div>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/plot_cpdb.html">plot_cpdb</a></span><span class="op">(</span>scdata <span class="op">=</span> <span class="va">kidneyimmune</span>, cell_type1 <span class="op">=</span> <span class="st">'B cell'</span>, cell_type2 <span class="op">=</span> <span class="st">'CD4T cell'</span>, </span>
 <span>    celltype_key <span class="op">=</span> <span class="st">'celltype'</span>, means <span class="op">=</span> <span class="va">means</span>, pvals <span class="op">=</span> <span class="va">pvals</span>, splitby_key <span class="op">=</span> <span class="st">'Experiment'</span>,</span>
 <span>    gene_family <span class="op">=</span> <span class="st">'chemokines'</span>, noir <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="reference/misc.html">small_guide</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="reference/misc.html">small_axis</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="reference/misc.html">small_legend</a></span><span class="op">(</span>keysize<span class="op">=</span><span class="fl">.5</span><span class="op">)</span></span></code></pre></div>
-<div class="figure">
-<img src="exampleImages/plot_cpdb_example4.png" alt=""><p class="caption">plot_cpdb</p>
+<div class="float">
+<img src="exampleImages/plot_cpdb_example4.png" alt="plot_cpdb"><div class="figcaption">plot_cpdb</div>
 </div>
 <p>A new style to plot inspired from <code>squidpy.pl.ligrec</code> where significant interactions are shown as outline instead.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/plot_cpdb.html">plot_cpdb</a></span><span class="op">(</span>scdata <span class="op">=</span> <span class="va">kidneyimmune</span>, cell_type1 <span class="op">=</span> <span class="st">'B cell'</span>, cell_type2 <span class="op">=</span> <span class="st">'CD4T cell'</span>, </span>
 <span>    celltype_key <span class="op">=</span> <span class="st">'celltype'</span>, means <span class="op">=</span> <span class="va">means</span>, pvals <span class="op">=</span> <span class="va">pvals</span>, splitby_key <span class="op">=</span> <span class="st">'Experiment'</span>,</span>
 <span>    gene_family <span class="op">=</span> <span class="st">'chemokines'</span>, default_style <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="reference/misc.html">small_guide</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="reference/misc.html">small_axis</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="reference/misc.html">small_legend</a></span><span class="op">(</span>keysize<span class="op">=</span><span class="fl">.5</span><span class="op">)</span></span></code></pre></div>
-<div class="figure">
-<img src="exampleImages/plot_cpdb_alternate2.png" alt=""><p class="caption">plot_cpdb</p>
+<div class="float">
+<img src="exampleImages/plot_cpdb_alternate2.png" alt="plot_cpdb"><div class="figcaption">plot_cpdb</div>
 </div>
 <p>if <code>genes</code> and <code>gene_family</code> are both not specified, the function will try to plot everything.</p>
 <p>Specifying <code>keep_significant_only</code> will only keep those that are p&lt;0.05.</p>
@@ -145,8 +145,8 @@
 <span>        splitby_key <span class="op">=</span> <span class="st">"Experiment"</span>, gene_family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Coinhibitory"</span>, <span class="st">"Costimulatory"</span><span class="op">)</span>,</span>
 <span>        cluster_rows <span class="op">=</span> <span class="cn">FALSE</span>, <span class="co"># ensures that the families are separate</span></span>
 <span>        keep_significant_only <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<div class="figure">
-<img src="exampleImages/plotcpdb_two.png" alt=""><p class="caption">plot_cpdb</p>
+<div class="float">
+<img src="exampleImages/plotcpdb_two.png" alt="plot_cpdb"><div class="figcaption">plot_cpdb</div>
 </div>
 <p>And also provide custom families as a <code>data.frame</code>.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
@@ -154,14 +154,14 @@
 <span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/plot_cpdb.html">plot_cpdb</a></span><span class="op">(</span>scdata <span class="op">=</span> <span class="va">kidneyimmune</span>, cell_type1 <span class="op">=</span> <span class="st">"B cell"</span>, cell_type2 <span class="op">=</span> <span class="st">"CD4T cell"</span>, celltype_key <span class="op">=</span> <span class="st">"celltype"</span>, means <span class="op">=</span> <span class="va">means</span>, pvals <span class="op">=</span> <span class="va">pvals</span>,,</span>
 <span>        splitby_key <span class="op">=</span> <span class="st">"Experiment"</span>, gene_family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"set1"</span>, <span class="st">"set2"</span><span class="op">)</span>, custom_gene_family <span class="op">=</span><span class="va">df</span>,</span>
 <span>        keep_significant_only <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<div class="figure">
-<img src="exampleImages/plotcpdb_custom.png" alt=""><p class="caption">plot_cpdb</p>
+<div class="float">
+<img src="exampleImages/plotcpdb_custom.png" alt="plot_cpdb"><div class="figcaption">plot_cpdb</div>
 </div>
 </div>
 <div class="section level2">
 <h2 id="combine_cpdb">combine_cpdb<a class="anchor" aria-label="anchor" href="#combine_cpdb"></a></h2>
 <p>For the <code>splitby_key</code> option to work, the annotation in the meta file must be defined in the following format:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>{splitby_key}_{celltype_key}</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a>{splitby_key}_{celltype_key}</span></code></pre></div>
 <p>so to set up an example vector, it would be something like:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">annotation</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">kidneyimmune</span><span class="op">$</span><span class="va">Experiment</span>, <span class="st">'_'</span>, <span class="va">kidneyimmune</span><span class="op">$</span><span class="va">celltype</span><span class="op">)</span></span></code></pre></div>
@@ -241,8 +241,8 @@
 <span>    remove_self <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span>    <span class="op">)</span></span>
 <span><span class="va">p</span></span></code></pre></div>
-<div class="figure">
-<img src="exampleImages/plot_cpdb2_example.png" alt=""><p class="caption">plot_cpd2</p>
+<div class="float">
+<img src="exampleImages/plot_cpdb2_example.png" alt="plot_cpd2"><div class="figcaption">plot_cpd2</div>
 </div>
 </div>
 <div class="section level4">
@@ -289,8 +289,8 @@
 <span>    keep_significant_only <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>    standard_scale <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>    remove_self <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<div class="figure">
-<img src="exampleImages/plot_cpdb2.png" alt=""><p class="caption">plot_cpd2</p>
+<div class="float">
+<img src="exampleImages/plot_cpdb2.png" alt="plot_cpd2"><div class="figcaption">plot_cpd2</div>
 </div>
 </div>
 </div>
@@ -314,8 +314,8 @@
 <span>    remove_self <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span>    <span class="op">)</span></span>
 <span><span class="va">p</span></span></code></pre></div>
-<div class="figure">
-<img src="exampleImages/plot_cpdb3.png" alt=""><p class="caption">plot_cpdb3</p>
+<div class="float">
+<img src="exampleImages/plot_cpdb3.png" alt="plot_cpdb3"><div class="figcaption">plot_cpdb3</div>
 </div>
 </div>
 <div class="section level2">
@@ -339,8 +339,8 @@
 <span>    standard_scale <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>    <span class="op">)</span></span>
 <span><span class="va">p</span></span></code></pre></div>
-<div class="figure">
-<img src="exampleImages/plot_cpdb4.png" alt=""><p class="caption">plot_cpdb4</p>
+<div class="float">
+<img src="exampleImages/plot_cpdb4.png" alt="plot_cpdb4"><div class="figcaption">plot_cpdb4</div>
 </div>
 <p>or specify more than 1 interactions + only show specific cell-type type interactions!</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
@@ -359,8 +359,8 @@
 <span>            <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'B cell'</span>, <span class="st">'CD4T cell'</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>        keep_significant_only <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>        <span class="op">)</span></span></code></pre></div>
-<div class="figure">
-<img src="exampleImages/plot_cpdb4_2.png" alt=""><p class="caption">plot_cpdb42</p>
+<div class="float">
+<img src="exampleImages/plot_cpdb4_2.png" alt="plot_cpdb42"><div class="figcaption">plot_cpdb42</div>
 </div>
 </div>
 <div class="section level2">
@@ -368,13 +368,13 @@
 <p>Ported the original heatmap plot to this pacakge as per the main cellphonedb repo. Uses <code>pheatmap</code> internally. Colours indicate the number of significant interactions.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/plot_cpdb_heatmap.html">plot_cpdb_heatmap</a></span><span class="op">(</span><span class="va">kidneyimmune</span>, <span class="st">'celltype'</span>, <span class="va">pvals2</span>, cellheight <span class="op">=</span> <span class="fl">10</span>, cellwidth <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
-<div class="figure">
-<img src="exampleImages/plot_cpdb_heatmap2.png" alt=""><p class="caption">plot_cpdb_heatmap</p>
+<div class="float">
+<img src="exampleImages/plot_cpdb_heatmap2.png" alt="plot_cpdb_heatmap"><div class="figcaption">plot_cpdb_heatmap</div>
 </div>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/plot_cpdb_heatmap.html">plot_cpdb_heatmap</a></span><span class="op">(</span><span class="va">kidneyimmune</span>, <span class="st">'celltype'</span>, <span class="va">pvals2</span>, cellheight <span class="op">=</span> <span class="fl">10</span>, cellwidth <span class="op">=</span> <span class="fl">10</span>, symmetrical <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<div class="figure">
-<img src="exampleImages/plot_cpdb_heatmap.png" alt=""><p class="caption">plot_cpdb_heatmap</p>
+<div class="float">
+<img src="exampleImages/plot_cpdb_heatmap.png" alt="plot_cpdb_heatmap"><div class="figcaption">plot_cpdb_heatmap</div>
 </div>
 <p>The values for the <code>symmetrical=FALSE</code> mode follow the direction of the L-R direction where it’s always moleculeA:celltypeA -&gt; moleculeB:celltypeB.</p>
 <p>Therefore, if you trace on the <code>x-axis</code> for <code>celltype A</code> [MNPa(mono)] to <code>celltype B</code> [CD8T cell] on the <code>y-axis</code>:</p>
@@ -418,8 +418,8 @@
 <span><span class="va">p2</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/correlationSpot.html">correlationSpot</a></span><span class="op">(</span><span class="va">spatial</span>, genes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'Tnfsf13b'</span>, <span class="st">'Cd79a'</span><span class="op">)</span>, celltypes <span class="op">=</span> <span class="st">'Group1-3'</span>, pt.size.factor <span class="op">=</span> <span class="fl">1.6</span>, ncol <span class="op">=</span> <span class="fl">2</span>, crop <span class="op">=</span> <span class="cn">TRUE</span>, average_by_cluster <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_gradient.html" class="external-link">scale_fill_gradientn</a></span><span class="op">(</span>colors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rev.html" class="external-link">rev</a></span><span class="op">(</span><span class="fu">RColorBrewer</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/RColorBrewer/man/ColorBrewer.html" class="external-link">brewer.pal</a></span><span class="op">(</span><span class="fl">12</span>, <span class="st">'Spectral'</span><span class="op">)</span><span class="op">)</span>,limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">'correlation averaged across clusters'</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">cowplot</span><span class="fu">::</span><span class="fu">plot_grid</span><span class="op">(</span><span class="va">pa</span>, <span class="va">pb</span>, <span class="va">p1</span>, <span class="va">p2</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-<div class="figure">
-<img src="exampleImages/correlationSpot_example.png" alt=""><p class="caption">plot_cpdb</p>
+<div class="float">
+<img src="exampleImages/correlationSpot_example.png" alt="plot_cpdb"><div class="figcaption">plot_cpdb</div>
 </div>
 </div>
 <div class="section level2">
@@ -431,8 +431,8 @@
 <span><span class="va">g1</span> <span class="op">&lt;-</span> <span class="va">g</span> <span class="op">+</span> <span class="fu"><a href="reference/misc.html">small_legend</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="reference/misc.html">small_guide</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="reference/misc.html">small_axis</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="reference/misc.html">bottomleft_legend</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://patchwork.data-imaginist.com" class="external-link">patchwork</a></span><span class="op">)</span></span>
 <span><span class="va">g</span> <span class="op">+</span> <span class="va">g1</span></span></code></pre></div>
-<div class="figure">
-<img src="exampleImages/gghelperfunctions_example.png" alt=""><p class="caption">gghelperfunctions</p>
+<div class="float">
+<img src="exampleImages/gghelperfunctions_example.png" alt="gghelperfunctions"><div class="figcaption">gghelperfunctions</div>
 </div>
 </div>
 <div class="section level2">

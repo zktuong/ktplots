@@ -73,7 +73,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Plotting CellPhoneDB results</h1>
             
-            <h4 data-toc-skip class="date">2024-02-19</h4>
+            <h4 data-toc-skip class="date">2024-03-08</h4>
       
       
       <div class="hidden name"><code>vignette.rmd</code></div>
@@ -319,7 +319,7 @@ that are p&lt;0.05.</p>
 </h4>
 <p>For the <code>splitby_key</code> option to work, the annotation in
 the meta file must be defined in the following format:</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>{splitby_key}_{celltype_key}</span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a>{splitby_key}_{celltype_key}</span></code></pre></div>
 <p>so to set up an example vector, it would be something like:</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">annotation</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">kidneyimmune</span><span class="op">$</span><span class="va">Experiment</span>, <span class="st">"_"</span>, <span class="va">kidneyimmune</span><span class="op">$</span><span class="va">celltype</span><span class="op">)</span></span></code></pre></div>
