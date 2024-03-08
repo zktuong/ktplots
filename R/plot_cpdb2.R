@@ -67,6 +67,7 @@ plot_cpdb2 <- function(scdata, cell_type1, cell_type2, celltype_key, means, pval
     interactions$use_interaction_name <- paste0(interactions$id_cp_interaction, SPECIAL_SEP,
         interactions$interacting_pair)
     interactions$converted <- gsub("_", "-", interactions$use_interaction_name)
+    interactions$use_interaction_name <- interactions$interacting_pair
     interactions_subset <- interactions[interactions$converted %in% lr_interactions$Var1,
         ]
     tm0 <- do.call(c, lapply(as.list(interactions_subset$use_interaction_name), strsplit,

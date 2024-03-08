@@ -61,6 +61,7 @@ jobs:
         run: R CMD INSTALL .
 
       - name: Build and deploy pkgdown site
+        if: github.actor == 'zktuong' && github.repository == 'zktuong/ktplots'
         run: |
           git config --local user.name "$GITHUB_ACTOR"
           git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
