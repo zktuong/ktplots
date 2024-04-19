@@ -22,6 +22,7 @@
 #' @param alpha pvalue threshold to trim.
 #' @param return_tables whether or not to return the results as a table rather than the heatmap
 #' @param symmetrical whether or not to return as symmetrical matrix
+#' @param default_sep the default separator used when CellPhoneDB was run.
 #' @param ... passed to pheatmap::pheatmap.
 #' @return pheatmap object of cellphone db output
 #' @examples
@@ -39,7 +40,7 @@ plot_cpdb_heatmap <- function(pvals, cell_types = NULL, degs_analysis = FALSE, l
   cluster_rows = TRUE, border_color = "white", fontsize_row = 11, fontsize_col = 11,
   family = "Arial", main = "", treeheight_col = 0, treeheight_row = 0, low_col = "dodgerblue4",
   mid_col = "peachpuff", high_col = "deeppink4", alpha = 0.05, return_tables = FALSE,
-  symmetrical = TRUE, ...) {
+  symmetrical = TRUE, default_sep = "\\|", ...) {
   requireNamespace("reshape2")
   requireNamespace("grDevices")
   all_intr <- pvals
@@ -78,7 +79,7 @@ plot_cpdb_heatmap <- function(pvals, cell_types = NULL, degs_analysis = FALSE, l
     group_by(Var1) %>%
     summarise(COUNT = sum(significant)) %>%
     as.data.frame()
-  tmp <- lapply(count1x[, 1], function(x) strsplit(as.character(x), "\\|"))
+  tmp <- lapply(count1x[, 1], function(x) strsplit(as.character(x), default_sep))
   tmp <- lapply(tmp, function(x) x[[1]])
   tmp <- as.data.frame(do.call(rbind, tmp))
   colnames(tmp) <- c("SOURCE", "TARGET")
