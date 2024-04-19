@@ -4,3 +4,4 @@
 *.history
 .DS_Store
 .Rapp.history
+/.vscode
