@@ -1,8 +1,8 @@
 pandoc: 3.1.11
-pkgdown: 2.0.7
+pkgdown: 2.0.9
 pkgdown_sha: ~
 articles:
-  vignette: vignette.html
   vignette_v5: vignette_v5.html
-last_built: 2024-03-08T06:09Z
+  vignette: vignette.html
+last_built: 2024-04-19T00:40Z
 
