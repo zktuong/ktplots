@@ -30,6 +30,7 @@
 #' @param scale_alpha_by_cellsign Whether or not to filter the transparency of interactions by the cellsign.
 #' @param filter_by_cellsign Filter out interactions with a 0 value cellsign.
 #' @param keep_id_cp_interaction Whether or not to keep the id_cp_interaction in the plot.
+#' @param result_precision Sets integer value for decimal points of p_value, default to 3
 #' @param ... passes arguments to grep for cell_type1 and cell_type2.
 #' @return ggplot dot plot object of cellphone db output
 #' @examples
@@ -55,6 +56,7 @@ plot_cpdb <- function(
     special_character_regex_pattern = NULL, degs_analysis = FALSE, return_table = FALSE,
     exclude_interactions = NULL, min_interaction_score = 0, scale_alpha_by_interaction_scores = FALSE,
     scale_alpha_by_cellsign = FALSE, filter_by_cellsign = FALSE, title = "", keep_id_cp_interaction = FALSE,
+    result_precision = 3,
     ...) {
   requireNamespace("SingleCellExperiment")
   requireNamespace("grDevices")
@@ -354,7 +356,7 @@ plot_cpdb <- function(
     names(df_) <- NULL
     df <- do.call(rbind, df_)
   }
-  df$pvals[which(df$pvals == 0)] <- 0.001
+  df$pvals[which(df$pvals == 0)] <- 10^-result_precision
   df$pvals[which(df$pvals >= 0.05)] <- NA
   if (!is.null(splitby_key)) {
     if (length(groups) > 0) {
