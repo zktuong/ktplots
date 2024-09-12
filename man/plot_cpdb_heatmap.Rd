@@ -27,7 +27,6 @@ plot_cpdb_heatmap(
   alpha = 0.05,
   return_tables = FALSE,
   symmetrical = TRUE,
-  default_sep = "\\\\|",
   ...
 )
 }
@@ -75,8 +74,6 @@ plot_cpdb_heatmap(
 \item{return_tables}{whether or not to return the results as a table rather than the heatmap}
 
 \item{symmetrical}{whether or not to return as symmetrical matrix}
-
-\item{default_sep}{the default separator used when CellPhoneDB was run.}
 
 \item{...}{passed to pheatmap::pheatmap.}
 }

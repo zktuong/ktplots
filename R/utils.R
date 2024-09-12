@@ -236,7 +236,7 @@ DEFAULT_CPDB_SEP <- "|"
 .cellTypeExpr_complex <- function(sce_, genes, gene_symbol_mapping = NULL) {
     requireNamespace("Matrix")
     requireNamespace("SingleCellExperiment")
-    scex <- tryCatch(sce_[genes[genes %in% rownames(sce_)], ], error = function(e) {
+    scex <- tryCatch(sce_[genes, ], error = function(e) {
         if (!is.null(gene_symbol_mapping)) {
             sce_[which(SingleCellExperiment::rowData(sce_)[, gene_symbol_mapping] %in%
                 genes), ]
@@ -252,7 +252,7 @@ DEFAULT_CPDB_SEP <- "|"
 .cellTypeFraction_complex <- function(sce_, genes, gene_symbol_mapping = NULL) {
     requireNamespace("Matrix")
     requireNamespace("SingleCellExperiment")
-    scex <- tryCatch(sce_[genes[genes %in% rownames(sce_)], ], error = function(e) {
+    scex <- tryCatch(sce_[genes, ], error = function(e) {
         if (!is.null(gene_symbol_mapping)) {
             sce_[which(SingleCellExperiment::rowData(sce_)[, gene_symbol_mapping] %in%
                 genes), ]
