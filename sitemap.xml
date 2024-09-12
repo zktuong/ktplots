@@ -1,63 +1,23 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>/404.html</loc>
-  </url>
-  <url>
-    <loc>/LICENSE-text.html</loc>
-  </url>
-  <url>
-    <loc>/_legacy_README.html</loc>
-  </url>
-  <url>
-    <loc>/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>/articles/vignette.html</loc>
-  </url>
-  <url>
-    <loc>/articles/vignette_v5.html</loc>
-  </url>
-  <url>
-    <loc>/authors.html</loc>
-  </url>
-  <url>
-    <loc>/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/combine_cpdb.html</loc>
-  </url>
-  <url>
-    <loc>/reference/correlationSpot.html</loc>
-  </url>
-  <url>
-    <loc>/reference/geneDotPlot.html</loc>
-  </url>
-  <url>
-    <loc>/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/kidneyimmune.html</loc>
-  </url>
-  <url>
-    <loc>/reference/ktplots.html</loc>
-  </url>
-  <url>
-    <loc>/reference/misc.html</loc>
-  </url>
-  <url>
-    <loc>/reference/plot_cpdb.html</loc>
-  </url>
-  <url>
-    <loc>/reference/plot_cpdb2.html</loc>
-  </url>
-  <url>
-    <loc>/reference/plot_cpdb3.html</loc>
-  </url>
-  <url>
-    <loc>/reference/plot_cpdb4.html</loc>
-  </url>
-  <url>
-    <loc>/reference/plot_cpdb_heatmap.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>/404.html</loc></url>
+<url><loc>/LICENSE-text.html</loc></url>
+<url><loc>/_legacy_README.html</loc></url>
+<url><loc>/articles/index.html</loc></url>
+<url><loc>/articles/vignette.html</loc></url>
+<url><loc>/articles/vignette_v5.html</loc></url>
+<url><loc>/authors.html</loc></url>
+<url><loc>/index.html</loc></url>
+<url><loc>/reference/combine_cpdb.html</loc></url>
+<url><loc>/reference/correlationSpot.html</loc></url>
+<url><loc>/reference/geneDotPlot.html</loc></url>
+<url><loc>/reference/index.html</loc></url>
+<url><loc>/reference/kidneyimmune.html</loc></url>
+<url><loc>/reference/ktplots.html</loc></url>
+<url><loc>/reference/misc.html</loc></url>
+<url><loc>/reference/plot_cpdb.html</loc></url>
+<url><loc>/reference/plot_cpdb2.html</loc></url>
+<url><loc>/reference/plot_cpdb3.html</loc></url>
+<url><loc>/reference/plot_cpdb4.html</loc></url>
+<url><loc>/reference/plot_cpdb_heatmap.html</loc></url>
 </urlset>
+
