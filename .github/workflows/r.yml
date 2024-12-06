@@ -42,7 +42,9 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: pkgdown
+          extra-packages: |
+            covr
+            pkgdown
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
