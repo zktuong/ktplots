@@ -44,8 +44,10 @@ jobs:
         with:
           extra-packages: pkgdown
 
-      - name: Install package
-        run: R CMD INSTALL .
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::rcmdcheck
+          needs: check
 
       - name: Test coverage
         if: github.actor == 'zktuong'
