@@ -40,15 +40,13 @@ jobs:
           restore-keys: |
             ${{ runner.OS }}-R-${{ steps.install-r.outputs.installed-r-version }}-cache-
 
-      - uses: r-lib/actions/setup-r-dependencies@v2
+      - name: Install and check
+        uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: |
+            any::rcmdcheck
             covr
             pkgdown
-
-      - uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          extra-packages: any::rcmdcheck
           needs: check
 
       - name: Test coverage
