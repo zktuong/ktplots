@@ -15,6 +15,7 @@ jobs:
       matrix:
         config:
           - { os: ubuntu-latest }
+          - { os: windows-latest }
           - { os: macos-latest }
     runs-on: ${{ matrix.config.os }}
     env:
