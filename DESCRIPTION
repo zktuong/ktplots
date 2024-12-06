@@ -28,8 +28,8 @@ Suggests:
 	testthat,
 	covr,
 	plyr
-LazyData: true
-RoxygenNote: 7.2.3
+LazyData: false
+RoxygenNote: 7.3.2
 Collate: 
     'combine_cpdb.R'
     'correlationSpot.R'
