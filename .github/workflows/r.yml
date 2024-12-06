@@ -50,7 +50,7 @@ jobs:
           needs: check
 
       - name: Test coverage
-        if: github.actor == 'zktuong'
+        if: github.actor == 'zktuong' && matrix.config.os == 'ubuntu-latest'
         run: |
           Rscript -e 'covr::codecov(token = "${{ secrets.CODECOV_TOKEN }}")'
         shell: bash -l {0}
