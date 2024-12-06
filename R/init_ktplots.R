@@ -10,6 +10,8 @@
 #' @export
 init_ktplots <- function() {
     requireNamespace("devtools")
+    requireNamespace("styler")
+    styler::style_pkg(".", style = styler::tidyverse_style, indent_by = 4)
     devtools::document()
     setwd("..")
     devtools::install("ktplots", dependencies = FALSE)
@@ -19,7 +21,9 @@ init_ktplots <- function() {
 #' @export
 
 init <- function(package, dependencies = FALSE) {
+    requireNamespace("styler")
     setwd(paste0("~/Documents/GitHub/", package))
+    styler::style_pkg(".", style = styler::tidyverse_style, indent_by = 4)
     requireNamespace("devtools")
     devtools::document()
     setwd("..")

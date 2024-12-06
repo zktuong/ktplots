@@ -27,7 +27,8 @@ Suggests:
 	scater,
 	testthat,
 	covr,
-	plyr
+	plyr,
+    styler
 LazyData: false
 RoxygenNote: 7.3.2
 Collate: 
