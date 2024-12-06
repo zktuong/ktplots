@@ -15,10 +15,3 @@ combine results from multiple cellphonedb runs.
 \description{
 combine multiple results from cellphonedb.
 }
-\examples{
-\donttest{
-combine_cpdb(means, means2, means3)
-combine_cpdb(pvals, pvals2, pvals3)
-combine_cpdb(decon, decon2, decon3)
-}
-}

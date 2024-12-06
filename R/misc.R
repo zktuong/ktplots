@@ -8,7 +8,7 @@
 #' x <- range01(runif(100))
 #' @export
 range01 <- function(x) {
-    (x - min(x))/(max(x) - min(x))
+    (x - min(x)) / (max(x) - min(x))
 }
 
 
@@ -23,8 +23,11 @@ range01 <- function(x) {
 #' }
 #' @export
 "%nin%" <- function(x, y) {
-    if (!is.null(x))
-        x else y
+    if (!is.null(x)) {
+        x
+    } else {
+        y
+    }
 }
 
 #' @import dplyr
@@ -37,11 +40,17 @@ range01 <- function(x) {
 #' g + small_legend()
 #' }
 #' @export
-small_legend <- function(fontsize = 5, keysize = 0.1, marginsize = c(-0.1, 0, 0,
-    0), ...) {
-    small_legend_theme <- theme(legend.title = element_text(size = fontsize), legend.text = element_text(size = fontsize),
+small_legend <- function(fontsize = 5, keysize = 0.1, marginsize = c(
+                             -0.1, 0, 0,
+                             0
+                         ), ...) {
+    small_legend_theme <- theme(
+        legend.title = element_text(size = fontsize), legend.text = element_text(size = fontsize),
         legend.key.size = unit(keysize, "lines"), legend.margin = margin(marginsize[1],
-            marginsize[2], marginsize[3], marginsize[4], unit = "cm"), ...)
+            marginsize[2], marginsize[3], marginsize[4],
+            unit = "cm"
+        ), ...
+    )
     return(small_legend_theme)
 }
 
@@ -54,8 +63,10 @@ small_legend <- function(fontsize = 5, keysize = 0.1, marginsize = c(-0.1, 0, 0,
 #' }
 #' @export
 small_guide <- function(guidesize = 1, ...) {
-    small_guide <- guides(shape = guide_legend(override.aes = list(size = guidesize)),
-        color = guide_legend(override.aes = list(size = guidesize)), ...)
+    small_guide <- guides(
+        shape = guide_legend(override.aes = list(size = guidesize)),
+        color = guide_legend(override.aes = list(size = guidesize)), ...
+    )
     return(small_guide)
 }
 
@@ -69,10 +80,12 @@ small_guide <- function(guidesize = 1, ...) {
 #' }
 #' @export
 small_axis <- function(fontsize = 4, linethickness = 0.1, ...) {
-    axis <- theme(text = element_text(size = fontsize), axis.text = element_text(size = fontsize),
+    axis <- theme(
+        text = element_text(size = fontsize), axis.text = element_text(size = fontsize),
         axis.text.x = element_text(size = fontsize), axis.text.y = element_text(size = fontsize),
         axis.line = element_line(linewidth = linethickness), axis.ticks = element_line(linewidth = linethickness),
-        ...)
+        ...
+    )
     return(axis)
 }
 
@@ -85,8 +98,10 @@ small_axis <- function(fontsize = 4, linethickness = 0.1, ...) {
 #' }
 #' @export
 small_grid <- function(linethickness = 0.1, panelthickness = 0.3, ...) {
-    grid <- theme(panel.grid = element_line(linewidth = linethickness), panel.border = element_rect(linewidth = panelthickness),
-        ...)
+    grid <- theme(
+        panel.grid = element_line(linewidth = linethickness), panel.border = element_rect(linewidth = panelthickness),
+        ...
+    )
     return(grid)
 }
 
@@ -99,8 +114,10 @@ small_grid <- function(linethickness = 0.1, panelthickness = 0.3, ...) {
 #' }
 #' @export
 topright_legend <- function(legendmargin = margin(6, 6, 6, 6), ...) {
-    legend <- theme(legend.position = c(0.99, 0.99), legend.justification = c("right",
-        "top"), legend.box.just = "right", legend.margin = legendmargin, ...)
+    legend <- theme(legend.position = c(0.99, 0.99), legend.justification = c(
+        "right",
+        "top"
+    ), legend.box.just = "right", legend.margin = legendmargin, ...)
     return(legend)
 }
 
@@ -113,8 +130,10 @@ topright_legend <- function(legendmargin = margin(6, 6, 6, 6), ...) {
 #' }
 #' @export
 topleft_legend <- function(legendmargin = margin(6, 6, 6, 6), ...) {
-    legend <- theme(legend.position = c(0.01, 0.99), legend.justification = c("left",
-        "top"), legend.box.just = "left", legend.margin = legendmargin, ...)
+    legend <- theme(legend.position = c(0.01, 0.99), legend.justification = c(
+        "left",
+        "top"
+    ), legend.box.just = "left", legend.margin = legendmargin, ...)
     return(legend)
 }
 
@@ -127,8 +146,10 @@ topleft_legend <- function(legendmargin = margin(6, 6, 6, 6), ...) {
 #' }
 #' @export
 bottomleft_legend <- function(legendmargin = margin(6, 6, 6, 6), ...) {
-    legend <- theme(legend.position = c(0.01, 0.01), legend.justification = c("left",
-        "bottom"), legend.box.just = "left", legend.margin = legendmargin, ...)
+    legend <- theme(legend.position = c(0.01, 0.01), legend.justification = c(
+        "left",
+        "bottom"
+    ), legend.box.just = "left", legend.margin = legendmargin, ...)
     return(legend)
 }
 
@@ -141,7 +162,9 @@ bottomleft_legend <- function(legendmargin = margin(6, 6, 6, 6), ...) {
 #' }
 #' @export
 bottomright_legend <- function(legendmargin = margin(6, 6, 6, 6), ...) {
-    legend <- theme(legend.position = c(0.99, 0.01), legend.justification = c("right",
-        "bottom"), legend.box.just = "left", legend.margin = legendmargin, ...)
+    legend <- theme(legend.position = c(0.99, 0.01), legend.justification = c(
+        "right",
+        "bottom"
+    ), legend.box.just = "left", legend.margin = legendmargin, ...)
     return(legend)
 }

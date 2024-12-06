@@ -20,10 +20,15 @@
 #' @return SpatialFeaturePlot
 #' @export
 
-correlationSpot <- function(st, genes = NULL, celltypes = NULL, geneset = NULL, mode = c("high",
-    "low", "both"), cutoff = 0.5, standardize = TRUE, dims = 1:30, k.params = 10,
-    resolution = 1, rna_slot = "SCT", label_slot = "predictions", by = c("image",
-        "expression"), average_by_cluster = FALSE, ...) {
+correlationSpot <- function(
+    st, genes = NULL, celltypes = NULL, geneset = NULL, mode = c(
+        "high",
+        "low", "both"
+    ), cutoff = 0.5, standardize = TRUE, dims = 1:30, k.params = 10,
+    resolution = 1, rna_slot = "SCT", label_slot = "predictions", by = c(
+        "image",
+        "expression"
+    ), average_by_cluster = FALSE, ...) {
     requireNamespace("Seurat")
     requireNamespace("FNN")
 

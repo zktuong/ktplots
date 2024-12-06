@@ -36,6 +36,7 @@ plot_cpdb(
   filter_by_cellsign = FALSE,
   title = "",
   keep_id_cp_interaction = FALSE,
+  result_precision = 3,
   ...
 )
 }
@@ -99,6 +100,8 @@ plot_cpdb(
 \item{filter_by_cellsign}{Filter out interactions with a 0 value cellsign.}
 
 \item{keep_id_cp_interaction}{Whether or not to keep the id_cp_interaction in the plot.}
+
+\item{result_precision}{Sets integer value for decimal points of p_value, default to 3}
 
 \item{...}{passes arguments to grep for cell_type1 and cell_type2.}
 }

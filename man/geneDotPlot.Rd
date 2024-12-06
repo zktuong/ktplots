@@ -69,6 +69,6 @@ Plotting genes as dotplot
 \examples{
 \donttest{
 data(kidneyimmune)
-geneDotPlot(kidneyimmune, genes = c('CD68', 'CD80', 'CD86', 'CD74', 'CD2', 'CD5'), celltype_key = 'celltype', splitby_key = 'Project', standard_scale = TRUE) + theme(strip.text.x = element_text(angle = 45, hjust = 0))
+geneDotPlot(kidneyimmune, genes = c("CD68", "CD80", "CD86", "CD74", "CD2", "CD5"), celltype_key = "celltype", splitby_key = "Project", standard_scale = TRUE) + theme(strip.text.x = element_text(angle = 45, hjust = 0))
 }
 }

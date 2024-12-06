@@ -82,7 +82,7 @@ plot_cpdb_heatmap(pvals = rel_int_degs, cellheight = 10, cellwidth = 10, degs_an
 You can also specify specific celltypes to plot.
 
 ```{r, message  = FALSE, warning = FALSE}
-plot_cpdb_heatmap(pvals=pvals_stat, cell_types=c("NK cell", "pDC", "B cell", "CD8T cell"), cellheight = 10, cellwidth = 10)
+plot_cpdb_heatmap(pvals = pvals_stat, cell_types = c("NK cell", "pDC", "B cell", "CD8T cell"), cellheight = 10, cellwidth = 10)
 ```
 
 The current heatmap is directional (check `count_network` and `interaction_edges` for more details in `return_tables = True`).
@@ -111,43 +111,43 @@ A -> B is 9 interactions
 A simple usage of `plot_cpdb` is as follows:
 ```{r, message = FALSE, warning = FALSE, fig.width = 10, fig.height = 4}
 plot_cpdb(
-    scdata=kidneyimmune,
-    cell_type1="B cell",
-    cell_type2=".",  # this means all cell-types
-    celltype_key="celltype",
-    means=means_stat,
-    pvals=pvals_stat,
-    genes=c("PTPRC", "TNFSF13"),
-    title="interacting interactions!",
+    scdata = kidneyimmune,
+    cell_type1 = "B cell",
+    cell_type2 = ".", # this means all cell-types
+    celltype_key = "celltype",
+    means = means_stat,
+    pvals = pvals_stat,
+    genes = c("PTPRC", "TNFSF13"),
+    title = "interacting interactions!",
 )
 ```
 
 You can keep the original `id_cp_interaction` value in the name too.
 ```{r, message = FALSE, warning = FALSE, fig.width = 12, fig.height = 4}
 plot_cpdb(
-    scdata=kidneyimmune,
-    cell_type1="B cell",
-    cell_type2=".",  # this means all cell-types
-    celltype_key="celltype",
-    means=means_stat,
-    pvals=pvals_stat,
-    genes=c("PTPRC", "TNFSF13"),
-    title="interacting interactions!",
-    keep_id_cp_interaction=TRUE,
+    scdata = kidneyimmune,
+    cell_type1 = "B cell",
+    cell_type2 = ".", # this means all cell-types
+    celltype_key = "celltype",
+    means = means_stat,
+    pvals = pvals_stat,
+    genes = c("PTPRC", "TNFSF13"),
+    title = "interacting interactions!",
+    keep_id_cp_interaction = TRUE,
 )
 ```
 
 ```{r, message = FALSE, warning = FALSE, fig.width = 10, fig.height = 4}
 plot_cpdb(
-    scdata=kidneyimmune,
-    cell_type1="B cell",
-    cell_type2=".",  # this means all cell-types
-    celltype_key="celltype",
-    means=means_degs,
-    pvals=rel_int_degs,
-    degs_analysis=TRUE,
-    genes=c("PTPRC", "TNFSF13"),
-    title="interacting interactions!",
+    scdata = kidneyimmune,
+    cell_type1 = "B cell",
+    cell_type2 = ".", # this means all cell-types
+    celltype_key = "celltype",
+    means = means_degs,
+    pvals = rel_int_degs,
+    degs_analysis = TRUE,
+    genes = c("PTPRC", "TNFSF13"),
+    title = "interacting interactions!",
 )
 ```
 
@@ -155,25 +155,25 @@ Or don't specify either and it will try to plot all significant interactions.
 
 ```{r, message = FALSE, warning = FALSE, fig.width = 10, fig.height = 10}
 plot_cpdb(
-    scdata=kidneyimmune,
-    cell_type1="B cell",
-    cell_type2=".",
-    celltype_key="celltype",
-    means=means_stat,
-    pvals=pvals_stat,
+    scdata = kidneyimmune,
+    cell_type1 = "B cell",
+    cell_type2 = ".",
+    celltype_key = "celltype",
+    means = means_stat,
+    pvals = pvals_stat,
 )
 ```
 
 ```{r, message = FALSE, warning = FALSE, fig.width = 10, fig.height = 10}
 plot_cpdb(
-    scdata=kidneyimmune,
-    cell_type1="B cell",
-    cell_type2=".",  # this means all cell-types
-    celltype_key="celltype",
-    means=means_degs,
-    pvals=rel_int_degs,
-    degs_analysis=TRUE,
-    title="interacting interactions!",
+    scdata = kidneyimmune,
+    cell_type1 = "B cell",
+    cell_type2 = ".", # this means all cell-types
+    celltype_key = "celltype",
+    means = means_degs,
+    pvals = rel_int_degs,
+    degs_analysis = TRUE,
+    title = "interacting interactions!",
 )
 ```
 
@@ -181,21 +181,21 @@ You can also try an alternative visualisation inspired by how `squidpy` displays
 
 ```{r, message = FALSE, warning = FALSE, fig.width = 10, fig.height = 3}
 plot_cpdb(
-    scdata=kidneyimmune,
-    cell_type1="B cell",
-    cell_type2=".",
-    celltype_key="celltype",
-    means=means_stat,
-    pvals=pvals_stat,
-    genes=c("PTPRC", "CD40", "CLEC2D"),
-    default_style=FALSE
+    scdata = kidneyimmune,
+    cell_type1 = "B cell",
+    cell_type2 = ".",
+    celltype_key = "celltype",
+    means = means_stat,
+    pvals = pvals_stat,
+    genes = c("PTPRC", "CD40", "CLEC2D"),
+    default_style = FALSE
 )
 ```
 
 you can also toggle options to `splitby_key` and `gene_family`:
 
 ```{r, message = FALSE, warning = FALSE, fig.width = 10, fig.height = 6}
-data(cpdb_output) # this is a different dataset where the "Experiment" was appended to the "celltype" 
+data(cpdb_output) # this is a different dataset where the "Experiment" was appended to the "celltype"
 
 plot_cpdb(
     scdata = kidneyimmune,
@@ -232,7 +232,7 @@ And also provide custom families as a `data.frame`.
 ```{r, message = FALSE, warning = FALSE, fig.width = 10, fig.height = 6}
 df <- data.frame(set1 = c("CCR6", "CCL20", "CXCL10", "CCR3", "TNFRSF13C"), set2 = c("CCL5", "CCR4", "PTPRC", "CD40", "CLEC2D"))
 plot_cpdb(
-    scdata=kidneyimmune,
+    scdata = kidneyimmune,
     cell_type1 = "B cell",
     cell_type2 = "CD4T cell",
     celltype_key = "celltype",
@@ -246,10 +246,7 @@ plot_cpdb(
 
 ### combine_cpdb
 
-For the `splitby_key` option to work, the annotation in the meta file must be defined in the following format:
-```{r, eval = FALSE}
-{splitby_key}_{celltype_key}
-```
+For the `splitby_key` option to work, the annotation in the meta file must be defined in the following format: `{splitby_key}_{celltype_key}`
 
 so to set up an example vector, it would be something like:
 ```{r, eval = FALSE}
