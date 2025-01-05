@@ -13,6 +13,10 @@ DEFAULT_CPDB_SEP <- "|"
 
 
 .prep_table <- function(data) {
+    # first check if the class is read using tibble. if it is, error as it is not supported
+    if (class(data) == "tbl_df") {
+        stop("Please convert the data to a data.frame before proceeding. Do not use tidyverse/tibble to read the data.")
+    }
     dat <- data
     rownames(dat) <- paste0(dat$id_cp_interaction, SPECIAL_SEP, dat$interacting_pair)
     colnames(dat) <- gsub(paste0("\\", DEFAULT_CPDB_SEP), DEFAULT_SEP, colnames(dat))
