@@ -1,6 +1,6 @@
 #' Plotting select interactions from CellPhoneDB results as a chord diagram
 #'
-#' @param scdata single-cell data. can be seurat/summarizedexperiment object
+#' @param scdata single-cell data. Must be a SingleCellExperiment object.
 #' @param cell_type1 cell type 1
 #' @param cell_type2 cell type 2
 #' @param celltype_key vector holding the celltype_key for each cell or column name of scdata's metadata. MUST match cpdb's columns
