@@ -24,6 +24,7 @@
 #' @param show_legend whether or not to show the legend
 #' @param legend.pos.x x position of legend
 #' @param legend.pos.y y position of legend
+#' @param inspect_df logical. Default is FALSE. If TRUE, returns the dataframe used to plot the chord diagram.
 #' @param ... passes arguments plot_cpdb
 #' @return Plotting CellPhoneDB results as a CellChat inspired chord diagram for specific interactions
 #' @examples
@@ -41,7 +42,7 @@ plot_cpdb4 <- function(
     standard_scale = TRUE, gene_symbol_mapping = NULL, frac = 0.1, remove_self = TRUE,
     desiredInteractions = NULL, degs_analysis = FALSE, directional = 1, alpha = 0.5,
     edge_colors = NULL, grid_colors = NULL, grid_scale = 0.1, show_legend = TRUE,
-    legend.pos.x = 20, legend.pos.y = 20, ...) {
+    legend.pos.x = 20, legend.pos.y = 20, inspect_df = FALSE, ...) {
     genes <- strsplit(interaction, "-")
     genesx <- unlist(lapply(genes, function(g) {
         c(paste(g, collapse = "-"), paste(rev(g), collapse = "-"))
@@ -306,36 +307,41 @@ plot_cpdb4 <- function(
         dfx[[1]] <- dfx[[1]][dfx[[1]]$barcode %in% barcodes, ]
     }
 
-    gl <- list()
-    if (length(show_legend) > 1) {
-        for (i in 1:length(dfx)) {
-            gl[[i]] <- tryCatch(.chord_diagram4(
-                tmp_dfx = dfx[[i]], lr_interactions = lr_interactions,
-                scaled = standard_scale, sep = DEFAULT_SEP, alpha = alpha, directional = directional,
-                show_legend = show_legend[i], edge_cols = edge_colors, grid_cols = grid_colors,
-                legend.pos.x = legend.pos.x, legend.pos.y = legend.pos.y, title = names(dfx)[i],
-                grid_scale = grid_scale
-            ), error = function(e) {
-                return(NA)
-            })
-        }
+    if (inspect_df) {
+        return(dfx)
     } else {
-        for (i in 1:length(dfx)) {
-            gl[[i]] <- tryCatch(.chord_diagram4(
-                tmp_dfx = dfx[[i]], lr_interactions = lr_interactions,
-                scaled = standard_scale, sep = DEFAULT_SEP, alpha = alpha, directional = directional,
-                show_legend = show_legend, edge_cols = edge_colors, grid_cols = grid_colors,
-                legend.pos.x = legend.pos.x, legend.pos.y = legend.pos.y, title = names(dfx)[i],
-                grid_scale = grid_scale
-            ), error = function(e) {
-                return(NA)
-            })
+        gl <- list()
+        if (length(show_legend) > 1) {
+            for (i in 1:length(dfx)) {
+                gl[[i]] <- tryCatch(.chord_diagram4(
+                    tmp_dfx = dfx[[i]], lr_interactions = lr_interactions,
+                    scaled = standard_scale, sep = DEFAULT_SEP, alpha = alpha, directional = directional,
+                    show_legend = show_legend[i], edge_cols = edge_colors, grid_cols = grid_colors,
+                    legend.pos.x = legend.pos.x, legend.pos.y = legend.pos.y, title = names(dfx)[i],
+                    grid_scale = grid_scale
+                ), error = function(e) {
+                    return(NA)
+                })
+            }
+        } else {
+            for (i in 1:length(dfx)) {
+                gl[[i]] <- tryCatch(.chord_diagram4(
+                    tmp_dfx = dfx[[i]], lr_interactions = lr_interactions,
+                    scaled = standard_scale, sep = DEFAULT_SEP, alpha = alpha, directional = directional,
+                    show_legend = show_legend, edge_cols = edge_colors, grid_cols = grid_colors,
+                    legend.pos.x = legend.pos.x, legend.pos.y = legend.pos.y, title = names(dfx)[i],
+                    grid_scale = grid_scale
+                ), error = function(e) {
+                    return(NA)
+                })
+            }
         }
-    }
 
-    if (length(gl) > 1) {
-        return(gl)
-    } else {
-        return(gl[[1]])
+        if (length(gl) > 1) {
+            return(gl)
+        } else {
+            return(gl[[1]])
+        }
     }
+    
 }
