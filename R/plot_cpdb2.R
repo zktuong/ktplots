@@ -47,7 +47,7 @@ plot_cpdb2 <- function(
         keep_significant_only = keep_significant_only, standard_scale = standard_scale,
         return_table = TRUE, degs_analysis = degs_analysis, ...
     )
-    if (is.na(lr_interactions)) {
+    if (class(lr_interactions) == "logical") { # check if NA
         message("No interactions could be plotted.")
         return(NA)
     }
