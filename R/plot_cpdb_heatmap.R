@@ -127,6 +127,7 @@ plot_cpdb_heatmap <- function(
             return(p)
         }
     } else {
-        stop("There are no significant results using p-value of: ", alpha, call. = FALSE)
+        message("There are no significant results using p-value of: ", alpha, call. = FALSE)
+        return(NA)
     }
 }

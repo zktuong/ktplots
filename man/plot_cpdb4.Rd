@@ -33,7 +33,7 @@ plot_cpdb4(
 )
 }
 \arguments{
-\item{scdata}{single-cell data. can be seurat/summarizedexperiment object}
+\item{scdata}{single-cell data. Must be a SingleCellExperiment object.}
 
 \item{cell_type1}{cell type 1}
 

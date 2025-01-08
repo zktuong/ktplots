@@ -55,6 +55,10 @@ plot_cpdb4 <- function(
         keep_significant_only = keep_significant_only, standard_scale = standard_scale,
         return_table = TRUE, degs_analysis = degs_analysis, ...
     )
+    if (class(lr_interactions) == "logical") { # check if NA
+        message("No interactions could be plotted.")
+        return(NA)
+    }
     lr_interactions <- lr_interactions[gsub(paste0(".*", SPECIAL_SEP), "", lr_interactions$Var1) %in%
         genesx, ]
     lr_interactions <- cbind(lr_interactions, do.call(rbind, strsplit(
