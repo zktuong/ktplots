@@ -48,6 +48,10 @@ plot_cpdb3 <- function(
         keep_significant_only = keep_significant_only, standard_scale = standard_scale,
         return_table = TRUE, degs_analysis = degs_analysis, ...
     )
+    if (is.na(lr_interactions)) {
+        message("No interactions could be plotted.")
+        return(NA)
+    }
     requireNamespace("SummarizedExperiment")
     requireNamespace("SingleCellExperiment")
     means_col <- grep("scaled_means|means", names(lr_interactions), value = TRUE)[1]

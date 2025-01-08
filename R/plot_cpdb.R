@@ -287,13 +287,15 @@ plot_cpdb <- function(
             if (dim(pvals_mat)[2] > 0) {
                 pvals_mat <- pvals_mat[, as.vector(group_id), drop = FALSE]
             } else {
-                stop("No significant hits.")
+                message("No significant hits.")
+                return(NA)
             }
         }
     }
     if (keep_significant_only) {
         if (dim(pvals_mat)[2] == 0) {
-            stop("No significant hits.")
+            message("No significant hits.")
+            return(NA)
         }
     }
     if (cluster_rows) {
@@ -374,11 +376,13 @@ plot_cpdb <- function(
     if (keep_significant_only) {
         if (standard_scale) {
             if (length(df$scaled_means) == 0) {
-                stop("No significant genes found and plotting will not proceed.")
+                message("No significant genes found and plotting will not proceed.")
+                return(NA)
             }
         } else {
             if (length(df$means) == 0) {
-                stop("No significant genes found and plotting will not proceed.")
+                message("No significant genes found and plotting will not proceed.")
+                return(NA)
             }
         }
     }
