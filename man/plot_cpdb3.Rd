@@ -27,6 +27,7 @@ plot_cpdb3(
   show_legend = TRUE,
   legend.pos.x = 20,
   legend.pos.y = 20,
+  return_df = FALSE,
   ...
 )
 }
@@ -74,6 +75,8 @@ plot_cpdb3(
 \item{legend.pos.x}{x position of legend}
 
 \item{legend.pos.y}{y position of legend}
+
+\item{return_df}{logical. Default is FALSE. If TRUE, returns the data used to plot the chord diagram.}
 
 \item{...}{passes arguments plot_cpdb}
 }
