@@ -28,6 +28,7 @@ plot_cpdb3(
   legend.pos.x = 20,
   legend.pos.y = 20,
   return_df = FALSE,
+  plot = TRUE,
   ...
 )
 }
@@ -76,7 +77,9 @@ plot_cpdb3(
 
 \item{legend.pos.y}{y position of legend}
 
-\item{return_df}{logical. Default is FALSE. If TRUE, returns the data used to plot the chord diagram.}
+\item{return_df}{logical. Default is FALSE. If TRUE, returns the data as an edge list.}
+
+\item{plot}{logical. Default is TRUE. If FALSE, the final data used to plot the chord diagram is returned.}
 
 \item{...}{passes arguments plot_cpdb}
 }

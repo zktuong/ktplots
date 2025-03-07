@@ -686,7 +686,7 @@ DEFAULT_CPDB_SEP <- "|"
 
 .chord_diagram4 <- function(tmp_dfx, lr_interactions, scaled, sep,
                             alpha, directional, show_legend, edge_cols, grid_cols, legend.pos.x, legend.pos.y,
-                            title, grid_scale) {
+                            title, grid_scale, plot) {
     tmp_dfx <- .swap_ligand_receptor(tmp_dfx)
     unique_celltype <- unique(c(lr_interactions$`1`, lr_interactions$`2`))
     na_df <- data.frame(t(combn(unique_celltype, 2)))
@@ -740,42 +740,46 @@ DEFAULT_CPDB_SEP <- "|"
     emptydf$receiver_swap <- na_df$receiver_swap
     tmp_dfx <- rbind(tmp_dfx_not_na, emptydf)
     tmp_dfx$value[is.na(tmp_dfx$value)] <- grid_scale
-    if (directional == 2) {
-        link.arr.type <- "triangle"
+    if (plot) {
+        if (directional == 2) {
+            link.arr.type <- "triangle"
+        } else {
+            link.arr.type <- "big.arrow"
+        }
+        cells <- unique(c(tmp_dfx$producer_swap, tmp_dfx$receiver_swap))
+        names(cells) <- cells
+        circos.clear()
+        chordDiagram(tmp_dfx[c("producer_swap", "receiver_swap", "value")],
+            directional = directional,
+            direction.type = c("diffHeight", "arrows"), link.arr.type = link.arr.type,
+            annotationTrack = c("name", "grid"), col = tmp_dfx$edge_color, grid.col = grid_color,
+            group = cells
+        )
+        requireNamespace("grid")
+        requireNamespace("ComplexHeatmap")
+        if (show_legend) {
+            lgd <- ComplexHeatmap::Legend(
+                at = names(edge_color), type = "grid",
+                legend_gp = grid::gpar(fill = edge_color), title = "interactions"
+            )
+            ComplexHeatmap::draw(lgd,
+                x = grid::unit(1, "npc") - grid::unit(legend.pos.x, "mm"),
+                y = grid::unit(legend.pos.y, "mm"), just = c("right", "bottom")
+            )
+        }
+        requireNamespace("graphics")
+        graphics::title(main = title)
+        circos.clear()
+        gg <- recordPlot()
+        return(gg)
     } else {
-        link.arr.type <- "big.arrow"
+        return(tmp_dfx)
     }
-    cells <- unique(c(tmp_dfx$producer_swap, tmp_dfx$receiver_swap))
-    names(cells) <- cells
-    circos.clear()
-    chordDiagram(tmp_dfx[c("producer_swap", "receiver_swap", "value")],
-        directional = directional,
-        direction.type = c("diffHeight", "arrows"), link.arr.type = link.arr.type,
-        annotationTrack = c("name", "grid"), col = tmp_dfx$edge_color, grid.col = grid_color,
-        group = cells
-    )
-    requireNamespace("grid")
-    requireNamespace("ComplexHeatmap")
-    if (show_legend) {
-        lgd <- ComplexHeatmap::Legend(
-            at = names(edge_color), type = "grid",
-            legend_gp = grid::gpar(fill = edge_color), title = "interactions"
-        )
-        ComplexHeatmap::draw(lgd,
-            x = grid::unit(1, "npc") - grid::unit(legend.pos.x, "mm"),
-            y = grid::unit(legend.pos.y, "mm"), just = c("right", "bottom")
-        )
-    }
-    requireNamespace("graphics")
-    graphics::title(main = title)
-    circos.clear()
-    gg <- recordPlot()
-    return(gg)
 }
 
 .chord_diagram3 <- function(tmp_dfx, lr_interactions, scaled, sep,
                             alpha, directional, show_legend, edge_cols, grid_cols, legend.pos.x, legend.pos.y,
-                            title) {
+                            title, plot) {
     tmp_dfx <- .swap_ligand_receptor(tmp_dfx)
     if (scaled) {
         interactions_items <- lr_interactions$scaled_means
@@ -818,35 +822,39 @@ DEFAULT_CPDB_SEP <- "|"
     tmp_dfx$grid_color <- grid_color[tmp_dfx$receiver_swap]
     tmp_dfx$grid_color[is.na(tmp_dfx$pval)] <- NA
     tmp_dfx <- tmp_dfx[!duplicated(tmp_dfx$barcode), ]
-    if (directional == 2) {
-        link.arr.type <- "triangle"
+    if (plot) {
+        if (directional == 2) {
+            link.arr.type <- "triangle"
+        } else {
+            link.arr.type <- "big.arrow"
+        }
+        cells <- unique(c(tmp_dfx$producer_swap, tmp_dfx$receiver_swap))
+        names(cells) <- cells
+        circos.clear()
+        chordDiagram(tmp_dfx[c("producer_swap", "receiver_swap", "value")],
+            directional = directional,
+            direction.type = c("diffHeight", "arrows"), link.arr.type = link.arr.type,
+            annotationTrack = c("name", "grid"), col = tmp_dfx$edge_color, grid.col = grid_color,
+            group = cells
+        )
+        requireNamespace("grid")
+        requireNamespace("ComplexHeatmap")
+        if (show_legend) {
+            lgd <- ComplexHeatmap::Legend(
+                at = names(edge_color), type = "grid",
+                legend_gp = grid::gpar(fill = edge_color), title = "interactions"
+            )
+            ComplexHeatmap::draw(lgd,
+                x = grid::unit(1, "npc") - grid::unit(legend.pos.x, "mm"),
+                y = grid::unit(legend.pos.y, "mm"), just = c("right", "bottom")
+            )
+        }
+        requireNamespace("graphics")
+        graphics::title(main = title)
+        circos.clear()
+        gg <- recordPlot()
+        return(gg)
     } else {
-        link.arr.type <- "big.arrow"
+        return(tmp_dfx)
     }
-    cells <- unique(c(tmp_dfx$producer_swap, tmp_dfx$receiver_swap))
-    names(cells) <- cells
-    circos.clear()
-    chordDiagram(tmp_dfx[c("producer_swap", "receiver_swap", "value")],
-        directional = directional,
-        direction.type = c("diffHeight", "arrows"), link.arr.type = link.arr.type,
-        annotationTrack = c("name", "grid"), col = tmp_dfx$edge_color, grid.col = grid_color,
-        group = cells
-    )
-    requireNamespace("grid")
-    requireNamespace("ComplexHeatmap")
-    if (show_legend) {
-        lgd <- ComplexHeatmap::Legend(
-            at = names(edge_color), type = "grid",
-            legend_gp = grid::gpar(fill = edge_color), title = "interactions"
-        )
-        ComplexHeatmap::draw(lgd,
-            x = grid::unit(1, "npc") - grid::unit(legend.pos.x, "mm"),
-            y = grid::unit(legend.pos.y, "mm"), just = c("right", "bottom")
-        )
-    }
-    requireNamespace("graphics")
-    graphics::title(main = title)
-    circos.clear()
-    gg <- recordPlot()
-    return(gg)
 }
