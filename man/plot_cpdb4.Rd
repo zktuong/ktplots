@@ -29,6 +29,7 @@ plot_cpdb4(
   show_legend = TRUE,
   legend.pos.x = 20,
   legend.pos.y = 20,
+  return_df = FALSE,
   ...
 )
 }
@@ -81,7 +82,9 @@ plot_cpdb4(
 
 \item{legend.pos.y}{y position of legend}
 
-\item{...}{passes arguments plot_cpdb}
+\item{return_df}{logical. Default is FALSE. If TRUE, returns the data used to plot the chord diagram.}
+
+\item{...}{passes arguments to plot_cpdb}
 }
 \value{
 Plotting CellPhoneDB results as a CellChat inspired chord diagram for specific interactions

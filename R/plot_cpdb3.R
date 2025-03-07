@@ -22,6 +22,7 @@
 #' @param show_legend whether or not to show the legend
 #' @param legend.pos.x x position of legend
 #' @param legend.pos.y y position of legend
+#' @param return_df logical. Default is FALSE. If TRUE, returns the data used to plot the chord diagram.
 #' @param ... passes arguments plot_cpdb
 #' @return Plotting CellPhoneDB results as a CellChat inspired chord diagram
 #' @examples
@@ -38,7 +39,7 @@ plot_cpdb3 <- function(
     deconvoluted, keep_significant_only = TRUE, splitby_key = NULL, standard_scale = TRUE,
     gene_symbol_mapping = NULL, frac = 0.1, remove_self = TRUE, desiredInteractions = NULL,
     degs_analysis = FALSE, directional = 1, alpha = 0.5, edge_colors = NULL, grid_colors = NULL,
-    show_legend = TRUE, legend.pos.x = 20, legend.pos.y = 20, ...) {
+    show_legend = TRUE, legend.pos.x = 20, legend.pos.y = 20, return_df = FALSE, ...) {
     if (class(scdata) == "Seurat") {
         stop("Sorry not supported. Please use a SingleCellExperiment object.")
     }
@@ -297,40 +298,43 @@ plot_cpdb3 <- function(
         )
         dfx[[1]] <- dfx[[1]][dfx[[1]]$barcode %in% barcodes, ]
     }
-
-    gl <- list()
-    if (length(show_legend) > 1) {
-        for (i in 1:length(dfx)) {
-            gl[[i]] <- tryCatch(
-                .chord_diagram3(
-                    tmp_df = dfx[[i]], lr_interaction = lr_interactions,
-                    scaled = standard_scale, sep = DEFAULT_SEP, alpha = alpha, directional = directional,
-                    show_legend = show_legend[i], edge_cols = edge_colors, grid_cols = grid_colors,
-                    legend.pos.x = legend.pos.x, legend.pos.y = legend.pos.y, title = names(dfx)[i]
-                ),
-                error = function(e) {
-                    return(NA)
-                }
-            )
+    if (!return_df) {
+        gl <- list()
+        if (length(show_legend) > 1) {
+            for (i in 1:length(dfx)) {
+                gl[[i]] <- tryCatch(
+                    .chord_diagram3(
+                        tmp_df = dfx[[i]], lr_interaction = lr_interactions,
+                        scaled = standard_scale, sep = DEFAULT_SEP, alpha = alpha, directional = directional,
+                        show_legend = show_legend[i], edge_cols = edge_colors, grid_cols = grid_colors,
+                        legend.pos.x = legend.pos.x, legend.pos.y = legend.pos.y, title = names(dfx)[i]
+                    ),
+                    error = function(e) {
+                        return(NA)
+                    }
+                )
+            }
+        } else {
+            for (i in 1:length(dfx)) {
+                gl[[i]] <- tryCatch(
+                    .chord_diagram3(
+                        tmp_dfx = dfx[[i]], lr_interaction = lr_interactions,
+                        scaled = standard_scale, sep = DEFAULT_SEP, alpha = alpha, directional = directional,
+                        show_legend = show_legend, edge_cols = edge_colors, grid_cols = grid_colors,
+                        legend.pos.x = legend.pos.x, legend.pos.y = legend.pos.y, title = names(dfx)[i]
+                    ),
+                    error = function(e) {
+                        return(NA)
+                    }
+                )
+            }
+        }
+        if (length(gl) > 1) {
+            return(gl)
+        } else {
+            return(gl[[1]])
         }
     } else {
-        for (i in 1:length(dfx)) {
-            gl[[i]] <- tryCatch(
-                .chord_diagram3(
-                    tmp_dfx = dfx[[i]], lr_interaction = lr_interactions,
-                    scaled = standard_scale, sep = DEFAULT_SEP, alpha = alpha, directional = directional,
-                    show_legend = show_legend, edge_cols = edge_colors, grid_cols = grid_colors,
-                    legend.pos.x = legend.pos.x, legend.pos.y = legend.pos.y, title = names(dfx)[i]
-                ),
-                error = function(e) {
-                    return(NA)
-                }
-            )
-        }
-    }
-    if (length(gl) > 1) {
-        return(gl)
-    } else {
-        return(gl[[1]])
+        return(dfx)
     }
 }
