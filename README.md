@@ -38,10 +38,10 @@ Please go to the official [vignette](https://zktuong.github.io/ktplots/articles/
 For the legacy version of the `README.md` file, please go [here](https://github.com/zktuong/ktplots/blob/master/_legacy_README.md).
 
 ## Citation
-If you find these functions useful, please consider leaving a star and cite this preprint:
+If you find these functions useful, please consider leaving a star and cite this paper published in **Nature Protocols**:
 
 ```
-Troulé K, Petryszak R, Prete M, Cranley J, Harasty A, Tuong ZK, Teichmann SA, Garcia-Alonso L, Vento-Tormo R. CellPhoneDB v5: inferring cell-cell communication from single-cell multiomics data. arXiv preprint arXiv:2311.04567. 2023 Nov 8.
+Troulé K, Petryszak R, Cakir B, Cranley J, Harasty A, Prete M, Tuong ZK, Teichmann SA, Garcia-Alonso L, Vento-Tormo R. CellPhoneDB v5: inferring cell-cell communication from single-cell multiomics data. Nature Protocols. 2025. doi:10.1038/s41596-024-01137-1.
 ```
 
 Thank you!
