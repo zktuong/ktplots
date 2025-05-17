@@ -314,10 +314,10 @@ plot_cpdb <- function(
         means_mat2 <- means_mat
     }
     # remove rows that are entirely 0
-    whichempty <- which(rowSums(means_mat2) == 0)
-    if (length(whichempty) > 0) {
-        means_mat2 <- means_mat2[whichempty, , drop = FALSE]
-    }
+    # whichempty <- which(rowSums(means_mat2) == 0)
+    # if (length(whichempty) > 0) {
+    # means_mat2 <- means_mat2[whichempty, , drop = FALSE]
+    # }
     means_mat2 <- as.matrix(means_mat2)
     requireNamespace("reshape2")
     if (standard_scale) {
